@@ -1,0 +1,50 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buyer Dashboard - E-Farming System</title>
+    <link rel="stylesheet" href="{% static 'css/buyerdashstyle.css' %}">
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h2>Buyer Dashboard</h2>
+            </div>
+            <ul class="components">
+                <li><a href="{% url 'crops_page' %}">Crops Page</a></li>
+                {% comment %} <li><a href="{% url 'purchase_history' %}">Purchase History</a></li>  {% endcomment %}
+            </ul>
+        </nav>
+
+        <!-- Page Content -->
+        <div id="content">
+            <header>
+                <div class="profile-dropdown">
+                    <a href="#" class="dropbtn">
+                            <img src="{% static 'images/profile_icon.png' %}" alt="Profile Icon">
+                        </a>
+                    <div class="dropdown-content">
+                        <a href="{% url 'updateprofile' %}">Update Profile</a>
+                        <a href="{% url 'index' %}">Logout</a>
+                    </div>
+                </div>
+                <h1>Welcome, {{ buyer_name }}! to Buyer Dashboard</h1>
+            </header>
+
+            <section>
+                <h2>Explore Available Crops</h2>
+                <p>Browse through the crops listed by farmers and make purchases.</p>
+                <!-- Add more content specific to buyer here -->
+            </section>
+
+            <footer>
+                <p>&copy; 2024 E-Farming System. All rights reserved.</p>
+            </footer>
+        </div>
+    </div>
+</body>
+</html>

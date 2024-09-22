@@ -1,0 +1,127 @@
+/* General Styles */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+
+}
+
+h1, h2, p {
+    margin: 0;
+    padding: 0;
+}
+
+/* Navigation Styles */
+header {
+    background-color: #4CAF50;
+    padding: 10px 0;
+    color: white;
+}
+
+nav h1 {
+    display: inline-block;
+    margin: 0;
+    font-size: 24px;
+    padding-left: 20px; /* You can decrease or set this to 0 to move it left */
+    margin-left: -10px; /* Adjust this value to move the h1 more to the left */
+}
+
+nav ul {
+    display: inline-block;
+    
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+nav ul li {
+    display: inline-block;
+    margin-left: 20px;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    padding: 5px 10px;
+}
+
+nav ul li a:hover {
+    background-color: #45a049;
+    border-radius: 5px;
+}
+
+/* About Section Styles */
+#about {
+    padding: 60px 0;
+    background-color: #f4f4f4;
+    background-image: url('https://t3.ftcdn.net/jpg/07/38/63/14/360_F_738631427_i0Txuc3zh1r3DzAibqgg3lH8173H4xeG.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+
+}
+
+#about .container {
+    width: 45%;
+    padding: 20px; /* Adjust padding as needed */
+    min-height: 80vh; /* Minimum height to cover a significant portion of the viewport */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    background: #fff;
+    border-radius: 80px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    justify-content: center; /* Center content vertically */
+    align-items: center; /* Center content horizontally */
+    text-align: center; /* Center text inside the container */
+    margin-left: 25%;
+}
+
+#about h2 {
+    font-size: 36px;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+#about p {
+    font-size: 18px;
+    color: #666;
+    line-height: 1.8;
+    margin-bottom: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    nav ul {
+        float: none;
+        text-align: center;
+    }
+
+    nav ul li {
+        display: block;
+        margin: 10px 0;
+    }
+
+    #about h2 {
+        font-size: 28px;
+    }
+
+    #about p {
+        font-size: 16px;
+    }
+}
+
+/* Footer Styles */
+footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 20px 0;
+    margin-top: 20px;
+}
+
+footer p {
+    margin: 0;
+}

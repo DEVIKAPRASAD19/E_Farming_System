@@ -1,0 +1,61 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Sales - E-Farming System</title>
+    <link rel="stylesheet" href="{% static 'css/farmerdashstyle.css' %}">
+</head>
+<body>
+    <header>
+        <h1>View Sales</h1>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="{% url 'farmer_dashboard' %}">Dashboard</a></li>
+            <li><a href="{% url 'add_crops' %}">Add Crops</a></li>
+            <li><a href="{% url 'view_crops' %}">View Crops</a></li>
+            <li><a href="{% url 'profile' %}">My Profile</a></li>
+            <li><a href="{% url 'logout' %}">Logout</a></li>
+        </ul>
+    </nav>
+
+    <section>
+        <h2>Sales Overview</h2>
+        <!-- Include a graph or summary of sales -->
+        <p>Here you can see your sales data.</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Sale Date</th>
+                    <th>Crop Name</th>
+                    <th>Quantity Sold (kg)</th>
+                    <th>Price per kg</th>
+                    <th>Total Sale Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sale in sales %}
+                <tr>
+                    <td>{{ sale.sale_date }}</td>
+                    <td>{{ sale.crop_name }}</td>
+                    <td>{{ sale.quantity_sold }}</td>
+                    <td>{{ sale.price_per_kg }}</td>
+                    <td>{{ sale.total_amount }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5">No sales data available.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 E-Farming System. All rights reserved.</p>
+    </footer>
+</body>
+</html>

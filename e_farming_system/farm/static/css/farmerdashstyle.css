@@ -1,0 +1,124 @@
+/* General Styling */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+}
+
+.wrapper {
+    display: flex;
+}
+
+/* Sidebar Styling */
+.sidebar {
+    min-width: 200px;
+    background: #11601e;
+    color: white;
+    height: 100vh;
+    padding: 20px 0;
+}
+
+.sidebar-header {
+    text-align: center;
+}
+
+.components {
+    list-style: none;
+    padding: 0;
+}
+
+.components li {
+    padding: 10px 15px;
+}
+
+.components li a {
+    color: white;
+    text-decoration: none;
+    display: block;
+}
+
+.components li a:hover {
+    background: #ece6e6;
+}
+
+/* Page Content Styling */
+#content {
+    flex-grow: 1;
+    padding: 20px;
+    background: white;
+    min-height: 100vh;
+    position: relative; /* For dropdown positioning */
+}
+
+/* Profile Dropdown Styling */
+.profile-dropdown {
+    position: absolute; /* Positioning at the top right */
+    top: 20px; /* Distance from the top */
+    right: 20px; /* Distance from the right */
+}
+
+.dropbtn {
+    background-color: transparent;
+    color: #333;
+    border: none;
+    cursor: pointer;
+    padding: 10px 15px;
+    text-align: left;
+    font-size: 16px;
+    position: relative; /* For dropdown */
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {
+    background-color: #f1f1f1;
+}
+
+.profile-dropdown:hover .dropdown-content {
+    display: block; /* Show on hover */
+}
+
+header {
+    margin-bottom: 20px;
+}
+
+h1 {
+    color: #095d33;
+}
+
+section {
+    margin-bottom: 30px;
+}
+
+footer {
+    text-align: center;
+    margin-top: 20px;
+    color: #0a9042;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .wrapper {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        height: auto;
+        min-width: 100%;
+    }
+}

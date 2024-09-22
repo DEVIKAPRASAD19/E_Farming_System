@@ -1,0 +1,35 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ crop.name }}</title>
+    <link rel="stylesheet" href="{% static 'css/cropdetails.css' %}">
+</head>
+<body>
+    <div class="top-right">
+        <button><a href="{% url 'crops_page' %}" class="back-button">Back to Crops</a></button>
+    </div>
+    
+    <div class="container">
+        <h1 id="cropName">{{ crop.name }}</h1>
+        <div class="crop-details">
+            <div class="crop-images">
+                <img id="cropImage" src="{{ crop.images.first.image.url }}" alt="{{ crop.name }}" class="crop-img-large">
+            </div>
+            <div class="crop-info">
+                <p><strong>Description:</strong> <span id="cropDescription">{{ crop.description }}</span></p>
+                <p><strong>Category:</strong> <span id="cropCategory">{{ crop.category }}</span></p>
+                <p><strong>Price:</strong> <span id="cropPrice">Rs.{{ crop.price }}</span></p>
+                {% comment %} <p><strong>Available Date:</strong> <span id="cropAvailableDate">{{ crop.available_date }}</span></p>
+                <p><strong>Posted Date:</strong> <span id="cropPostedDate">{{ crop.posted_date }}</span></p>
+                <p><strong>Farmer:</strong> <span id="farmerName">{{ crop.farmer.name }}</span></p> {% endcomment %}
+            </div>
+        </div>
+        <div class="action-buttons">
+            <button class="btn buy-btn">Buy</button>
+        </div>
+    </div>
+</body>
+</html>

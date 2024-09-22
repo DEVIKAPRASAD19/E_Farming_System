@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Profile</title>
+    <link rel="stylesheet" href="{% static 'css/updateprofile.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>Update Profile</h1>
+        <form id="updateProfileForm" action="{% url 'updateprofile' %}" method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" value="{{ user.name }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Contact:</label>
+                <input type="tel" id="phone" name="contact" value="{{ user.contact }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="address">Place:</label>
+                <input type="text" id="place" name="place" value="{{ user.place }}" required>
+            </div>
+
+            <button type="submit" class="btn">Update Profile</button>
+        </form>
+    </div>
+
+    <script src="{% static 'js/updateprofile.js' %}"></script>
+</body>
+</html>

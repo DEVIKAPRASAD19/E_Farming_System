@@ -1,0 +1,50 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer Dashboard - E-Farming System</title>
+    <link rel="stylesheet" href="{% static 'css/farmerdashstyle.css' %}">
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h2>Farmer Dashboard</h2>
+            </div>
+            <ul class="components">
+                <li><a href="{% url 'addcrops' %}">Add Crops</a></li>
+                <li><a href="{% url 'farmercrops' %}">View Crops</a></li>
+            </ul>
+        </nav>
+
+        <!-- Page Content -->
+        <div id="content">
+            <header>
+                <div class="profile-dropdown">
+                    <a href="#" class="dropbtn">
+                        <img src="{% static 'images/profile_icon.png' %}" alt="Profile Icon">
+                    </a>
+                <div class="dropdown-content">
+                        <a href="{% url 'updateprofile' %}">Update Profile</a>
+                        <a href="{% url 'logout' %}">Logout</a>
+                    </div>
+                </div>
+                <h1>Welcome, {{ farmer_name }}! to Farmer Dashboard</h1>
+            </header>
+
+            <section>
+                <h2>Manage Your Crops</h2>
+                <p>Add new crops, view sales, and manage your profile.</p>
+                <!-- Add more content specific to farmer here -->
+            </section><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+            <footer>
+                <p>&copy; 2024 E-Farming System. All rights reserved.</p>
+            </footer>
+        </div>
+    </div>
+</body>
+</html>

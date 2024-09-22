@@ -1,0 +1,96 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - E-Farming System</title>
+    <link rel="stylesheet" href="{% static 'css/registerstyle.css' %}">
+</head>
+<body>
+    <div class="register-container">
+        <h2>Register for E-Farming System</h2>
+        <form action="{% url 'register' %}" method="post" onsubmit="return validateForm()"> <!-- Use the URL template tag -->
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required pattern="[A-Za-z\s]+" title="Name should only contain letters." minlength="3">
+                <span class="error-message" id="name-error"></span>
+            </div>
+            <div class="form-group">
+                <label for="contact">Contact No:</label>
+                <input type="text" id="contact" name="contact" required pattern="\d{10}" title="Please enter a valid 10-digit contact number.">
+                <span class="error-message" id="contact-error"></span>
+            </div>
+            <div class="form-group">
+                <label for="place">Place:</label>
+                <input type="text" id="place" name="place" required minlength="3">
+                <span class="error-message" id="place-error"></span>
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+                <span class="error-message" id="email-error"></span>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required minlength="8">
+                <span class="error-message" id="password-error"></span>
+            </div>
+            <div class="form-group">
+                <label for="role">Role:</label>
+                <select id="role" name="role" required>
+                    <option value="" disabled selected>Select your role</option>
+                    <option value="farmer">Farmer</option>
+                    <option value="buyer">Buyer</option>
+                </select>
+                <span class="error-message" id="role-error"></span>
+            </div>
+            <button type="submit" class="register-button">Register</button>
+            <p class="login-link">Already have an account? <a href="{% url 'login' %}">Login Here</a></p> <!-- Use the URL template tag -->
+        </form>
+    </div>
+
+    <script>
+        function validateForm() {
+            let isValid = true;
+            const name = document.getElementById('name');
+            const contact = document.getElementById('contact');
+            const place = document.getElementById('place');
+            const email = document.getElementById('email');
+            const password = document.getElementById('password');
+            const role = document.getElementById('role');
+
+            // Reset previous error messages
+            document.querySelectorAll('.error-message').forEach(e => e.textContent = '');
+
+            // Name validation
+            if (!name.value.match(/^[A-Za-z\s]+$/)) {
+                document.getElementById('name-error').textContent = "Name should contain only letters.";
+                isValid = false;
+            }
+
+            // Contact number validation
+            if (!contact.value.match(/^\d{10}$/)) {
+                document.getElementById('contact-error').textContent = "Please enter a valid 10-digit contact number.";
+                isValid = false;
+            }
+
+            // Password validation
+            if (password.value.length < 8) {
+                document.getElementById('password-error').textContent = "Password must be at least 8 characters.";
+                isValid = false;
+            }
+
+            // Role validation
+            if (role.value === "") {
+                document.getElementById('role-error').textContent = "Please select a role.";
+                isValid = false;
+            }
+
+            return isValid; // Prevent form submission if any validation fails
+        }
+    </script>
+</body>
+</html>

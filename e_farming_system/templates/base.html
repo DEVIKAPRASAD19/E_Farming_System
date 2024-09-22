@@ -1,0 +1,35 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}E-Farming System{% endblock %}</title> <!-- Block for title -->
+    <link rel="stylesheet" href="{% static 'css/main.css' %}"> <!-- Common CSS file -->
+</head>
+<body>
+    <!-- Common header for all pages -->
+    <header>
+        <nav>
+            <ul>
+                <li><a href="{% url 'index' %}">Home</a></li>
+                <li><a href="{% url 'addcrops' %}">Add Crop</a></li>
+                <li><a href="{% url 'crop_list' %}">Crops</a></li>
+                <li><a href="{% url 'index' %}">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Block for content that will be overridden in child templates -->
+    <main>
+        {% block content %}
+        <!-- Content specific to each page goes here -->
+        {% endblock %}
+    </main>
+
+    <!-- Common footer for all pages -->
+    <footer>
+        <p>&copy; 2024 E-Farming System</p>
+    </footer>
+</body>
+</html>
