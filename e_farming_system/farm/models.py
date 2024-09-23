@@ -74,4 +74,10 @@ class CropImage(models.Model):
 
     def __str__(self):
         return f"Image for {self.crop.name}"
+    
+
+
+class Adminm(models.Model):
+    email = models.EmailField(max_length=254, unique=True)
+    password = models.CharField(max_length=128)
 

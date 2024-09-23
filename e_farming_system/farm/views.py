@@ -14,7 +14,7 @@ from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.contrib.auth.tokens import default_token_generator as custom_token_generator
 from django.utils.html import strip_tags
-from .models import Registeruser
+from .models import Registeruser, Adminm
 from .forms import SetPasswordForm
 from .tokens import custom_token_generator
 from django.contrib.sites.shortcuts import get_current_site
@@ -50,26 +50,28 @@ def login(request):
     if request.method == 'POST':
         email = request.POST.get('email')
         password = request.POST.get('password')
-        
-        # Fetch the user based on email and password
-        user = Registeruser.objects.filter(email=email, password=password).first()
 
-        if user :
-            # Store user information in session
+        # Check if the user is an admin
+        admin = Adminm.objects.filter(email=email, password=password).first()
+        if admin:
+            request.session['admin_email'] = admin.email
+            return redirect('adminfarm')  # Replace 'admin_dashboard' with the correct URL name
+
+        # Check if the user is a farmer or buyer
+        user = Registeruser.objects.filter(email=email, password=password).first()
+        if user:
             request.session['user_id'] = user.user_id
             request.session['name'] = user.name
             request.session['role'] = user.role
 
-            # Redirect to respective dashboard based on the role
+            # Redirect based on role
             if user.role == 'farmer':
-                return redirect('farmer_dashboard')
+                return redirect('farmer_dashboard')  # Replace 'farmer_dashboard' with the correct URL name
             elif user.role == 'buyer':
-                return redirect('buyer_dashboard')
-            """ else:
-                return render(request, 'login.html', {'error': 'Invalid user role'}) """
+                return redirect('buyer_dashboard')  # Replace 'buyer_dashboard' with the correct URL name
         else:
-            # If authentication fails, return an error message
-            return render(request, 'login.html', {'error': 'Invalid email or password'})
+            messages.error(request, 'Invalid email or password')
+            return render(request, 'login.html')
 
     return render(request, 'login.html')
 
