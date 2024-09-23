@@ -7,11 +7,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - E-Farming System</title>
     <link rel="stylesheet" href="{% static 'css/registerstyle.css' %}">
+    <style>
+        /* Add styles for error messages */
+        .error-message {
+            color: red;
+            font-size: 12px;
+        }
+
+        .valid {
+            border-color: green;
+        }
+
+        .invalid {
+            border-color: red;
+        }
+    </style>
 </head>
 <body>
     <div class="register-container">
         <h2>Register for E-Farming System</h2>
-        <form action="{% url 'register' %}" method="post" onsubmit="return validateForm()"> <!-- Use the URL template tag -->
+        <form action="{% url 'register' %}" method="post" onsubmit="return validateForm()"> 
             {% csrf_token %}
             <div class="form-group">
                 <label for="name">Name:</label>
@@ -48,13 +63,63 @@
                 <span class="error-message" id="role-error"></span>
             </div>
             <button type="submit" class="register-button">Register</button>
-            <p class="login-link">Already have an account? <a href="{% url 'login' %}">Login Here</a></p> <!-- Use the URL template tag -->
+            <p class="login-link">Already have an account? <a href="{% url 'login' %}">Login Here</a></p>
         </form>
     </div>
 
     <script>
+        // Function to validate individual fields
+        function validateField(field, regex, errorId, errorMessage) {
+            if (field.value === "") {
+                document.getElementById(errorId).textContent = "Please fill the field.";
+                field.classList.remove('valid');
+                field.classList.add('invalid');
+            } else if (!regex.test(field.value)) {
+                document.getElementById(errorId).textContent = errorMessage;
+                field.classList.remove('valid');
+                field.classList.add('invalid');
+            } else {
+                document.getElementById(errorId).textContent = '';
+                field.classList.remove('invalid');
+                field.classList.add('valid');
+            }
+        }
+
+        // Add 'blur' event listeners for live validation when user leaves the field
+        document.getElementById('name').addEventListener('blur', function() {
+            validateField(this, /^[A-Za-z\s]{3,}$/, 'name-error', "Name should contain at least 3 letters and only letters.");
+        });
+
+        document.getElementById('contact').addEventListener('blur', function() {
+            validateField(this, /^\d{10}$/, 'contact-error', "Please enter a valid 10-digit contact number.");
+        });
+
+        document.getElementById('place').addEventListener('blur', function() {
+            validateField(this, /^[A-Za-z\s]{3,}$/, 'place-error', "Place should contain at least 3 letters and only letters.");
+        });
+
+        document.getElementById('email').addEventListener('blur', function() {
+            validateField(this, /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,}$/, 'email-error', "Please enter a valid email address.");
+        });
+
+        document.getElementById('password').addEventListener('blur', function() {
+            validateField(this, /^.{8,}$/, 'password-error', "Password must be at least 8 characters long.");
+        });
+
+        document.getElementById('role').addEventListener('blur', function() {
+            if (this.value === "") {
+                document.getElementById('role-error').textContent = "Please select a role.";
+                this.classList.remove('valid');
+                this.classList.add('invalid');
+            } else {
+                document.getElementById('role-error').textContent = "";
+                this.classList.remove('invalid');
+                this.classList.add('valid');
+            }
+        });
+
+        // Final form validation before submission
         function validateForm() {
-            let isValid = true;
             const name = document.getElementById('name');
             const contact = document.getElementById('contact');
             const place = document.getElementById('place');
@@ -62,24 +127,35 @@
             const password = document.getElementById('password');
             const role = document.getElementById('role');
 
-            // Reset previous error messages
-            document.querySelectorAll('.error-message').forEach(e => e.textContent = '');
+            let isValid = true;
 
             // Name validation
-            if (!name.value.match(/^[A-Za-z\s]+$/)) {
-                document.getElementById('name-error').textContent = "Name should contain only letters.";
+            if (!name.value.match(/^[A-Za-z\s]{3,}$/)) {
+                document.getElementById('name-error').textContent = "Name should contain at least 3 letters and only letters.";
                 isValid = false;
             }
 
-            // Contact number validation
+            // Contact validation
             if (!contact.value.match(/^\d{10}$/)) {
                 document.getElementById('contact-error').textContent = "Please enter a valid 10-digit contact number.";
                 isValid = false;
             }
 
+            // Place validation
+            if (!place.value.match(/^[A-Za-z\s]{3,}$/)) {
+                document.getElementById('place-error').textContent = "Place should contain at least 3 letters.";
+                isValid = false;
+            }
+
+            // Email validation
+            if (!email.value.match(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,}$/)) {
+                document.getElementById('email-error').textContent = "Please enter a valid email address.";
+                isValid = false;
+            }
+
             // Password validation
             if (password.value.length < 8) {
-                document.getElementById('password-error').textContent = "Password must be at least 8 characters.";
+                document.getElementById('password-error').textContent = "Password must be at least 8 characters long.";
                 isValid = false;
             }
 
@@ -89,7 +165,7 @@
                 isValid = false;
             }
 
-            return isValid; // Prevent form submission if any validation fails
+            return isValid;
         }
     </script>
 </body>

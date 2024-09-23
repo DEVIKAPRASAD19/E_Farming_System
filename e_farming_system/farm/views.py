@@ -256,7 +256,7 @@ def register(request):
     return render(request, 'register.html')
 
 
-
+@login_required(login_url='login')
 def farmer_dashboard(request):
     if request.session.get('user_id'):
         farmer_name = request.session.get('name')  # Get farmer's name from session
@@ -265,7 +265,7 @@ def farmer_dashboard(request):
         return redirect('login')
 
 
-
+@login_required(login_url='login')
 def buyer_dashboard(request):
     if request.session.get('user_id'):
         buyer_name = request.session.get('name')  # Get buyer's name from session
@@ -441,7 +441,7 @@ def farmercrops(request):
     return render(request, 'farmercrops.html', {'crops': crops})
 
 
-
+@login_required(login_url='login')
 def addcrops(request):
     if request.method == 'POST':
         name = request.POST.get('name')
@@ -484,8 +484,10 @@ def addcrops(request):
         crop_photos = request.FILES.getlist('crop_photos')  # Handling multiple image files
         for photo in crop_photos:
             CropImage.objects.create(crop=crop_instance, image=photo)  # Saving each image to CropImage
+
+        messages.success(request, 'Crop added successfully')
         
-        return redirect('farmer_dashboard')  # Redirect to the farmer dashboard after crop addition
+        return redirect('addcrops')  # Redirect to the farmer dashboard after crop addition
     
     return render(request, 'addcrops.html')  # Render the crop addition form
 

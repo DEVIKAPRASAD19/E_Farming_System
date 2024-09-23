@@ -3,13 +3,20 @@
 {% block content %}
 <nav class="navbar">
     <div class="nav-container">
-        <a href="{% url 'index' %}" class="nav-link">Home</a>
+        <a href="{% url 'farmer_dashboard' %}" class="nav-link">Back</a>
         <a href="{% url 'index' %}" class="nav-link">Logout</a> <!-- Updated link -->
     </div>
 </nav>
 
 <div class="form-container"> <!-- Updated class name -->
     <h2>Add a Crop</h2>
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="alert alert-success">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form-group">

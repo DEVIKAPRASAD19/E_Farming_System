@@ -22,9 +22,9 @@
             <a href="{% url 'crop_details' crop.id %}">  <!-- Updated URL to match your detail view -->
                 <img src="{{ crop.images.first.image.url }}" alt="{{ crop.name }}" class="crop-image">
                 <h2>{{ crop.name }}</h2>
-                <p>{{ crop.description|truncatewords:20 }}</p>
+                {% comment %} <p>{{ crop.description|truncatewords:20 }}</p>
                 <p class="price">Price: Rs.{{ crop.price }}</p>
-                <p class="category">Category: {{ crop.category }}</p>
+                <p class="category">Category: {{ crop.category }}</p> {% endcomment %}
             </a>
         </div>
         {% endfor %}
