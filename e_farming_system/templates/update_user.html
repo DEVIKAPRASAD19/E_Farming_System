@@ -1,0 +1,35 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update User - {{ user.name }}</title>
+    <link rel="stylesheet" href="{% static 'css/updateuser.css' %}">
+</head>
+<body>
+    <div class="header">
+        <h1>Update User: {{ user.name }}</h1>
+        <a href="{% url 'manage_users' user.role %}" class="back-button">
+            <span>Back</span>
+        </a>
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" value="{{ user.name }}" required><br>
+
+        <label for="contact">Contact:</label>
+        <input type="text" id="contact" name="contact" value="{{ user.contact }}" required><br>
+
+        <label for="place">Place:</label>
+        <input type="text" id="place" name="place" value="{{ user.place }}" required><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" value="{{ user.email }}" required><br>
+
+        <button type="submit">Update</button>
+    </form>
+</body>
+</html>

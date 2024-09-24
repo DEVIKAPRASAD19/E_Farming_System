@@ -9,6 +9,7 @@ urlpatterns = [
     path('login', views.login, name='login'),
     path('register', views.register, name='register'),
     path('adminfarm', views.adminfarm, name='adminfarm'),
+    path('adminviews', views.adminviews, name='adminviews'),
     path('about', views.about, name='about'),
     path('contact', views.contact,name='contact'),
     path('farmer_dashboard', views.farmer_dashboard, name='farmer_dashboard'),
@@ -25,6 +26,9 @@ urlpatterns = [
     path('crops/', views.crops_page, name='crops_page'),  # For listing all crops
     path('crops/<int:id>/', views.crop_details, name='crop_details'),  # For crop details
     
+    path('manage-users/<str:role>/', views.manage_users, name='manage_users'),
+    path('update-user/<int:user_id>/', views.update_user, name='update_user'),
+    path('delete-user/<int:user_id>/', views.delete_user, name='delete_user'),
    
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

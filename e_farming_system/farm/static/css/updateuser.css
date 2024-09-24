@@ -1,0 +1,70 @@
+/* General styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+}
+
+/* Header styles */
+.header {
+    background-color: #4CAF50; /* Green background */
+    color: white; /* White text */
+    padding: 15px;
+    text-align: center;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+
+/* Back button styles */
+.back-button {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 15px;
+    background-color: #333; /* Dark background */
+    color: white; /* White text */
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.back-button:hover {
+    background-color: #555; /* Darker on hover */
+}
+
+/* Form styles */
+form {
+    background-color: white; /* White background */
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Light shadow */
+}
+
+/* Input styles */
+label {
+    display: block; /* Block layout for labels */
+    margin-bottom: 5px;
+    font-weight: bold; /* Bold text for labels */
+}
+
+input[type="text"],
+input[type="email"] {
+    width: 100%; /* Full width */
+    padding: 10px; /* Padding inside input */
+    margin-bottom: 15px; /* Space between inputs */
+    border: 1px solid #ccc; /* Light gray border */
+    border-radius: 4px; /* Rounded corners */
+}
+
+/* Button styles */
+button {
+    background-color: #4CAF50; /* Green button */
+    color: white; /* White text */
+    padding: 10px 15px; /* Padding inside button */
+    border: none; /* No border */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer on hover */
+}
+
+button:hover {
+    background-color: #45a049; /* Darker green on hover */
+}

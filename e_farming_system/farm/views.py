@@ -7,8 +7,6 @@ from django.utils.encoding import force_bytes, force_str
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage, send_mail
 from django.conf import settings
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.utils.encoding import force_bytes, force_str
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.contrib.auth.tokens import default_token_generator as custom_token_generator
@@ -25,6 +23,7 @@ from django.core.files.storage import FileSystemStorage
 from django.contrib.auth import logout 
 from .models import Crop, CropImage
 from django.views.decorators.cache import cache_control
+from django.shortcuts import get_object_or_404
 
 
 
@@ -76,10 +75,12 @@ def login(request):
 
 
 
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def user_logout(request):
-    logout(request)
-    return redirect('index')  # Redirect to home page or login page
+    request.session.flush()  # Clears the session data
+    return redirect('index')  # Redirects to the login page
 
+               
 """ def password_reset_form(request):
     if request.method == "POST":
         email = request.POST['email'].strip().lower()  # Normalize the email
@@ -255,7 +256,7 @@ def register(request):
     return render(request, 'register.html')
 
 
-
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def farmer_dashboard(request):
     if request.session.get('user_id'):
         farmer_name = request.session.get('name')  # Get farmer's name from session
@@ -264,7 +265,7 @@ def farmer_dashboard(request):
         return redirect('login')
 
 
-
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def buyer_dashboard(request):
     if request.session.get('user_id'):
         buyer_name = request.session.get('name')  # Get buyer's name from session
@@ -276,8 +277,9 @@ def buyer_dashboard(request):
 
 
 
-def viewcrops(request):
-    return render(request, 'viewcrops.html')
+def adminviews(request):
+    crops = Crop.objects.all()  # Fetch all crops
+    return render(request, 'adminviews.html', {'crops': crops})
 
 def salesview(request):
     return render(request, 'salesview.html')
@@ -435,12 +437,13 @@ def crop_detail(request, crop_id):
     crop = Crop.objects.get(id=crop_id)
     return render(request, 'crop_detail.html', {'crop': crop}) """
 
+
 def farmercrops(request):
     crops = Crop.objects.all()  # Fetch all crops
     return render(request, 'farmercrops.html', {'crops': crops})
 
 
-
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def addcrops(request):
     if request.method == 'POST':
         name = request.POST.get('name')
@@ -502,3 +505,31 @@ def crop_details(request, id):
     crop_instance = Crop.objects.get(id=id)
     # Render the crop details page with the fetched crop instance
     return render(request, 'crop_details.html', {'crop': crop_instance})
+
+# View to list farmers or buyers based on role
+def manage_users(request, role):
+    users = Registeruser.objects.filter(role=role)
+    context = {'users': users, 'role': role}
+    return render(request, 'manage_users.html', context)
+
+
+# View to update user
+def update_user(request, user_id):
+    user = get_object_or_404(Registeruser, user_id=user_id)
+    if request.method == 'POST':
+        user.name = request.POST.get('name')
+        user.contact = request.POST.get('contact')
+        user.place = request.POST.get('place')
+        user.email = request.POST.get('email')
+        user.save()
+        return redirect('manage_users', role=user.role)
+    
+    context = {'user': user}
+    return render(request, 'update_user.html', {'user': user})
+
+
+def delete_user(request, user_id):
+    user = get_object_or_404(Registeruser, user_id=user_id)
+    user.delete()
+    return redirect('manage_users', user.role)  # Redirect to the manage users page after deletion
+

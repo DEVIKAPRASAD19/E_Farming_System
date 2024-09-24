@@ -1,0 +1,33 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crops</title>
+    <link rel="stylesheet" href="{% static 'css/farmercrops.css' %}">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+</head>
+<body>
+    <div class="header">
+        <h1>Crops Available</h1>
+        <a href="{% url 'adminfarm' %}" class="back-button">
+            <span>Back</span>
+        </a>
+    </div>
+
+    <div class="crops-list">
+        {% for crop in crops %}
+        <div class="crop-item">
+            <!-- Updated URL to match your detail view -->
+                <img src="{{ crop.images.first.image.url }}" alt="{{ crop.name }}" class="crop-image">
+                <h2>{{ crop.name }}</h2>
+                <p>{{ crop.description|truncatewords:20 }}</p>
+                <p class="price">Price: Rs.{{ crop.price }}</p>
+                <p class="category">Category: {{ crop.category }}</p>
+            </a>
+        </div>
+        {% endfor %}
+    </main>
+</body>
+</html>

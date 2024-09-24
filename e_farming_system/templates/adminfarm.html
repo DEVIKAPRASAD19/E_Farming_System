@@ -16,9 +16,11 @@
             </div>
             <ul class="list-unstyled components">
                 <li><a href="#manage-farmers" onclick="showSection('manage-farmers')">Manage Farmers</a></li>
-                <li><a href="#manage-buyers" onclick="showSection('manage-buyers')">Manage Buyers</a></li>
+                {% comment %} <li><a href="#manage-buyers" onclick="showSection('manage-buyers')">Manage Buyers</a></li> {% endcomment %}
                 <li><a href="#manage-crops" onclick="showSection('manage-crops')">Manage Crops</a></li>
-                <li><a href="{% url 'farmercrops' %}">View Crops</a></li>
+                <li><a href="{% url 'manage_users' 'farmer' %}">Manage Farmers</a></li>
+                <li><a href="{% url 'manage_users' 'buyer' %}">Manage Buyers</a></li>
+                <li><a href="{% url 'adminviews' %}">View Crops</a></li>
                 <li><a href="{% url 'logout' %}">Logout</a></li>
             </ul>
         </nav>
