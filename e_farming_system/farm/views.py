@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
@@ -25,7 +24,7 @@ from django.contrib.auth.models import User
 from django.core.files.storage import FileSystemStorage
 from django.contrib.auth import logout 
 from .models import Crop, CropImage
-
+from django.views.decorators.cache import cache_control
 
 
 
@@ -256,7 +255,7 @@ def register(request):
     return render(request, 'register.html')
 
 
-@login_required(login_url='login')
+
 def farmer_dashboard(request):
     if request.session.get('user_id'):
         farmer_name = request.session.get('name')  # Get farmer's name from session
@@ -265,7 +264,7 @@ def farmer_dashboard(request):
         return redirect('login')
 
 
-@login_required(login_url='login')
+
 def buyer_dashboard(request):
     if request.session.get('user_id'):
         buyer_name = request.session.get('name')  # Get buyer's name from session
@@ -441,7 +440,7 @@ def farmercrops(request):
     return render(request, 'farmercrops.html', {'crops': crops})
 
 
-@login_required(login_url='login')
+
 def addcrops(request):
     if request.method == 'POST':
         name = request.POST.get('name')
