@@ -10,13 +10,7 @@
 
 <div class="form-container">
     <h2>Add a Crop</h2>
-    {% if messages %}
-        <div class="messages">
-            {% for message in messages %}
-                <div class="alert alert-success">{{ message }}</div>
-            {% endfor %}
-        </div>
-    {% endif %}
+    
     <form id="add-crop-form" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         
@@ -60,7 +54,13 @@
         <button type="submit">Add Crop</button>
     </form>
 </div>
-
+{% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="alert alert-success">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
 <link rel="stylesheet" href="{% static 'css/addcropsstyle.css' %}">
 <script>
 // Live validation script

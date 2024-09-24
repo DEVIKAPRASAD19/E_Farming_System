@@ -28,6 +28,7 @@
                         <img src="{% static 'images/profile_icon.png' %}" alt="Profile Icon">
                     </a>
                 <div class="dropdown-content">
+                    <a href="{% url 'view_profile' user.user_id %}">View Profile</a>
                         <a href="{% url 'updateprofile' %}">Update Profile</a>
                         <a href="{% url 'logout' %}">Logout</a>
                     </div>
@@ -39,7 +40,7 @@
                 <h2>Manage Your Crops</h2>
                 <p>Add new crops, view sales, and manage your profile.</p>
                 <!-- Add more content specific to farmer here -->
-            </section><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+            </section><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
             <footer>
                 <p>&copy; 2024 E-Farming System. All rights reserved.</p>

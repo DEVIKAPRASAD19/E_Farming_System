@@ -1,0 +1,26 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Profile - {{ user.name }}</title>
+    <link rel="stylesheet" href="{% static 'css/view_profile.css' %}"> <!-- Link to your CSS file -->
+</head>
+<body>
+    <div class="header">
+        <h1>Profile of {{ user.name }}</h1>
+{% comment %}         <a href="{% url 'edit_profile' user.user_id %}" class="edit-btn">Edit Profile</a> {% endcomment %}
+        <a href="{% url 'index' %}" class="back-button">Home</a>
+    </div>
+
+    <div class="profile-details">
+        <h2>User Details</h2>
+        <p><strong>Name:</strong> {{ user.name }}</p>
+        <p><strong>Contact:</strong> {{ user.contact }}</p>
+        <p><strong>Place:</strong> {{ user.place }}</p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <p><strong>Role:</strong> {{ user.role }}</p>
+    </div>
+</body>
+</html>

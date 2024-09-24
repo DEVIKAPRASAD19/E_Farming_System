@@ -258,9 +258,24 @@ def register(request):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def farmer_dashboard(request):
-    if request.session.get('user_id'):
-        farmer_name = request.session.get('name')  # Get farmer's name from session
-        return render(request, 'farmer_dashboard.html', {'farmer_name': farmer_name})
+    # Check if user_id is in session
+    user_id = request.session.get('user_id')
+    if user_id:
+        try:
+            # Fetch user details from the database using user_id
+            user = Registeruser.objects.get(user_id=user_id)
+        except Registeruser.DoesNotExist:
+            # Handle case where user does not exist
+            return redirect('login')
+
+        # Get farmer's name from session
+        farmer_name = request.session.get('name')
+
+        # Render the dashboard template with user context
+        return render(request, 'farmer_dashboard.html', {
+            'farmer_name': farmer_name,
+            'user': user,  # Pass the user object to access user_id in the template
+        })
     else:
         return redirect('login')
 
@@ -268,11 +283,19 @@ def farmer_dashboard(request):
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def buyer_dashboard(request):
     if request.session.get('user_id'):
-        buyer_name = request.session.get('name')  # Get buyer's name from session
-        return render(request, 'buyer_dashboard.html', {'buyer_name': buyer_name})
+        buyer_id = request.session.get('user_id')  # Get buyer's user ID from session
+        try:
+            # Fetch the buyer's details from the database
+            buyer = Registeruser.objects.get(user_id=buyer_id)
+            buyer_name = buyer.name  # Get buyer's name from the fetched user details
+            
+            # Render the dashboard with the user's details
+            return render(request, 'buyer_dashboard.html', {'buyer_name': buyer_name, 'user': buyer})
+        except Registeruser.DoesNotExist:
+            # Handle the case where the user does not exist in the database
+            return redirect('login')
     else:
         return redirect('login')
-
 
 
 
@@ -533,3 +556,7 @@ def delete_user(request, user_id):
     user.delete()
     return redirect('manage_users', user.role)  # Redirect to the manage users page after deletion
 
+
+def view_profile(request, user_id):
+    user = get_object_or_404(Registeruser, user_id=user_id)
+    return render(request, 'view_profile.html', {'user': user})

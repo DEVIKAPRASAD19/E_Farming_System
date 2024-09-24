@@ -7,6 +7,11 @@ body {
     display: flex;
     flex-direction: column;
     height: 100vh; /* Full height of the viewport */
+    background-color: #f8f9fa;
+    background-image: url('https://cdn.pixabay.com/photo/2018/07/06/19/40/field-3521063_960_720.jpg'); /* Add your image path here */
+    background-size: cover; /* Ensure the image covers the entire background */
+    background-position: center; /* Center the background image */
+    background-repeat: no-repeat; /* Prevent the image from repeating */
 }
 
 .navbar {

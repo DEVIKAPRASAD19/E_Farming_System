@@ -6,6 +6,7 @@ body {
     background-color: #f4f4f9;
 }
 
+/* Wrapper to hold sidebar and content */
 .wrapper {
     display: flex;
 }
@@ -49,6 +50,9 @@ body {
     background: white;
     min-height: 100vh;
     position: relative; /* For dropdown positioning */
+    background-image: url('https://img.freepik.com/free-photo/nature-product-backdrop-farm-sunlight_53876-147923.jpg'); /* Add your image path here */
+    background-size: cover; /* Ensure the image covers the content area */
+    background-position: center; /* Center the background image */
 }
 
 /* Profile Dropdown Styling */
@@ -108,7 +112,7 @@ section {
 footer {
     text-align: center;
     margin-top: 20px;
-    color: #0a9042;
+    color: #010f07;
 }
 
 /* Responsive Design */

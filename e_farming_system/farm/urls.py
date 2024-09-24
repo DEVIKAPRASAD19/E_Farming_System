@@ -21,6 +21,7 @@ urlpatterns = [
     path('forgotpass', views.forgotpass, name='forgotpass'),
     path('reset_password/<str:token>/', views.reset_password, name='reset_password'),
     path('updateprofile', views.updateprofile, name='updateprofile'),
+    path('profile/<int:user_id>/', views.view_profile, name='view_profile'),
     path('updatebuyer', views.updatebuyer, name='updatebuyer'),
     path('addcrops', views.addcrops, name='addcrops'),
     path('crops/', views.crops_page, name='crops_page'),  # For listing all crops

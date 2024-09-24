@@ -4,13 +4,17 @@ body {
     padding: 0;
     font-family: Arial, sans-serif;
     background-color: #f8f9fa;
+    background-image: url('https://www.shutterstock.com/image-photo/witness-modernization-farming-through-photo-260nw-2383073389.jpg'); /* Add your image path here */
+    background-size: cover; /* Ensure the image covers the entire background */
+    background-position: center; /* Center the background image */
+    background-repeat: no-repeat; /* Prevent the image from repeating */
 }
 
 .container {
     max-width: 600px;
     margin: 50px auto;
     padding: 20px;
-    background-color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.9); /* Slight transparency for the container */
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }

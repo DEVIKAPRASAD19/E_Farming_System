@@ -12,6 +12,8 @@
         .error-message {
             color: red;
             font-size: 12px;
+            margin-top: 5px;
+            display: none; /* Hide initially */
         }
 
         .valid {
@@ -26,32 +28,32 @@
 <body>
     <div class="register-container">
         <h2>Register for E-Farming System</h2>
-        <form action="{% url 'register' %}" method="post" onsubmit="return validateForm()"> 
+        <form id="registrationForm" action="{% url 'register' %}" method="post">
             {% csrf_token %}
             <div class="form-group">
                 <label for="name">Name:</label>
-                <input type="text" id="name" name="name" required pattern="[A-Za-z\s]+" title="Name should only contain letters." minlength="3">
-                <span class="error-message" id="name-error"></span>
+                <input type="text" id="name" name="name" required minlength="3">
+                <span class="error-message" id="name-error">Name must contain at least 3 letters and only letters.</span>
             </div>
             <div class="form-group">
                 <label for="contact">Contact No:</label>
-                <input type="text" id="contact" name="contact" required pattern="\d{10}" title="Please enter a valid 10-digit contact number.">
-                <span class="error-message" id="contact-error"></span>
+                <input type="text" id="contact" name="contact" required>
+                <span class="error-message" id="contact-error">Please enter a valid 10-digit contact number starting with 6, 7, 8, or 9.</span>
             </div>
             <div class="form-group">
                 <label for="place">Place:</label>
                 <input type="text" id="place" name="place" required minlength="3">
-                <span class="error-message" id="place-error"></span>
+                <span class="error-message" id="place-error">Place must contain at least 3 letters.</span>
             </div>
             <div class="form-group">
                 <label for="email">Email:</label>
                 <input type="email" id="email" name="email" required>
-                <span class="error-message" id="email-error"></span>
+                <span class="error-message" id="email-error">Please enter a valid email address.</span>
             </div>
             <div class="form-group">
                 <label for="password">Password:</label>
                 <input type="password" id="password" name="password" required minlength="8">
-                <span class="error-message" id="password-error"></span>
+                <span class="error-message" id="password-error">Password must be at least 8 characters long.</span>
             </div>
             <div class="form-group">
                 <label for="role">Role:</label>
@@ -60,7 +62,7 @@
                     <option value="farmer">Farmer</option>
                     <option value="buyer">Buyer</option>
                 </select>
-                <span class="error-message" id="role-error"></span>
+                <span class="error-message" id="role-error">Please select a role.</span>
             </div>
             <button type="submit" class="register-button">Register</button>
             <p class="login-link">Already have an account? <a href="{% url 'login' %}">Login Here</a></p>
@@ -68,58 +70,8 @@
     </div>
 
     <script>
-        // Function to validate individual fields
-        function validateField(field, regex, errorId, errorMessage) {
-            if (field.value === "") {
-                document.getElementById(errorId).textContent = "Please fill the field.";
-                field.classList.remove('valid');
-                field.classList.add('invalid');
-            } else if (!regex.test(field.value)) {
-                document.getElementById(errorId).textContent = errorMessage;
-                field.classList.remove('valid');
-                field.classList.add('invalid');
-            } else {
-                document.getElementById(errorId).textContent = '';
-                field.classList.remove('invalid');
-                field.classList.add('valid');
-            }
-        }
-
-        // Add 'blur' event listeners for live validation when user leaves the field
-        document.getElementById('name').addEventListener('blur', function() {
-            validateField(this, /^[A-Za-z\s]{3,}$/, 'name-error', "Name should contain at least 3 letters and only letters.");
-        });
-
-        document.getElementById('contact').addEventListener('blur', function() {
-            validateField(this, /^\d{10}$/, 'contact-error', "Please enter a valid 10-digit contact number.");
-        });
-
-        document.getElementById('place').addEventListener('blur', function() {
-            validateField(this, /^[A-Za-z\s]{3,}$/, 'place-error', "Place should contain at least 3 letters and only letters.");
-        });
-
-        document.getElementById('email').addEventListener('blur', function() {
-            validateField(this, /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,}$/, 'email-error', "Please enter a valid email address.");
-        });
-
-        document.getElementById('password').addEventListener('blur', function() {
-            validateField(this, /^.{8,}$/, 'password-error', "Password must be at least 8 characters long.");
-        });
-
-        document.getElementById('role').addEventListener('blur', function() {
-            if (this.value === "") {
-                document.getElementById('role-error').textContent = "Please select a role.";
-                this.classList.remove('valid');
-                this.classList.add('invalid');
-            } else {
-                document.getElementById('role-error').textContent = "";
-                this.classList.remove('invalid');
-                this.classList.add('valid');
-            }
-        });
-
-        // Final form validation before submission
-        function validateForm() {
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.getElementById('registrationForm');
             const name = document.getElementById('name');
             const contact = document.getElementById('contact');
             const place = document.getElementById('place');
@@ -127,46 +79,152 @@
             const password = document.getElementById('password');
             const role = document.getElementById('role');
 
-            let isValid = true;
-
-            // Name validation
-            if (!name.value.match(/^[A-Za-z\s]{3,}$/)) {
-                document.getElementById('name-error').textContent = "Name should contain at least 3 letters and only letters.";
-                isValid = false;
+            // Function to show error
+            function showError(message, elementId) {
+                const errorElement = document.getElementById(elementId);
+                errorElement.textContent = message;
+                errorElement.style.display = 'block';
             }
 
-            // Contact validation
-            if (!contact.value.match(/^\d{10}$/)) {
-                document.getElementById('contact-error').textContent = "Please enter a valid 10-digit contact number.";
-                isValid = false;
+            // Function to clear error
+            function clearError(elementId) {
+                const errorElement = document.getElementById(elementId);
+                errorElement.textContent = '';
+                errorElement.style.display = 'none';
             }
 
-            // Place validation
-            if (!place.value.match(/^[A-Za-z\s]{3,}$/)) {
-                document.getElementById('place-error').textContent = "Place should contain at least 3 letters.";
-                isValid = false;
+            // Function to validate phone number (10 digits, starts with 6, 7, 8, or 9, not '1234567890')
+            function validatePhoneNumber(phoneNumber) {
+                return /^[6789]\d{9}$/.test(phoneNumber) && phoneNumber !== '1234567890';
             }
 
-            // Email validation
-            if (!email.value.match(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,}$/)) {
-                document.getElementById('email-error').textContent = "Please enter a valid email address.";
-                isValid = false;
+            // Function to validate name (only alphabets and spaces, minimum 3 characters)
+            function validateName(name) {
+                return /^[A-Za-z\s]{3,}$/.test(name);
             }
 
-            // Password validation
-            if (password.value.length < 8) {
-                document.getElementById('password-error').textContent = "Password must be at least 8 characters long.";
-                isValid = false;
+            // Function to validate place (only alphabets and spaces, minimum 3 characters)
+            function validatePlace(place) {
+                return /^[A-Za-z\s]{3,}$/.test(place);
             }
 
-            // Role validation
-            if (role.value === "") {
-                document.getElementById('role-error').textContent = "Please select a role.";
-                isValid = false;
+            // Function to validate email
+            function validateEmail(email) {
+                return /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(email);
             }
 
-            return isValid;
-        }
+            // Function to validate password (min 8 characters, upper, lower, number, special)
+            function validatePassword(password) {
+                return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(password);
+            }
+
+            // Function to validate role selection
+            function validateRole(role) {
+                return role !== "";
+            }
+
+            // Live validation for each field
+            name.addEventListener('input', function() {
+                if (!validateName(name.value.trim())) {
+                    showError('Name must be at least 3 characters long and contain only letters.', 'name-error');
+                    name.classList.add('invalid');
+                } else {
+                    clearError('name-error');
+                    name.classList.remove('invalid');
+                    name.classList.add('valid');
+                }
+            });
+
+            contact.addEventListener('input', function() {
+                if (!validatePhoneNumber(contact.value.trim())) {
+                    showError('Phone number must start with 6, 7, 8, or 9, and be 10 digits long.', 'contact-error');
+                    contact.classList.add('invalid');
+                } else {
+                    clearError('contact-error');
+                    contact.classList.remove('invalid');
+                    contact.classList.add('valid');
+                }
+            });
+
+            place.addEventListener('input', function() {
+                if (!validatePlace(place.value.trim())) {
+                    showError('Place must contain at least 3 letters.', 'place-error');
+                    place.classList.add('invalid');
+                } else {
+                    clearError('place-error');
+                    place.classList.remove('invalid');
+                    place.classList.add('valid');
+                }
+            });
+
+            email.addEventListener('input', function() {
+                if (!validateEmail(email.value.trim())) {
+                    showError('Enter a valid email address.', 'email-error');
+                    email.classList.add('invalid');
+                } else {
+                    clearError('email-error');
+                    email.classList.remove('invalid');
+                    email.classList.add('valid');
+                }
+            });
+
+            password.addEventListener('input', function() {
+                if (!validatePassword(password.value.trim())) {
+                    showError('Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.', 'password-error');
+                    password.classList.add('invalid');
+                } else {
+                    clearError('password-error');
+                    password.classList.remove('invalid');
+                    password.classList.add('valid');
+                }
+            });
+
+            role.addEventListener('change', function() {
+                if (!validateRole(role.value.trim())) {
+                    showError('Please select a role.', 'role-error');
+                    role.classList.add('invalid');
+                } else {
+                    clearError('role-error');
+                    role.classList.remove('invalid');
+                    role.classList.add('valid');
+                }
+            });
+
+            // Event listener for form submission
+            form.addEventListener('submit', function(event) {
+                // Validate all fields one last time before submission
+                let valid = true;
+
+                if (!validateName(name.value.trim())) {
+                    showError('Name must be at least 3 characters long and contain only letters.', 'name-error');
+                    valid = false;
+                }
+                if (!validatePhoneNumber(contact.value.trim())) {
+                    showError('Phone number must start with 6, 7, 8, or 9, and be 10 digits long.', 'contact-error');
+                    valid = false;
+                }
+                if (!validatePlace(place.value.trim())) {
+                    showError('Place must contain at least 3 letters.', 'place-error');
+                    valid = false;
+                }
+                if (!validateEmail(email.value.trim())) {
+                    showError('Enter a valid email address.', 'email-error');
+                    valid = false;
+                }
+                if (!validatePassword(password.value.trim())) {
+                    showError('Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.', 'password-error');
+                    valid = false;
+                }
+                if (!validateRole(role.value.trim())) {
+                    showError('Please select a role.', 'role-error');
+                    valid = false;
+                }
+
+                if (!valid) {
+                    event.preventDefault(); // Prevent form submission if there are errors
+                }
+            });
+        });
     </script>
 </body>
 </html>
