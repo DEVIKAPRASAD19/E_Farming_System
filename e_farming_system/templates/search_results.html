@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results</title>
+    <link rel="stylesheet" href="{% static 'css/searchresult.css' %}">
+</head>
+<body>
+
+<h2>Search Results</h2>
+
+{% if crops %}
+    <ul>
+        {% for crop in crops %}
+        <li>
+            {% if crop.images.first %}  <!-- Check if there is at least one image -->
+                <img src="{{ crop.images.first.image.url }}" alt="{{ crop.name }}">
+            {% else %}
+                <img src="{% static 'images/placeholder.png' %}" alt="No image available"> <!-- Placeholder image -->
+            {% endif %}
+            <h3>{{ crop.name }}</h3>
+            <p>Category: {{ crop.category }}</p>
+            <p>Price: Rs.{{ crop.price }}</p>
+            {% comment %} <button onclick="location.href='{% url 'buy_crop' crop.id %}'">Buy</button> {% endcomment %}
+            {% comment %} <button onclick="location.href='{% url 'add_to_cart' crop.id %}'">Add to Cart</button> {% endcomment %}
+            <button class="btn buy-btn">Buy</button>
+            <button class="btn add-to-cart-btn">Add to Cart</button>
+        </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No crops found matching your search criteria.</p>
+{% endif %}
+
+</body>
+</html>

@@ -3,7 +3,7 @@ body {
     font-family: 'Arial', sans-serif;
     margin: 0;
     padding: 0;
-    background-image: url("{% static 'images/farm-background.jpg' %}"); /* Add your background image */
+    background-image: url("https://media.istockphoto.com/id/1015304242/vector/rural-landscape-with-wheat-fields.jpg?s=612x612&w=0&k=20&c=ISft1qS3LVyZyc6qi6j2Shl54Sszk82twzNuAFewB78="); /* Background image */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -13,9 +13,11 @@ body {
 /* Header Styling */
 .header {
     text-align: center;
-    padding: 20px;
-    background-color: rgba(0, 128, 0, 0.8); /* Semi-transparent green */
+    padding: 30px 20px;
+    background-color: rgba(0, 128, 0, 0.9); /* More opaque green for better contrast */
     color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-bottom: 4px solid #005700; /* Bottom border for emphasis */
 }
 
 .header h1 {
@@ -28,28 +30,29 @@ body {
     position: absolute;
     top: 20px;
     left: 20px;
-    background-color: #007bff;
+    background-color: #2c3e50; /* Darker blue-gray */
     color: white;
     padding: 10px 20px;
     border-radius: 5px;
     text-decoration: none;
     font-size: 16px;
     font-weight: bold;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s; /* Added transform for a pop effect */
 }
 
 .back-button:hover {
-    background-color: #0056b3;
+    background-color: #34495e; /* Slightly lighter on hover */
+    transform: scale(1.05); /* Slightly enlarges the button */
 }
 
 /* Table Styling */
 .users-list {
     width: 90%;
     margin: 40px auto;
-    background-color: rgba(255, 255, 255, 0.9); /* White background with transparency */
+    background-color: rgba(255, 255, 255, 0.95); /* Less transparent for better readability */
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.3);
 }
 
 table {
@@ -60,29 +63,38 @@ table {
 }
 
 table th, table td {
-    padding: 12px;
+    padding: 15px;
     text-align: left;
     border-bottom: 1px solid #ddd;
 }
 
 table th {
-    background-color: #4CAF50;
+    background-color: #4CAF50; /* Green header */
     color: white;
+    font-weight: bold;
+    letter-spacing: 1px; /* Added spacing for clarity */
 }
 
 table tr:nth-child(even) {
-    background-color: #f2f2f2;
+    background-color: #f9f9f9; /* Light grey for even rows */
+}
+
+table tr:hover {
+    background-color: rgba(76, 175, 80, 0.1); /* Subtle highlight on row hover */
 }
 
 /* Action Buttons */
-.edit-btn, .delete-btn {
+.edit-btn, .delete-btn, .deactivate-btn, .reactivate-btn {
     padding: 8px 12px;
     color: white;
     text-decoration: none;
     border-radius: 5px;
     margin-right: 10px;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s; /* Added transform for a pop effect */
 }
 
+/* Button Colors */
 .edit-btn {
     background-color: #28a745; /* Green */
 }
@@ -91,12 +103,33 @@ table tr:nth-child(even) {
     background-color: #dc3545; /* Red */
 }
 
+.deactivate-btn {
+    background-color: #f12e03; /* Orange */
+}
+
+.reactivate-btn {
+    background-color: #17a2b8; /* Teal */
+}
+
+/* Button Hover Effects */
 .edit-btn:hover {
-    background-color: #218838;
+    background-color: #218838; /* Darker Green */
+    transform: scale(1.05); /* Slightly enlarges the button */
 }
 
 .delete-btn:hover {
-    background-color: #c82333;
+    background-color: #c82333; /* Darker Red */
+    transform: scale(1.05);
+}
+
+.deactivate-btn:hover {
+    background-color: #ba220e; /* Darker Orange */
+    transform: scale(1.05);
+}
+
+.reactivate-btn:hover {
+    background-color: #138496; /* Darker Teal */
+    transform: scale(1.05);
 }
 
 /* Mobile Responsiveness */

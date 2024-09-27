@@ -5,7 +5,7 @@ from django.conf.urls.static import static
 
 
 urlpatterns = [
-    path('', views.index, name='index'),
+    path('', views.index, name='index'), 
     path('login', views.login, name='login'),
     path('register', views.register, name='register'),
     path('adminfarm', views.adminfarm, name='adminfarm'),
@@ -15,7 +15,8 @@ urlpatterns = [
     path('farmer_dashboard', views.farmer_dashboard, name='farmer_dashboard'),
     path('buyer_dashboard', views.buyer_dashboard, name='buyer_dashboard'),
     path('logout', views.user_logout, name='logout'),
-    path('farmercrops', views.farmercrops, name='farmercrops'),
+     path('farmercrops/', views.farmercrops, name='farmercrops'),
+    path('farmeredit_crop/<int:crop_id>/', views.farmeredit_crop, name='farmeredit_crop'),
     path('salesview', views.salesview, name='salesview'),
     path('profile', views.profile, name='profile'),
     path('forgotpass', views.forgotpass, name='forgotpass'),
@@ -26,10 +27,13 @@ urlpatterns = [
     path('addcrops', views.addcrops, name='addcrops'),
     path('crops/', views.crops_page, name='crops_page'),  # For listing all crops
     path('crops/<int:id>/', views.crop_details, name='crop_details'),  # For crop details
-    
+    path('search/', views.search_crops, name='search_crops'),
+    path('add_to_cart/<int:crop_id>/', views.add_to_cart, name='add_to_cart'),
+    path('cart/', views.cart_view, name='cart_view'),
     path('manage-users/<str:role>/', views.manage_users, name='manage_users'),
     path('update-user/<int:user_id>/', views.update_user, name='update_user'),
-    path('delete-user/<int:user_id>/', views.delete_user, name='delete_user'),
+    path('deactivate_user/<int:user_id>/', views.deactivate_user, name='deactivate_user'),
+    path('activate_user/<int:user_id>/', views.activate_user, name='activate_user')
    
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

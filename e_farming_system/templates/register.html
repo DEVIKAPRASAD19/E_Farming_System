@@ -38,7 +38,7 @@
             <div class="form-group">
                 <label for="contact">Contact No:</label>
                 <input type="text" id="contact" name="contact" required>
-                <span class="error-message" id="contact-error">Please enter a valid 10-digit contact number starting with 6, 7, 8, or 9.</span>
+                <span class="error-message" id="contact-error">Please enter a valid 10-digit contact number starting with 6, 7, 8, or 9, and not repetitive like 2222222222.</span>
             </div>
             <div class="form-group">
                 <label for="place">Place:</label>
@@ -93,17 +93,19 @@
                 errorElement.style.display = 'none';
             }
 
-            // Function to validate phone number (10 digits, starts with 6, 7, 8, or 9, not '1234567890')
+            // Function to validate phone number
             function validatePhoneNumber(phoneNumber) {
-                return /^[6789]\d{9}$/.test(phoneNumber) && phoneNumber !== '1234567890';
+                return /^[6789]\d{9}$/.test(phoneNumber) && 
+                       phoneNumber !== '1234567890' &&
+                       !/(\d)\1{9}/.test(phoneNumber);
             }
 
-            // Function to validate name (only alphabets and spaces, minimum 3 characters)
+            // Function to validate name
             function validateName(name) {
                 return /^[A-Za-z\s]{3,}$/.test(name);
             }
 
-            // Function to validate place (only alphabets and spaces, minimum 3 characters)
+            // Function to validate place
             function validatePlace(place) {
                 return /^[A-Za-z\s]{3,}$/.test(place);
             }
@@ -113,14 +115,26 @@
                 return /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(email);
             }
 
-            // Function to validate password (min 8 characters, upper, lower, number, special)
+            // Function to validate password
             function validatePassword(password) {
                 return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(password);
             }
 
-            // Function to validate role selection
+            // Function to validate role
             function validateRole(role) {
                 return role !== "";
+            }
+
+            // General validation for field dependencies
+            function validateFieldsBefore(currentField, previousField, errorElementId) {
+                currentField.addEventListener('focus', function() {
+                    if (previousField.value.trim() === "") {
+                        showError('Please fill out the previous field before filling this one.', errorElementId);
+                        currentField.blur();
+                    } else {
+                        clearError(errorElementId);
+                    }
+                });
             }
 
             // Live validation for each field
@@ -135,9 +149,10 @@
                 }
             });
 
+            validateFieldsBefore(contact, name, 'contact-error');
             contact.addEventListener('input', function() {
                 if (!validatePhoneNumber(contact.value.trim())) {
-                    showError('Phone number must start with 6, 7, 8, or 9, and be 10 digits long.', 'contact-error');
+                    showError('Phone number must start with 6, 7, 8, or 9, be 10 digits long, and not be repetitive.', 'contact-error');
                     contact.classList.add('invalid');
                 } else {
                     clearError('contact-error');
@@ -146,6 +161,7 @@
                 }
             });
 
+            validateFieldsBefore(place, contact, 'place-error');
             place.addEventListener('input', function() {
                 if (!validatePlace(place.value.trim())) {
                     showError('Place must contain at least 3 letters.', 'place-error');
@@ -157,6 +173,7 @@
                 }
             });
 
+            validateFieldsBefore(email, place, 'email-error');
             email.addEventListener('input', function() {
                 if (!validateEmail(email.value.trim())) {
                     showError('Enter a valid email address.', 'email-error');
@@ -168,6 +185,7 @@
                 }
             });
 
+            validateFieldsBefore(password, email, 'password-error');
             password.addEventListener('input', function() {
                 if (!validatePassword(password.value.trim())) {
                     showError('Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.', 'password-error');
@@ -179,6 +197,7 @@
                 }
             });
 
+            validateFieldsBefore(role, password, 'role-error');
             role.addEventListener('change', function() {
                 if (!validateRole(role.value.trim())) {
                     showError('Please select a role.', 'role-error');
@@ -192,7 +211,6 @@
 
             // Event listener for form submission
             form.addEventListener('submit', function(event) {
-                // Validate all fields one last time before submission
                 let valid = true;
 
                 if (!validateName(name.value.trim())) {
@@ -200,7 +218,7 @@
                     valid = false;
                 }
                 if (!validatePhoneNumber(contact.value.trim())) {
-                    showError('Phone number must start with 6, 7, 8, or 9, and be 10 digits long.', 'contact-error');
+                    showError('Phone number must start with 6, 7, 8, or 9, be 10 digits long, and not be repetitive like 2222222222.', 'contact-error');
                     valid = false;
                 }
                 if (!validatePlace(place.value.trim())) {
@@ -208,7 +226,7 @@
                     valid = false;
                 }
                 if (!validateEmail(email.value.trim())) {
-                    showError('Enter a valid email address.', 'email-error');
+                    showError('Please enter a valid email address.', 'email-error');
                     valid = false;
                 }
                 if (!validatePassword(password.value.trim())) {
@@ -221,7 +239,7 @@
                 }
 
                 if (!valid) {
-                    event.preventDefault(); // Prevent form submission if there are errors
+                    event.preventDefault();
                 }
             });
         });

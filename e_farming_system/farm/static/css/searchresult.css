@@ -1,0 +1,88 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 20px;
+}
+
+h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+li {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin: 10px;
+    padding: 15px;
+    text-align: center;
+    width: 250px; /* Width of each crop item */
+    transition: transform 0.2s; /* Smooth hover effect */
+}
+
+li:hover {
+    transform: scale(1.05); /* Scale effect on hover */
+}
+
+img {
+    border-radius: 8px;
+    width: 100%; /* Makes the image responsive */
+    height: 150px; /* Set a fixed height for the images */
+    object-fit: cover; /* Ensures images cover the container while preserving aspect ratio */
+}
+
+h3 {
+    font-size: 1.2em;
+    margin: 10px 0;
+    color: #007bff; /* Bootstrap primary color */
+}
+
+p {
+    margin: 5px 0;
+    color: #555; /* Grey color for text */
+}
+
+.action-buttons {
+    display: flex;                /* Use Flexbox for horizontal alignment */
+    justify-content: center;      /* Center the buttons */
+    margin-top: 10px;            /* Space above the buttons */
+}
+
+.btn {
+    background-color: #007bff;   /* Blue background for Buy button */
+    color: white;                 /* Button text color */
+    border: none;                 /* Remove border */
+    border-radius: 5px;          /* Rounded corners */
+    padding: 10px 15px;          /* Padding around the button */
+    cursor: pointer;              /* Pointer cursor on hover */
+    font-size: 1em;               /* Font size */
+    margin: 0 5px;               /* Space between buttons */
+    transition: background-color 0.3s; /* Smooth background color change */
+}
+
+.buy-btn {
+    background-color: #28a745;    /* Green background for Add to Cart button */
+}
+
+.buy-btn:hover {
+    background-color: #218838;     /* Darker green on hover */
+}
+
+.add-to-cart-btn {
+    background-color: #007bff;    /* Blue background for Add to Cart button */
+}
+
+.add-to-cart-btn:hover {
+    background-color: #0056b3;     /* Darker blue on hover */
+}

@@ -11,7 +11,7 @@
     <div class="header">
         <h1>Profile of {{ user.name }}</h1>
 {% comment %}         <a href="{% url 'edit_profile' user.user_id %}" class="edit-btn">Edit Profile</a> {% endcomment %}
-        <a href="{% url 'index' %}" class="back-button">Home</a>
+        {% comment %} <a href="{% url 'index' %}" class="back-button">Back</a> {% endcomment %}
     </div>
 
     <div class="profile-details">

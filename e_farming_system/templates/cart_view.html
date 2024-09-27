@@ -1,0 +1,48 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+    <link rel="stylesheet" href="{% static 'css/searchresult.css' %}">
+    <script>
+        function updateCartDisplay(cropName, cropPrice, cropImageUrl) {
+            const cartContainer = document.getElementById('cart-items');
+            const itemElement = document.createElement('div');
+            itemElement.className = 'cart-item';
+            itemElement.innerHTML = `
+                <img src="${cropImageUrl}" alt="${cropName}" width="100">
+                <h3>${cropName}</h3>
+                <p>Price: $${cropPrice}</p>
+                <button onclick="removeItem(this)">Remove</button>
+            `;
+            cartContainer.appendChild(itemElement);
+        }
+
+        function removeItem(button) {
+            const item = button.parentElement;
+            item.remove(); // Remove the item from the cart display
+        }
+    </script>
+</head>
+<body>
+    <h2>Your Shopping Cart</h2>
+    <div id="cart-items">
+        {% if cart_items %}
+            {% for item in cart_items %}
+                <div class="cart-item">
+                    <img src="{{ item.crop.images.first.image.url }}" alt="{{ item.crop.name }}" width="100">
+                    <h3>{{ item.crop.name }}</h3>
+                    <p>Price: ${{ item.crop.price }}</p>
+                    <button onclick="removeItem(this)">Remove</button>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Your cart is empty.</p>
+        {% endif %}
+    </div>
+    <h3>Total Price: ${{ total_price }}</h3>
+   {% comment %}  <button onclick="location.href='{% url 'checkout' %}'">Proceed to Checkout</button> {% endcomment %}
+</body>
+</html>

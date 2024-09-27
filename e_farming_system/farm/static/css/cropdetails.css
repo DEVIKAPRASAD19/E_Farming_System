@@ -48,48 +48,31 @@ h1 {
 }
 
 .action-buttons {
-    text-align: center;
-    margin-top: 20px;
+    display: flex;                /* Use Flexbox for horizontal alignment */
+    justify-content: center;      /* Center the buttons horizontally */
+    margin-top: 10px;            /* Space above the buttons */
 }
 
 .btn {
-    padding: 10px 20px;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
+    background-color: #28a745;   /* Button background color */
+    color: white;                 /* Button text color */
+    border: none;                 /* Remove border */
+    border-radius: 5px;          /* Rounded corners */
+    padding: 10px 15px;          /* Padding around the button */
+    cursor: pointer;              /* Pointer cursor on hover */
+    font-size: 1em;              /* Font size */
+    margin: 0 5px;               /* Space between buttons */
+    transition: background-color 0.3s; /* Smooth background color change */
 }
 
 .btn:hover {
-    background-color: #218838;
+    background-color: #218838;    /* Darker shade on hover */
 }
 
-.top-right {
-    position: absolute;
-    top: 20px;
-    right: 20px;
+.add-to-cart-btn {
+    background-color: #007bff;  /* Green background for Add to Cart button */
 }
 
-.back-button {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background-color: #134114;
-    color: white;
-    padding: 10px 20px;
-    text-decoration: none;
-    border-radius: 5px;
-    font-size: 16px;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
-}
-
-.back-button:hover {
-    background-color: #45a049; /* Darker shade on hover */
-}
-
-.back-button span {
-    display: inline-block;
+.add-to-cart-btn:hover {
+    background-color: #0056b3   /* Darker green on hover */
 }

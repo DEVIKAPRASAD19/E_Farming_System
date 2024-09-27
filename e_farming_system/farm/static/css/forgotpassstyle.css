@@ -2,6 +2,11 @@
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f9;
+    background-color: #f8f9fa;
+    background-image: url('https://img.freepik.com/free-photo/young-wheat-green-field_1268-29146.jpg'); /* Add your image path here */
+    background-size: cover; /* Ensure the image covers the entire background */
+    background-position: center; /* Center the background image */
+    background-repeat: no-repeat; /* Prevent the image from repeating */
     margin: 0;
     padding: 0;
     display: flex;

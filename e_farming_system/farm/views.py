@@ -53,20 +53,30 @@ def login(request):
         admin = Adminm.objects.filter(email=email, password=password).first()
         if admin:
             request.session['admin_email'] = admin.email
-            return redirect('adminfarm')  # Replace 'admin_dashboard' with the correct URL name
+            return redirect('adminfarm')  # Replace with the correct URL name
 
         # Check if the user is a farmer or buyer
-        user = Registeruser.objects.filter(email=email, password=password).first()
+        user = Registeruser.objects.filter(email=email).first()  # Get the user by email
         if user:
-            request.session['user_id'] = user.user_id
-            request.session['name'] = user.name
-            request.session['role'] = user.role
+            # Check the password (ensure you're using hashed passwords in production)
+            if user.password == password:  # Replace this with a secure hash check in production
+                if not user.status:  # Check if the user's account is deactivated
+                    messages.error(request, 'Your account is deactivated. Please contact support.')
+                    return render(request, 'login.html')
 
-            # Redirect based on role
-            if user.role == 'farmer':
-                return redirect('farmer_dashboard')  # Replace 'farmer_dashboard' with the correct URL name
-            elif user.role == 'buyer':
-                return redirect('buyer_dashboard')  # Replace 'buyer_dashboard' with the correct URL name
+                # If user is active, set session variables
+                request.session['user_id'] = user.user_id
+                request.session['name'] = user.name
+                request.session['role'] = user.role
+
+                # Redirect based on role
+                if user.role == 'farmer':
+                    return redirect('farmer_dashboard')  # Replace with the correct URL name
+                elif user.role == 'buyer':
+                    return redirect('buyer_dashboard')  # Replace with the correct URL name
+            else:
+                messages.error(request, 'Invalid email or password')
+                return render(request, 'login.html')
         else:
             messages.error(request, 'Invalid email or password')
             return render(request, 'login.html')
@@ -81,156 +91,6 @@ def user_logout(request):
     return redirect('index')  # Redirects to the login page
 
                
-""" def password_reset_form(request):
-    if request.method == "POST":
-        email = request.POST['email'].strip().lower()  # Normalize the email
-        try:
-            user = Registeruser.objects.get(email=email)
-        except User.DoesNotExist:
-            return render(request, 'password_reset_form.html', {'error': 'No account found with this email.'})
-        
-        # Generate token and UID
-        token = token_generator.make_token(user)
-        uid = urlsafe_base64_encode(force_bytes(user.pk))
-
-        # Prepare email context
-        current_site = get_current_site(request)
-        mail_subject = 'Password Reset Request'
-        message = render_to_string('password_reset_email.html', {
-            'user': user,
-            'domain': current_site.domain,
-            'uid': uid,
-            'token': token,
-        })
-        
-        # Send email
-        send_mail(mail_subject, message, 'noreply@example.com', [email])
-        
-        return redirect('password_reset_done')
-    
-    return render(request, 'password_reset_form.html')
-
-
-
-# Step 2: Password Reset Confirm View
-def password_reset_confirm(request, uidb64=None, token=None):
-    if request.method == 'POST':
-        new_password = request.POST.get('new_password')
-        confirm_password = request.POST.get('confirm_password')
-
-        if new_password != confirm_password:
-            return render(request, 'password_reset_confirm.html', {'error': 'Passwords do not match.'})
-
-        try:
-            uid = force_str(urlsafe_base64_decode(uidb64))
-            print(f'Decoded UID: {uid}')
-            
-            user_exists = User.objects.filter(pk=uid).exists()
-            if not user_exists:
-                print(f'User with ID {uid} does not exist.')
-                raise User.DoesNotExist
-
-            user = User.objects.get(pk=uid)
-            print(f'User found: {user}')
-        except (TypeError, ValueError, OverflowError, User.DoesNotExist) as e:
-            print(f'Error decoding UID or retrieving user: {e}')
-            return render(request, 'password_reset_confirm.html', {'error': 'User not found or UID decoding issue.'})
-
-        is_token_valid = default_token_generator.check_token(user, token)
-        print(f'Token: {token}')
-        print(f'Token Validity: {is_token_valid}')
-
-        if is_token_valid:
-            user.set_password(new_password)
-            user.save()
-            return redirect('password_reset_complete')
-        else:
-            return render(request, 'password_reset_confirm.html', {'error': 'Invalid or expired token. Please request a new password reset.'})
-
-    return render(request, 'password_reset_confirm.html', {'uid': uidb64, 'token': token})
-
-
-
-
-# Step 3: Password Reset Done View
-def password_reset_done(request):
-    return render(request, 'password_reset_done.html')
-
-# Step 4: Password Reset Complete View
-def password_reset_complete(request):
-    return render(request, 'password_reset_complete.html')
-               
- """
-""" def forgot_view(request):
-    if request.method == 'POST':
-        email = request.POST.get('email')
-
-        try:
-            # Retrieve the user by email only
-            user = Registeruser.objects.get(email=email)
-            current_site = get_current_site(request)
-            token = custom_token_generator.make_token(user)
-            uid = urlsafe_base64_encode(force_bytes(user.user_id))  # Ensure 'id' is used
-
-            # Reset link adjusted for your eFarming system
-            reset_link = f"http://{current_site.domain}/reset/{uid}/{token}/"
-
-            subject = 'Password Reset Request'
-            html_message = render_to_string('reset_email.html', {
-                'user': user,
-                'reset_link': mark_safe(reset_link),
-            })
-            plain_message = strip_tags(html_message)
-
-            email_message = EmailMessage(
-                subject,
-                html_message,
-                settings.DEFAULT_FROM_EMAIL,
-                [user.email]
-            )
-            email_message.content_subtype = 'html'
-            email_message.send(fail_silently=False)
-
-            messages.success(request, 'A reset link has been sent to your email.')
-            return redirect('login')
-
-        except Registeruser.DoesNotExist:
-            messages.error(request, 'Invalid email address.')
-            return render(request, 'forgot.html')
-    return render(request, 'forgot.html')
-
-def reset_password_view(request, uidb64, token):
-    try:
-        uid = force_str(urlsafe_base64_decode(uidb64))
-        user = Registeruser.objects.get(user_id=uid)  # Use `id` instead of `user_id`
-    except (TypeError, ValueError, OverflowError, Registeruser.DoesNotExist):
-        user = None
-
-    if user and custom_token_generator.check_token(user, token):
-        if request.method == 'POST':
-            form = SetPasswordForm(request.POST, user=user)
-            if form.is_valid():
-                new_password = form.cleaned_data.get('new_password')
-                user.set_password(new_password)  # Hash the password
-                user.save()
-
-                send_mail(
-                    'Password Reset Successful',
-                    f'Hello {user.name}, your password in the eFarming system has been successfully reset. Thank you!',
-                    settings.DEFAULT_FROM_EMAIL,
-                    [user.email],
-                    fail_silently=False,
-                )
-
-                messages.success(request, 'Your password has been reset successfully.')
-                return redirect('login')
-        else:
-            form = SetPasswordForm(user=user)
-        return render(request, 'reset_password.html', {'form': form, 'valid_link': True})
-    else:
-        messages.error(request, 'The password reset link is invalid or has expired.')
-        return redirect('forgot')
- """
 
 def register(request):
     if request.method == 'POST':
@@ -250,7 +110,7 @@ def register(request):
         user = Registeruser(name=name, contact=contact, place=place, email=email, password=password, role=role)
         user.save()
 
-        messages.success(request, 'Registration successful! Please log in.')
+        #messages.success(request, 'Registration successful! Please log in.')
         return redirect('login')
     
     return render(request, 'register.html')
@@ -340,7 +200,7 @@ def forgotpass(request):
                 user.save()
 
                 # Display success message to the user
-                messages.success(request, 'Password reset link has been sent to your email.')
+               # messages.success(request, 'Password reset link has been sent to your email.')
                 return redirect('login')  # Redirect to login after sending the email
 
             except Exception as e:
@@ -372,7 +232,7 @@ def reset_password(request, token):
                 user.save()
 
                 # Show success message and redirect to login
-                messages.success(request, 'Password reset successful. You can now log in.')
+                #messages.success(request, 'Password reset successful. You can now log in.')
                 return redirect('login')
             else:
                 # Show error if passwords do not match
@@ -427,38 +287,6 @@ def updatebuyer(request):
 
 
 
-""" def addcrops(request):
-    if request.method == 'POST':
-        name = request.POST.get('name')
-        description = request.POST.get('description')
-        price = request.POST.get('price')
-        category = request.POST.get('category')
-        image = request.FILES.get('image')
-
-        # Create a new Crop instance and assign the user
-        crop = Crop(
-            name=name,
-            description=description,
-            price=price,
-            category=category,
-            image=image,
-            added_by=request.user  # This should be a User instance
-        )
-        crop.save()
-
-        return redirect('success_url')  # Redirect to a success page or wherever you want
-
-    return render(request, 'addcrops.html')  # Render your form template
-
-# View to list all crops
-def crop_list(request):
-    crops = Crop.objects.all()
-    return render(request, 'crop_list.html', {'crops': crops})
-
-# View to see crop details
-def crop_detail(request, crop_id):
-    crop = Crop.objects.get(id=crop_id)
-    return render(request, 'crop_detail.html', {'crop': crop}) """
 
 
 def farmercrops(request):
@@ -466,7 +294,7 @@ def farmercrops(request):
     return render(request, 'farmercrops.html', {'crops': crops})
 
 
-@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+
 def addcrops(request):
     if request.method == 'POST':
         name = request.POST.get('name')
@@ -502,7 +330,7 @@ def addcrops(request):
             description=description,
             price=price,
             category=category,
-            farmer=farmer  # Now this is a User instance
+            farmer=register_user  # Now this is a User instance
         )
         
         # Handle crop images
@@ -510,9 +338,9 @@ def addcrops(request):
         for photo in crop_photos:
             CropImage.objects.create(crop=crop_instance, image=photo)  # Saving each image to CropImage
 
-        messages.success(request, 'Crop added successfully')
+        #messages.success(request, 'Crop added successfully')
         
-        return redirect('addcrops')  # Redirect to the farmer dashboard after crop addition
+        return redirect('farmer_dashboard')  # Redirect to the farmer dashboard after crop addition
     
     return render(request, 'addcrops.html')  # Render the crop addition form
 
@@ -531,9 +359,51 @@ def crop_details(request, id):
 
 # View to list farmers or buyers based on role
 def manage_users(request, role):
-    users = Registeruser.objects.filter(role=role)
-    context = {'users': users, 'role': role}
-    return render(request, 'manage_users.html', context)
+    # Filter users based on role (farmer, buyer, etc.)
+    users = Registeruser.objects.filter(role=role)  # Filter by role
+    return render(request, 'manage_users.html', {'users': users, 'role': role})
+
+
+def farmer_crops_view(request):
+    # Get the logged-in farmer's Registeruser instance
+    farmer_user_id = request.session.get('user_id')  # Ensure this matches how you're storing the user ID
+    try:
+        register_user = Registeruser.objects.get(user_id=farmer_user_id)  # Fetch the farmer's Registeruser instance
+        crops = Crop.objects.filter(farmer=register_user)  # Filter crops by this Registeruser instance
+    except Registeruser.DoesNotExist:
+        crops = []  # No crops if the user does not exist
+
+    context = {
+        'crops': crops
+    }
+    return render(request, 'farmercrops.html', context) 
+
+
+
+
+def farmeredit_crop(request, crop_id):
+    # Check if the user is authenticated
+    if not request.user.is_authenticated:
+        # Redirect or return a 403 Forbidden response if not authenticated
+        return redirect('login')  # or use HttpResponseForbidden()
+
+    # Fetch the crop object; adjust query according to your model relationships
+    crop = get_object_or_404(Crop, id=crop_id, farmer=request.user)
+
+    if request.method == 'POST':
+        # Handle the form submission to update the crop details
+        crop.name = request.POST.get('name')
+        crop.description = request.POST.get('description')
+        crop.price = request.POST.get('price')
+        # Add other fields as necessary
+
+        crop.save()  # Save the updated crop
+
+        # Redirect to a success page or the updated crop's detail page
+        return redirect('farmercrops')  # Replace with the desired redirect target
+
+    # Render the edit crop form with the existing crop data
+    return render(request, 'farmeredit_crop.html', {'crop': crop})
 
 
 # View to update user
@@ -551,12 +421,55 @@ def update_user(request, user_id):
     return render(request, 'update_user.html', {'user': user})
 
 
-def delete_user(request, user_id):
+def deactivate_user(request, user_id):
     user = get_object_or_404(Registeruser, user_id=user_id)
-    user.delete()
-    return redirect('manage_users', user.role)  # Redirect to the manage users page after deletion
+    user.status = False  # Deactivate the user
+    user.save()
+    messages.success(request, f'User {user.name} has been deactivated.')
+
+    # Redirect to manage_users with the user's role
+    return redirect('manage_users', role=user.role)  # Ensure user.role is defined in your Registeruser model
+
+def activate_user(request, user_id):
+    user = get_object_or_404(Registeruser, user_id=user_id)
+    user.status = True  # Activate the user
+    user.save()
+    messages.success(request, f'User {user.name} has been activated.')
+
+    # Redirect to manage_users with the user's role
+    return redirect('manage_users', role=user.role)  # Ensure user.role is defined in your Registeruser model
+
 
 
 def view_profile(request, user_id):
     user = get_object_or_404(Registeruser, user_id=user_id)
     return render(request, 'view_profile.html', {'user': user})
+
+
+def search_crops(request):
+    query = request.GET.get('query', '')
+    category = request.GET.get('category', '')
+    
+    crops = Crop.objects.all()  # Start with all crops
+    
+    if query:
+        crops = crops.filter(name__icontains=query)  # Filter by name
+    
+    if category:
+        crops = crops.filter(category__iexact=category)  # Filter by category
+    
+    return render(request, 'search_results.html', {'crops': crops})
+
+
+def add_to_cart(request, crop_id):
+    crop = get_object_or_404(Crop, id=crop_id)
+    # Logic to add the crop to the cart
+    # For example, you might use the session to store cart items
+    cart = request.session.get('cart', [])
+    cart.append(crop_id)  # Assuming you store crop IDs in the cart
+    request.session['cart'] = cart
+    return redirect('cart_view')  # Redirect to an appropriate page
+
+def cart_view(request):
+    # Logic for your cart view goes here
+    return render(request, 'cart_view.html') 

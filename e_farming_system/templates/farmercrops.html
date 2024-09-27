@@ -4,30 +4,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crops</title>
+    <title>My Crops</title>
     <link rel="stylesheet" href="{% static 'css/farmercrops.css' %}">
-    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
 </head>
 <body>
     <div class="header">
-        <h1>Crops Available</h1>
-        <a href="{% url 'farmer_dashboard' %}" class="back-button">
-            <span>Back</span>
-        </a>
+        <h1>Your Crops</h1>
+        <a href="{% url 'farmer_dashboard' %}" class="back-button">Back</a>
     </div>
 
     <div class="crops-list">
-        {% for crop in crops %}
-        <div class="crop-item">
-            <!-- Updated URL to match your detail view -->
-                <img src="{{ crop.images.first.image.url }}" alt="{{ crop.name }}" class="crop-image">
+        {% if crops %}
+            {% for crop in crops %}
+            <div class="crop-item">
+                {% if crop.images.first %}
+                    <img src="{{ crop.images.first.image.url }}" alt="{{ crop.name }}" class="crop-image">
+                {% else %}
+                    <img src="{% static 'images/default_crop.jpg' %}" alt="Default Image" class="crop-image"> <!-- Use a default image if no images exist -->
+                {% endif %}
                 <h2>{{ crop.name }}</h2>
                 <p>{{ crop.description|truncatewords:20 }}</p>
                 <p class="price">Price: Rs.{{ crop.price }}</p>
                 <p class="category">Category: {{ crop.category }}</p>
-            </a>
-        </div>
-        {% endfor %}
-    </main>
+                <!-- Uncomment when you want to enable editing -->
+                <!-- <a href="{% url 'farmeredit_crop' crop.id %}">Edit</a> -->
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>No crops found.</p> <!-- Message if no crops exist -->
+        {% endif %}
+    </div>
 </body>
 </html>
