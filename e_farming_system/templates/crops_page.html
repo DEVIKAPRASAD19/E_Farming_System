@@ -25,6 +25,7 @@
                 <option value="fruit">Fruits</option>
                 <option value="vegetable">Vegetables</option>
                 <option value="grain">Grains</option>
+                <option value="Other">Other</option>
             </select>
             <button type="submit" class="search-btn">Search</button>
         </form>
@@ -42,6 +43,8 @@
                     {% comment %} <p class="price">Price: Rs.{{ crop.price }}</p>
                     <p class="category">Category: {{ crop.category }}</p> {% endcomment %}
                 </a>
+                <!-- Add to Wishlist Button -->
+                <a href="{% url 'add_to_wishlist' crop.id %}" class="wishlist-btn" title="Add to Wishlist">❤️</a>
             </div>
             {% endfor %}
         {% else %}
@@ -50,3 +53,17 @@
     </div>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

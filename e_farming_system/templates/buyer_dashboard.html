@@ -16,6 +16,7 @@
             </div>
             <ul class="components">
                 <li><a href="{% url 'crops_page' %}">Crops Page</a></li>
+                <li><a href="{% url 'wishlist' %}">My Wishlists</a></li>
                 {% comment %} <li><a href="{% url 'purchase_history' %}">Purchase History</a></li>  {% endcomment %}
             </ul>
         </nav>
@@ -30,7 +31,7 @@
                     <div class="dropdown-content">
                         <a href="{% url 'view_profile' user.user_id %}">View Profile</a>
                         <a href="{% url 'updateprofile' %}">Update Profile</a>
-                        <a href="{% url 'index' %}">Logout</a>
+                        <a href="{% url 'logout' %}">Logout</a>
                     </div>
                 </div>
                 <h1>Welcome, {{ buyer_name }}! to Buyer Dashboard</h1>

@@ -22,14 +22,12 @@
                 <p><strong>Description:</strong> <span id="cropDescription">{{ crop.description }}</span></p>
                 <p><strong>Category:</strong> <span id="cropCategory">{{ crop.category }}</span></p>
                 <p><strong>Price:</strong> <span id="cropPrice">Rs.{{ crop.price }}</span></p>
-                {% comment %} <p><strong>Available Date:</strong> <span id="cropAvailableDate">{{ crop.available_date }}</span></p>
-                <p><strong>Posted Date:</strong> <span id="cropPostedDate">{{ crop.posted_date }}</span></p>
-                <p><strong>Farmer:</strong> <span id="farmerName">{{ crop.farmer.name }}</span></p> {% endcomment %}
             </div>
         </div>
         <div class="action-buttons">
             <button class="btn buy-btn">Buy</button>
             <button class="btn add-to-cart-btn">Add to Cart</button>
+            <a href="{% url 'add_to_wishlist' crop.id %}" class="wishlist-btn" title="Add to Wishlist">Wishlist</a>
         </div>
     </div>
 </body>

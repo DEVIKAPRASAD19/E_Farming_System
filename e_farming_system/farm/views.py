@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login as auth_login
+from django.contrib.auth.hashers import make_password, check_password
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -11,11 +12,11 @@ from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.contrib.auth.tokens import default_token_generator as custom_token_generator
 from django.utils.html import strip_tags
-from .models import Registeruser, Adminm
+from .models import Registeruser, Adminm, Cart
 from .forms import SetPasswordForm
 from .tokens import custom_token_generator
 from django.contrib.sites.shortcuts import get_current_site
-import logging
+from django.contrib.auth.decorators import login_required
 from django.utils.crypto import get_random_string
 from django.urls import reverse
 from django.contrib.auth.models import User
@@ -24,7 +25,7 @@ from django.contrib.auth import logout
 from .models import Crop, CropImage
 from django.views.decorators.cache import cache_control
 from django.shortcuts import get_object_or_404
-
+from django.http import HttpResponse
 
 
 
@@ -42,6 +43,7 @@ def contact(request):
 
 def adminfarm(request):
     return render(request,'adminfarm.html')
+
 
 
 def login(request):
@@ -86,7 +88,7 @@ def login(request):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-def user_logout(request):
+def logout(request):
     request.session.flush()  # Clears the session data
     return redirect('index')  # Redirects to the login page
 
@@ -110,10 +112,11 @@ def register(request):
         user = Registeruser(name=name, contact=contact, place=place, email=email, password=password, role=role)
         user.save()
 
-        #messages.success(request, 'Registration successful! Please log in.')
+        messages.success(request, 'Registration successful! Please log in.')
         return redirect('login')
     
     return render(request, 'register.html')
+
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -348,12 +351,24 @@ def addcrops(request):
 
 
 def crops_page(request):
-    crops = Crop.objects.all()  # Fetch all crops
+    query = request.GET.get('query')
+    category = request.GET.get('category')
+    
+    # Filter crops by status and any search criteria
+    crops = Crop.objects.filter(status=1,is_verified=1)  # Only get activated crops
+
+    if query:
+        crops = crops.filter(name__icontains=query)  # Filter by search query
+    if category:
+        crops = crops.filter(category=category)  # Filter by category
+
     return render(request, 'crops_page.html', {'crops': crops})
 
+
 def crop_details(request, id):
-    # Fetch the crop object based on the id
-    crop_instance = Crop.objects.get(id=id)
+    # Fetch the crop object based on the id and ensure it's activated (status=1)
+    crop_instance = get_object_or_404(Crop, id=id, status=1, is_verified=1)  # Assuming status=True is for active
+    
     # Render the crop details page with the fetched crop instance
     return render(request, 'crop_details.html', {'crop': crop_instance})
 
@@ -364,46 +379,91 @@ def manage_users(request, role):
     return render(request, 'manage_users.html', {'users': users, 'role': role})
 
 
-def farmer_crops_view(request):
-    # Get the logged-in farmer's Registeruser instance
-    farmer_user_id = request.session.get('user_id')  # Ensure this matches how you're storing the user ID
-    try:
-        register_user = Registeruser.objects.get(user_id=farmer_user_id)  # Fetch the farmer's Registeruser instance
-        crops = Crop.objects.filter(farmer=register_user)  # Filter crops by this Registeruser instance
-    except Registeruser.DoesNotExist:
-        crops = []  # No crops if the user does not exist
+def farmer_crops(request):
+    # Check if user_id is in the session; if not, redirect to login
+    if not request.session.get('user_id'):
+        return redirect('login')
+
+    # Fetch the logged-in farmer using the session's user_id
+    farmer = get_object_or_404(Registeruser, user_id=request.session['user_id'])
+
+    # Ensure the user is a farmer
+    if farmer.role != 'farmer':
+        return redirect('home')  # Redirect non-farmer users to another page
+
+    # Check if the user wants to view inactive crops
+    show_inactive = request.GET.get('show_inactive', 'false') == 'true'
+
+    # Filter crops based on the show_inactive toggle
+    if show_inactive:
+        crops = Crop.objects.filter(farmer=farmer)  # Fetch all crops
+    else:
+        crops = Crop.objects.filter(farmer=farmer, status=True)  # Only fetch active crops
+
+    # Display a message if no crops are found
+    if not crops.exists():
+        messages.info(request, 'You have no crops.')  # Inform the user
 
     context = {
-        'crops': crops
+        'crops': crops,
+        'show_inactive': show_inactive  # Pass the toggle state to the template
     }
-    return render(request, 'farmercrops.html', context) 
+
+    return render(request, 'farmer_crops.html', context)
+
+
+
+def verify_crops(request):
+    crops = Crop.objects.filter(is_verified=False)  # Get crops that are not verified
+    return render(request, 'verify_crops.html', {'crops': crops})
+
+def approve_crop(request, crop_id):
+    try:
+        crop = Crop.objects.get(id=crop_id)
+        crop.is_verified = True  # Mark as verified
+        crop.save()
+        return HttpResponse("Crop has been approved!")
+    except Crop.DoesNotExist:
+        return HttpResponse("Crop not found")
+
+def reject_crop(request, crop_id):
+    try:
+        # Fetch the crop by its ID
+        crop = Crop.objects.get(id=crop_id)
+        
+        # Update the crop's status to False (0) to mark it as rejected
+        crop.status = False
+        crop.save()  # Save the changes
+        
+        return HttpResponse("Crop has been rejected and its status is now inactive!")
+    
+    except Crop.DoesNotExist:
+        return HttpResponse("Crop not found")
 
 
 
 
-def farmeredit_crop(request, crop_id):
-    # Check if the user is authenticated
-    if not request.user.is_authenticated:
-        # Redirect or return a 403 Forbidden response if not authenticated
-        return redirect('login')  # or use HttpResponseForbidden()
-
-    # Fetch the crop object; adjust query according to your model relationships
-    crop = get_object_or_404(Crop, id=crop_id, farmer=request.user)
+def update_crop(request, id):
+    crop_instance = get_object_or_404(Crop, id=id)
 
     if request.method == 'POST':
-        # Handle the form submission to update the crop details
-        crop.name = request.POST.get('name')
-        crop.description = request.POST.get('description')
-        crop.price = request.POST.get('price')
-        # Add other fields as necessary
+        # Update crop details
+        crop_instance.name = request.POST.get('name')
+        crop_instance.description = request.POST.get('description')
+        crop_instance.price = request.POST.get('price')
+        crop_instance.category = request.POST.get('category')
 
-        crop.save()  # Save the updated crop
+        # Handle image update
+        if 'image' in request.FILES:
+            crop_instance.images.all().delete()  # Optionally delete old images
+            # Assuming you have a related CropImage model
+            for image in request.FILES.getlist('image'):
+                CropImage.objects.create(crop=crop_instance, image=image)
+        
+        crop_instance.save()  # Save the updated crop instance
+        return redirect('farmercrops')  # Redirect to your crops list page
 
-        # Redirect to a success page or the updated crop's detail page
-        return redirect('farmercrops')  # Replace with the desired redirect target
-
-    # Render the edit crop form with the existing crop data
-    return render(request, 'farmeredit_crop.html', {'crop': crop})
+    return render(request, 'update_crop.html', {'crop': crop_instance})
 
 
 # View to update user
@@ -425,19 +485,55 @@ def deactivate_user(request, user_id):
     user = get_object_or_404(Registeruser, user_id=user_id)
     user.status = False  # Deactivate the user
     user.save()
-    messages.success(request, f'User {user.name} has been deactivated.')
 
-    # Redirect to manage_users with the user's role
-    return redirect('manage_users', role=user.role)  # Ensure user.role is defined in your Registeruser model
+    # Send deactivation email
+    send_mail(
+    subject='Important: Your Account Has Been Deactivated',
+    message=(
+        f"Dear {user.name},\n\n"
+        "We regret to inform you that your account has been deactivated by our admin team. "
+        "This action means you will no longer be able to access your account or its features at this time.\n\n"
+        "If you believe this is a mistake or if you have any questions, please feel free to contact us, and we will be happy to assist you.\n\n"
+        "Best regards,\n"
+        "The E-Farming Team\n"
+        f"Contact us: {settings.DEFAULT_FROM_EMAIL}"
+    ),
+    from_email=settings.DEFAULT_FROM_EMAIL,
+    recipient_list=[user.email],  # User's email
+    fail_silently=False,
+)
+
+
+    messages.success(request, f'User {user.name} has been deactivated.')
+    return redirect('manage_users', role=user.role)
 
 def activate_user(request, user_id):
     user = get_object_or_404(Registeruser, user_id=user_id)
     user.status = True  # Activate the user
     user.save()
-    messages.success(request, f'User {user.name} has been activated.')
 
-    # Redirect to manage_users with the user's role
-    return redirect('manage_users', role=user.role)  # Ensure user.role is defined in your Registeruser model
+    # Send activation email
+    send_mail(
+    subject='Your Account Has Been Activated!',
+    message=(
+        f"Dear {user.name},\n\n"
+        "We are happy to inform you that your account has been successfully activated by our admin team.\n"
+        "You can now log in to your account and continue using all the features available to you.\n\n"
+        "If you have any questions or require assistance, feel free to reach out to our support team.\n\n"
+        "Best regards,\n"
+        "The E-Farming Team\n"
+        f"Contact us: {settings.DEFAULT_FROM_EMAIL}"
+    ),
+    from_email=settings.DEFAULT_FROM_EMAIL,
+    recipient_list=[user.email],  # User's email
+    fail_silently=False,
+)
+
+
+    messages.success(request, f'User {user.name} has been activated.')
+    return redirect('manage_users', role=user.role)
+
+
 
 
 
@@ -449,27 +545,104 @@ def view_profile(request, user_id):
 def search_crops(request):
     query = request.GET.get('query', '')
     category = request.GET.get('category', '')
-    
-    crops = Crop.objects.all()  # Start with all crops
-    
+
+    # Filter crops based on query and category, ensuring only activated crops are included
+    crops = Crop.objects.filter(status=1, is_verified=1)  # Ensure only activated crops are considered
+
     if query:
-        crops = crops.filter(name__icontains=query)  # Filter by name
-    
+        crops = crops.filter(name__icontains=query)  # Search by name if query is provided
+
     if category:
-        crops = crops.filter(category__iexact=category)  # Filter by category
-    
-    return render(request, 'search_results.html', {'crops': crops})
+        crops = crops.filter(category=category)  # Filter by category if specified
+
+    return render(request, 'crops_page.html', {'crops': crops})
+
 
 
 def add_to_cart(request, crop_id):
-    crop = get_object_or_404(Crop, id=crop_id)
-    # Logic to add the crop to the cart
-    # For example, you might use the session to store cart items
-    cart = request.session.get('cart', [])
-    cart.append(crop_id)  # Assuming you store crop IDs in the cart
-    request.session['cart'] = cart
-    return redirect('cart_view')  # Redirect to an appropriate page
+    # Debug statement
+    print("User is authenticated:", request.user.is_authenticated)  
+    
+    if request.user.is_authenticated:  # Check if user is logged in
+        crop = get_object_or_404(Crop, id=crop_id)
+        cart_item, created = Cart.objects.get_or_create(crop=crop, user=request.user)
+        
+        if not created:  # If the crop is already in the cart, increase the quantity
+            cart_item.quantity += 1
+            cart_item.save()
+            messages.success(request, 'Crop quantity updated in your cart.')
+        else:
+            messages.success(request, 'Crop has been added to your cart!')
+        
+        return redirect('crop_details', crop_id=crop.id)  # Redirect back to crop details
+    else:
+        print("User is not authenticated, redirecting to login")  # Debugging line
+        return redirect('login')  # Redirect to the login page if not authenticated
 
-def cart_view(request):
-    # Logic for your cart view goes here
-    return render(request, 'cart_view.html') 
+def remove_from_cart(request, crop_id):
+    cart_item = get_object_or_404(Cart, crop__id=crop_id)
+    cart_item.delete()
+    
+    return redirect('cart_page')  # Redirect to the cart page or wherever you want
+
+def cart_page(request):
+    cart_items = Cart.objects.all()  # Get all cart items
+    return render(request, 'cart_page.html', {'cart_items': cart_items})
+
+
+def deactivate_crop(request, crop_id):
+    # Get the crop object
+    crop = get_object_or_404(Crop, id=crop_id)
+
+    # Set the crop's status to 0 (inactive)
+    crop.status = 0
+    crop.save()
+
+    # Redirect to the crops list page or wherever you want
+    return redirect('farmercrops')  # Update with the correct URL name for the crops list
+
+
+def activate_crop(request, crop_id):
+    # Get the crop object
+    crop = get_object_or_404(Crop, id=crop_id)
+
+    # Set the crop's status to 1 (active)
+    crop.status = 1
+    crop.save()
+
+    # Redirect to the crops list page or wherever you want
+    return redirect('farmercrops')  # Update with the correct URL name for the crops list
+
+
+
+def add_to_wishlist(request, crop_id):
+    crop = get_object_or_404(Crop, id=crop_id, status=1, is_verified=1)  # Only allow active and verified crops
+
+    # Get the wishlist from session, or initialize an empty list
+    wishlist = request.session.get('wishlist', [])
+
+    # Add the crop to wishlist if not already added
+    if crop_id not in wishlist:
+        wishlist.append(crop_id)
+        request.session['wishlist'] = wishlist  # Save the wishlist back to session
+
+    return redirect('wishlist')  # Redirect to the wishlist page
+
+
+def remove_from_wishlist(request, crop_id):
+    wishlist = request.session.get('wishlist', [])
+
+    if crop_id in wishlist:
+        wishlist.remove(crop_id)
+        request.session['wishlist'] = wishlist  # Save the updated wishlist back to session
+
+    return redirect('wishlist')
+
+def wishlist(request):
+    # Get the wishlist from session
+    wishlist = request.session.get('wishlist', [])
+
+    # Fetch the crops from the wishlist
+    crops = Crop.objects.filter(id__in=wishlist, status=1, is_verified=1)  # Only show active and verified crops
+
+    return render(request, 'wishlist.html', {'crops': crops})

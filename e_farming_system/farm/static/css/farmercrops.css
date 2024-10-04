@@ -1,5 +1,4 @@
-/* crops_page.css */
-
+/* General Body Styles */
 body {
     font-family: 'Arial', sans-serif;
     background-color: #f9f9f9;
@@ -9,6 +8,7 @@ body {
     position: relative; /* Ensure the header positioning is relative to the page */
 }
 
+/* Header Styles */
 .header {
     background-color: #4CAF50;
     color: white;
@@ -17,6 +17,7 @@ body {
     position: relative; /* For positioning the back button */
 }
 
+/* Back Button Styles */
 .back-button {
     position: absolute;
     top: 15px;
@@ -39,6 +40,7 @@ body {
     display: inline-block;
 }
 
+/* Crops List Styles */
 .crops-list {
     display: flex;
     flex-wrap: wrap;
@@ -49,6 +51,7 @@ body {
     margin: 0 auto;
 }
 
+/* Individual Crop Item Styles */
 .crop-item {
     background-color: white;
     border: 2px solid #151313;
@@ -67,11 +70,7 @@ body {
     transform: translateY(-5px);
 }
 
-.crop-item a:hover {
-    text-decoration: none; /* Ensure no underline appears on hover */
-    color: inherit;
-}
-
+/* Crop Image Styles */
 .crop-image {
     width: 100%;
     height: 200px;
@@ -80,6 +79,7 @@ body {
     margin-bottom: 15px;
 }
 
+/* Text Styles */
 h2 {
     font-size: 1.5em;
     margin: 10px 0;
@@ -97,6 +97,54 @@ p {
     color: #317f33;
 }
 
+/* Button Styles */
+.update-button, .deactivate-button, .activate-button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 10px; /* Adds space above the buttons */
+}
+
+.update-button {
+    background-color: #007BFF; /* Bootstrap Primary Color */
+    text-decoration: none;
+}
+
+.update-button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+.deactivate-button {
+    background-color: #dc3545; /* Bootstrap Danger Color */
+}
+
+.deactivate-button:hover {
+    background-color: #c82333; /* Darker red on hover */
+}
+
+.activate-button {
+    background-color: #28a745; /* Bootstrap Success Color */
+}
+
+.activate-button:hover {
+    background-color: #218838; /* Darker green on hover */
+}
+
+/* Verification Status Styles */
+.verified {
+    color: green;
+    font-weight: bold;
+}
+
+.not-verified {
+    color: red; /* Ensures "Not Verified" text appears in red */
+    font-weight: bold;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
     .crop-item {
         width: 90%; /* Adjusts to fit smaller screens */

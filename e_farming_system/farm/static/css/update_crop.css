@@ -1,0 +1,96 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+}
+
+.header {
+    background-color: #4CAF50; /* Green */
+    color: white;
+    padding: 15px 20px;
+    text-align: center;
+}
+
+.header h1 {
+    margin: 0;
+}
+
+.back-button {
+    color: white;
+    text-decoration: none;
+    padding: 10px 15px;
+    background-color: #333;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.back-button:hover {
+    background-color: #555;
+}
+
+/* Update Form Styles */
+.update-form {
+    max-width: 600px;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.update-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333;
+}
+
+.update-form input[type="text"],
+.update-form input[type="number"],
+.update-form select,
+.update-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+.update-form textarea {
+    height: 100px;
+    resize: vertical; /* Allows the user to resize vertically */
+}
+
+.update-form input[type="file"] {
+    padding: 5px;
+}
+
+.update-button {
+    background-color: #4CAF50; /* Green */
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.update-button:hover {
+    background-color: #45a049; /* Darker green */
+}
+
+/* Responsive Styles */
+@media (max-width: 600px) {
+    .update-form {
+        padding: 15px;
+    }
+
+    .update-button {
+        width: 100%;
+    }
+}

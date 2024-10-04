@@ -138,19 +138,24 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'efarming2024@gmail.com'
-EMAIL_HOST_PASSWORD = '#####'
+EMAIL_HOST_PASSWORD = 'klfn stkg wurz ptut'
 
 
 
 # settings.py
-LOGIN_REDIRECT_URL = '/login/'
-LOGOUT_REDIRECT_URL = 'index/'
+LOGIN_URL = '/login/'  # or '/login' based on your URL pattern
+
+# settings.py
+LOGIN_REDIRECT_URL = 'farmer_dashboard'  # Redirect after login
 
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",
     # You can add more directories if needed
 ]
+
+
+
 
 
 MEDIA_URL = '/media/'

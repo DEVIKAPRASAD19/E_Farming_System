@@ -70,6 +70,11 @@ class Crop(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     category = models.CharField(max_length=100)
     farmer = models.ForeignKey(Registeruser, on_delete=models.CASCADE)  # Link to the User model
+    status = models.BooleanField(default=True)         # 1 if available, else 0
+    is_verified = models.BooleanField(default=False)  # Admin verification field
+    added_at = models.DateTimeField(auto_now_add=True) # Timestamp for when the product is added
+    updated_at = models.DateTimeField(auto_now=True)   # Timestamp for when the product is last updated
+    
 
     def __str__(self):
         return self.name
@@ -80,6 +85,18 @@ class CropImage(models.Model):
 
     def __str__(self):
         return f"Image for {self.crop.name}"
+    
+
+class Cart(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='carts')
+    crop = models.ForeignKey(Crop, on_delete=models.CASCADE, related_name='carts')
+    quantity = models.PositiveIntegerField(default=1)
+
+    class Meta:
+        unique_together = ('user', 'crop')  # Prevent duplicates for the same user and crop
+
+    def __str__(self):
+        return f"{self.quantity} of {self.crop.name} in cart"
     
 
 
@@ -96,3 +113,7 @@ class Adminm(models.Model):
     def __str__(self):
         return f"{self.quantity} of {self.crop.name}"
  """
+
+class Wishlist(models.Model):
+    crop = models.ForeignKey(Crop, on_delete=models.CASCADE)
+    user_id = models.IntegerField(null=True, blank=True)  # user_id to associate wishlist with logged-in users

@@ -1,0 +1,50 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Wishlist</title>
+    <link rel="stylesheet" href="{% static 'css/wishlist.css' %}">
+</head>
+<body>
+
+<div class="container">
+    <!-- Back button -->
+    <div class="back-btn-container">
+        <a href="{% url 'crops_page' %}" class="back-btn">Back</a>
+    </div>
+
+    <h1>My Wishlist</h1>
+
+    {% if crops %}
+    <ul class="wishlist-items">
+        {% for crop in crops %}
+            <li class="wishlist-item">
+                <div class="crop-image">
+                    {% if crop.images.all %}
+                        <img src="{{ crop.images.first.image.url }}" alt="{{ crop.name }}">
+                    {% else %}
+                        <p>No image available</p>
+                    {% endif %}
+                </div>
+                <div class="crop-info">
+                    <h2>{{ crop.name }}</h2>
+                    <p>{{ crop.description }}</p>
+                    <span class="crop-price">Price: Rs.{{ crop.price }}</span>
+                </div>
+                <div class="actions">
+                    <a href="{% url 'remove_from_wishlist' crop.id %}" class="remove-btn">Remove</a>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+    
+    {% else %}
+        <p class="empty-message">Your wishlist is empty.</p>
+    {% endif %}
+
+</div>
+
+</body>
+</html>
