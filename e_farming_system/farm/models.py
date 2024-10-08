@@ -88,9 +88,10 @@ class CropImage(models.Model):
     
 
 class Cart(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='carts')
-    crop = models.ForeignKey(Crop, on_delete=models.CASCADE, related_name='carts')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    crop = models.ForeignKey(Crop, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
+    added_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ('user', 'crop')  # Prevent duplicates for the same user and crop
@@ -98,7 +99,9 @@ class Cart(models.Model):
     def __str__(self):
         return f"{self.quantity} of {self.crop.name} in cart"
     
-
+    def get_total_price(self):
+        return self.quantity * self.crop.price
+    
 
 class Adminm(models.Model):
     email = models.EmailField(max_length=254, unique=True)
@@ -116,4 +119,7 @@ class Adminm(models.Model):
 
 class Wishlist(models.Model):
     crop = models.ForeignKey(Crop, on_delete=models.CASCADE)
-    user_id = models.IntegerField(null=True, blank=True)  # user_id to associate wishlist with logged-in users
+    user = models.ForeignKey(Registeruser, on_delete=models.CASCADE)  # Use ForeignKey to associate with the user
+    added_date = models.DateTimeField(auto_now_add=True)
+
+    

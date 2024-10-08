@@ -9,26 +9,55 @@
 </head>
 <body>
     <div class="top-right">
-        <button><a href="{% url 'crops_page' %}" class="back-button">Back to Crops</a></button>
+        <a href="{% url 'crops_page' %}" class="back-button">Back to Crops</a>
     </div>
     
     <div class="container">
+        <!-- Message display block -->
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
         <h1 id="cropName">{{ crop.name }}</h1>
         <div class="crop-details">
             <div class="crop-images">
-                <img id="cropImage" src="{{ crop.images.first.image.url }}" alt="{{ crop.name }}" class="crop-img-large">
+                {% if crop.images.first %}
+                    <img id="cropImage" src="{{ crop.images.first.image.url }}" alt="{{ crop.name }}" class="crop-img-large">
+                {% else %}
+                    <p>No image available for this crop.</p>
+                {% endif %}
             </div>
             <div class="crop-info">
                 <p><strong>Description:</strong> <span id="cropDescription">{{ crop.description }}</span></p>
                 <p><strong>Category:</strong> <span id="cropCategory">{{ crop.category }}</span></p>
                 <p><strong>Price:</strong> <span id="cropPrice">Rs.{{ crop.price }}</span></p>
+                <p><strong>Farmer:</strong> <span id="farmerName">{{ crop.farmer.name }}</span></p>
+                <p><strong>Added At:</strong> <span id="addedAt">{{ crop.added_at }}</span></p>
+                {% comment %} <p><strong>Updated At:</strong> <span id="updatedAt">{{ crop.updated_at }}</span></p> {% endcomment %}
+                
+                <!-- Add to Cart Form -->
+                {% comment %} <form method="POST" action="{% url 'add_to_cart' crop.id %}">
+                    {% csrf_token %}
+                    <label for="quantity"><b>Quantity:</b></label>
+                    <input type="number" id="quantity" name="quantity" min="1" value="1">
+                    <button type="submit" class="btn add-to-cart-btn">Add to Cart</button>
+                </form> {% endcomment %}
             </div>
         </div>
+        
         <div class="action-buttons">
+            <form method="POST" action="{% url 'crop_details' crop.id %}">
+                {% csrf_token %}
+                <button type="submit" name="add_to_wishlist" class="btn add-to-wishlist-btn">Add to Wishlist</button>
+            </form>
+        
             <button class="btn buy-btn">Buy</button>
-            <button class="btn add-to-cart-btn">Add to Cart</button>
-            <a href="{% url 'add_to_wishlist' crop.id %}" class="wishlist-btn" title="Add to Wishlist">Wishlist</a>
         </div>
+        
     </div>
 </body>
 </html>

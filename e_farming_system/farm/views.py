@@ -12,7 +12,7 @@ from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.contrib.auth.tokens import default_token_generator as custom_token_generator
 from django.utils.html import strip_tags
-from .models import Registeruser, Adminm, Cart
+from .models import Registeruser, Adminm, Cart, Wishlist
 from .forms import SetPasswordForm
 from .tokens import custom_token_generator
 from django.contrib.sites.shortcuts import get_current_site
@@ -26,6 +26,7 @@ from .models import Crop, CropImage
 from django.views.decorators.cache import cache_control
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
+from decimal import Decimal  # Add this import statement
 
 
 
@@ -367,10 +368,28 @@ def crops_page(request):
 
 def crop_details(request, id):
     # Fetch the crop object based on the id and ensure it's activated (status=1)
-    crop_instance = get_object_or_404(Crop, id=id, status=1, is_verified=1)  # Assuming status=True is for active
-    
+    crop_instance = get_object_or_404(Crop, id=id, status=True, is_verified=True)  # Assuming status=True is for active crops
+
+    if request.method == 'POST':
+        if 'add_to_wishlist' in request.POST:
+            user_id = request.session.get('user_id')  # Fetch the user ID from session
+            if user_id:
+                user = get_object_or_404(Registeruser, user_id=user_id)  # Get the user
+                # Add crop to the wishlist or fetch it if it already exists
+                wishlist_item, created = Wishlist.objects.get_or_create(user=user, crop=crop_instance)
+
+                if created:
+                    messages.success(request, 'Crop added to your wishlist!')
+                else:
+                    messages.info(request, 'This crop is already in your wishlist.')
+            else:
+                messages.error(request, 'You need to log in to add crops to your wishlist.')
+
     # Render the crop details page with the fetched crop instance
-    return render(request, 'crop_details.html', {'crop': crop_instance})
+    context = {
+        'crop': crop_instance,
+    }
+    return render(request, 'crop_details.html', context)
 
 # View to list farmers or buyers based on role
 def manage_users(request, role):
@@ -615,34 +634,110 @@ def activate_crop(request, crop_id):
 
 
 
-def add_to_wishlist(request, crop_id):
-    crop = get_object_or_404(Crop, id=crop_id, status=1, is_verified=1)  # Only allow active and verified crops
-
-    # Get the wishlist from session, or initialize an empty list
-    wishlist = request.session.get('wishlist', [])
-
-    # Add the crop to wishlist if not already added
-    if crop_id not in wishlist:
-        wishlist.append(crop_id)
-        request.session['wishlist'] = wishlist  # Save the wishlist back to session
-
-    return redirect('wishlist')  # Redirect to the wishlist page
-
-
-def remove_from_wishlist(request, crop_id):
-    wishlist = request.session.get('wishlist', [])
-
-    if crop_id in wishlist:
-        wishlist.remove(crop_id)
-        request.session['wishlist'] = wishlist  # Save the updated wishlist back to session
-
-    return redirect('wishlist')
 
 def wishlist(request):
-    # Get the wishlist from session
-    wishlist = request.session.get('wishlist', [])
+    user_id = request.session.get('user_id')
+    
+    if user_id:
+        # Fetch the user from Registeruser model
+        user = get_object_or_404(Registeruser, user_id=user_id)
+        
+        if request.method == 'POST':
+            crop_id = request.POST.get('remove_crop_id')  # Get the crop ID from POST data
+            if crop_id:
+                try:
+                    wishlist_item = Wishlist.objects.get(user_id=user_id, crop_id=crop_id)
+                    wishlist_item.delete()  # Remove the crop from the wishlist
+                    messages.success(request, 'Crop removed from your wishlist.')
+                except Wishlist.DoesNotExist:
+                    messages.error(request, 'This crop is not in your wishlist.')
+        
+        # Fetch all wishlist items associated with the user
+        wishlist_items = Wishlist.objects.filter(user_id=user_id)
+        context = {
+            'crops': [item.crop for item in wishlist_items],  # Change variable name here to crops
+            'error': None
+        }
+    else:
+        messages.error(request, "You need to log in to view your wishlist.")
+        context = {
+            'crops': [],  # Change variable name here as well
+            'error': "You need to log in to view your wishlist."
+        }
+    
+    return render(request, 'wishlist.html', context)
 
-    # Fetch the crops from the wishlist
-    crops = Crop.objects.filter(id__in=wishlist, status=1, is_verified=1)  # Only show active and verified crops
 
-    return render(request, 'wishlist.html', {'crops': crops})
+
+
+def add_to_cart(request, crop_id):
+    if request.method == "POST":
+        quantity = int(request.POST.get('quantity', 1))  # Get quantity from POST data, default to 1 if not provided
+        cart = request.session.get('cart', {})
+
+        # Update the cart with the new quantity
+        if crop_id in cart:
+            cart[crop_id] += quantity  # Increment existing quantity
+        else:
+            cart[crop_id] = quantity  # Add new crop with its quantity
+
+        # Save the updated cart back to the session
+        request.session['cart'] = cart
+
+    return redirect('cart')  # Redirect to the cart page after adding
+
+
+
+
+def cart(request):
+    # Get the cart from the session
+    cart = request.session.get('cart', {})
+
+    # Initialize total price using Decimal for accuracy with money calculations
+    total_price = Decimal('0.00')
+    cart_items = []
+
+    # Loop through each crop in the cart
+    for crop_id, item in cart.items():
+        crop = get_object_or_404(Crop, id=crop_id)
+        
+        # Ensure quantity is correctly retrieved from the session
+        if isinstance(item, dict):
+            quantity = item.get('quantity', 1)
+        else:
+            quantity = item  # If not a dict, it's already an integer
+
+        # Calculate total price for the current item
+        item_total_price = crop.price * quantity  # crop.price is Decimal, quantity is int
+        
+        # Append to cart items list
+        cart_items.append({
+            'crop': crop,
+            'quantity': quantity,
+            'item_total_price': item_total_price
+        })
+
+        # Add to the total price of the cart
+        total_price += item_total_price
+
+    # Render the cart template with cart items and total price
+    return render(request, 'cart.html', {'cart_items': cart_items, 'total_price': total_price})
+
+
+def remove_from_cart(request, crop_id):
+    # Convert crop_id to string because session data is usually stored as strings
+    crop_id_str = str(crop_id)
+
+    # Get the cart from the session
+    cart = request.session.get('cart', {})
+
+    # Check if the crop is in the cart
+    if crop_id_str in cart:
+        # Remove the crop from the cart
+        del cart[crop_id_str]
+
+        # Save the updated cart back to the session
+        request.session['cart'] = cart
+
+    # Redirect to the cart page after removal
+    return redirect('cart')

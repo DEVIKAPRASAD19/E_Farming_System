@@ -1,0 +1,110 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f8f8;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #007bff; /* Bootstrap primary color */
+    color: white;
+}
+
+.header h1 {
+    margin: 0;
+}
+
+.back-button {
+    background-color: white;
+    color: #007bff;
+    border: 1px solid white;
+    padding: 10px 15px;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.back-button:hover {
+    background-color: #0056b3;
+    color: white;
+}
+
+.cart-container {
+    margin: 20px;
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+}
+
+.cart-items {
+    display: flex;
+    flex-direction: column;
+}
+
+.cart-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+}
+
+.cart-item:last-child {
+    border-bottom: none; /* Remove border from last item */
+}
+
+.crop-image {
+    width: 80px; /* Small image size */
+    height: 80px;
+    object-fit: cover; /* Cover image without distortion */
+    margin-right: 20px;
+}
+
+.item-details {
+    flex-grow: 1; /* Allow details to take remaining space */
+}
+
+.item-details h3 {
+    margin: 0 0 5px;
+}
+
+.remove-button {
+    background-color: #dc3545; /* Bootstrap danger color */
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.remove-button:hover {
+    background-color: #c82333;
+}
+
+.order-summary {
+    margin-top: 20px;
+}
+
+.continue-shopping {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.continue-button {
+    background-color: #28a745; /* Bootstrap success color */
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.continue-button:hover {
+    background-color: #218838;
+}

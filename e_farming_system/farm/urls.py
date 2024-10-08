@@ -6,7 +6,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('', views.index, name='index'), 
-    path('login', views.login, name='login'),
+    path('login/', views.login, name='login'),
     path('register', views.register, name='register'),
     path('adminfarm', views.adminfarm, name='adminfarm'),
     path('adminviews', views.adminviews, name='adminviews'),
@@ -27,9 +27,8 @@ urlpatterns = [
     path('addcrops', views.addcrops, name='addcrops'),
     path('crops/', views.crops_page, name='crops_page'),  # For listing all crops
     path('crops/<int:id>/', views.crop_details, name='crop_details'),  # For crop details
-    path('crop/<int:crop_id>/add_to_cart/', views.add_to_cart, name='add_to_cart'),
-    path('crop/<int:crop_id>/remove_from_cart/', views.remove_from_cart, name='remove_from_cart'),
-    path('cart/', views.cart_page, name='cart_page'),
+    
+  
     path('search/', views.search_crops, name='search_crops'),
     path('manage-users/<str:role>/', views.manage_users, name='manage_users'),
     path('update-user/<int:user_id>/', views.update_user, name='update_user'),
@@ -41,9 +40,11 @@ urlpatterns = [
     path('approve-crop/<int:crop_id>/', views.approve_crop, name='approve_crop'),
     path('reject-crop/<int:crop_id>/', views.reject_crop, name='reject_crop'),
     path('wishlist/', views.wishlist, name='wishlist'),
-    path('add-to-wishlist/<int:crop_id>/', views.add_to_wishlist, name='add_to_wishlist'),
-    path('remove-from-wishlist/<int:crop_id>/', views.remove_from_wishlist, name='remove_from_wishlist'),
-    
+
+    path('cart/add/<int:crop_id>/', views.add_to_cart, name='add_to_cart'),
+    path('cart/', views.cart, name='cart'),
+    path('remove_from_cart/<int:crop_id>/',views.remove_from_cart, name='remove_from_cart'),  # Add this line
+
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # path('password_reset/', views.password_reset_form, name='password_reset_form'),

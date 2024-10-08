@@ -142,12 +142,6 @@ EMAIL_HOST_PASSWORD = 'klfn stkg wurz ptut'
 
 
 
-# settings.py
-LOGIN_URL = '/login/'  # or '/login' based on your URL pattern
-
-# settings.py
-LOGIN_REDIRECT_URL = 'farmer_dashboard'  # Redirect after login
-
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",
@@ -160,6 +154,13 @@ STATICFILES_DIRS = [
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+#Redirect to the login page if not authenticated
+LOGIN_URL = '/login/'  # Ensure this points to your custom login URL
+
+# After login, redirect to the user homepage or a relevant page
+LOGIN_REDIRECT_URL = '/buyer_dashboard/'  # Adjust this to where users should land after login
+LOGOUT_REDIRECT_URL = '/index/'  # Where users go after logout
 
 
 

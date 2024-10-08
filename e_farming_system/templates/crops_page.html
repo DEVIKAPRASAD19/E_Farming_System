@@ -44,7 +44,7 @@
                     <p class="category">Category: {{ crop.category }}</p> {% endcomment %}
                 </a>
                 <!-- Add to Wishlist Button -->
-                <a href="{% url 'add_to_wishlist' crop.id %}" class="wishlist-btn" title="Add to Wishlist">❤️</a>
+                {% comment %} <a href="{% url 'wishlist' %}" class="wishlist-btn" title="Add to Wishlist">❤️</a> {% endcomment %}
             </div>
             {% endfor %}
         {% else %}

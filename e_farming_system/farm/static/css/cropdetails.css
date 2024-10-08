@@ -4,22 +4,29 @@ body {
     margin: 0;
     padding: 0;
     background-color: #f4f4f4;
+    background-image: url('https://www.novethic.fr/wp-content/uploads/fileadmin/ecologie-agriculture-benefices-646x407.jpg'); /* Background image */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 .container {
     max-width: 900px;
     margin: 50px auto;
     padding: 20px;
-    background-color: #fff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: rgba(255, 255, 255, 0.9); /* White with transparency */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
 }
 
+/* Heading styles */
 h1 {
     text-align: center;
     color: #333;
+    margin-bottom: 20px;
 }
 
+/* Crop details layout */
 .crop-details {
     display: flex;
     flex-wrap: wrap;
@@ -27,6 +34,7 @@ h1 {
     margin-top: 20px;
 }
 
+/* Image styling */
 .crop-images {
     flex: 1;
     margin-right: 20px;
@@ -35,8 +43,10 @@ h1 {
 .crop-images img {
     max-width: 100%;
     border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
+/* Crop information styling */
 .crop-info {
     flex: 2;
 }
@@ -51,41 +61,45 @@ h1 {
     color: #333;
 }
 
+/* Price styling */
 #cropPrice {
     font-weight: bold;
     color: #28a745; /* Green price color */
+    font-size: 20px;
 }
 
+/* Back button styling */
 .top-right {
     text-align: right;
     margin: 20px;
 }
 
 .top-right .back-button {
+    display: inline-block; /* Ensures it behaves like a button */
+    padding: 10px 20px; /* Button padding */
     text-decoration: none;
-    color: #fff;
+    color: #04162a; /* Blue color */
+    font-weight: bold;
+    border: 2px solid #072342; /* Border styling */
+    border-radius: 5px; /* Rounded corners */
+    transition: background-color 0.3s, color 0.3s; /* Transition effects */
 }
 
-.top-right button {
-    background-color: #f44336;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
+.top-right .back-button:hover {
+    background-color: #7b8a99; /* Blue background on hover */
+    color: white; /* White text on hover */
 }
 
-.top-right button:hover {
-    background-color: #d32f2f;
-}
-
-/* Buttons styling */
+/* Action buttons container */
 .action-buttons {
     margin-top: 30px;
     text-align: center;
+    display: flex; /* Aligns the buttons in a row */
+    justify-content: center; /* Centers the buttons */
+    gap: 10px; /* Adds space between buttons */
 }
 
+/* Button styling */
 .action-buttons .btn {
     padding: 15px 30px;
     font-size: 16px;
@@ -93,44 +107,91 @@ h1 {
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    margin: 0 10px;
+    transition: background-color 0.3s ease, transform 0.2s;
 }
 
+/* Buy button styling */
 .buy-btn {
-    background-color: #28a745; /* Green background for Buy button */
+    background-color: #28a745; /* Green background */
     color: white;
-    transition: background-color 0.3s ease;
 }
 
 .buy-btn:hover {
     background-color: #218838; /* Darker green on hover */
+    transform: scale(1.05); /* Slightly enlarge on hover */
 }
 
+/* Add to Cart button styling */
 .add-to-cart-btn {
-    background-color: #007bff; /* Blue background for Add to Cart button */
+    background-color: #007bff; /* Blue background */
     color: white;
-    transition: background-color 0.3s ease;
 }
 
 .add-to-cart-btn:hover {
     background-color: #0069d9; /* Darker blue on hover */
-}
-/* Wishlist button styling */
-.wishlist-btn {
-    background-color: #ff5722; /* Orange background for Wishlist button */
-    color: white;
-    padding: 15px 30px;
-    font-size: 16px;
-    font-weight: bold;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin: 0 10px;
-    text-decoration: none;
-    display: inline-block;
-    transition: background-color 0.3s ease;
+    transform: scale(1.05);
 }
 
-.wishlist-btn:hover {
+/* Add to Wishlist button styling */
+.add-to-wishlist-btn {
+    background-color: #ff5722; /* Orange background */
+    color: white;
+}
+
+.add-to-wishlist-btn:hover {
     background-color: #e64a19; /* Darker orange on hover */
+    transform: scale(1.05);
+}
+
+/* Form styling */
+form {
+    margin-top: 20px;
+    text-align: left;
+}
+
+form label {
+    font-weight: bold;
+}
+
+/* Input styling */
+input[type="number"] {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 60px;
+    margin-right: 10px;
+}
+
+input[type="number"]:focus {
+    border-color: #007bff; /* Change border color on focus */
+    outline: none; /* Remove default outline */
+}
+
+/* Message box styling */
+.messages {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.messages li {
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+}
+
+/* Success, Info, and Error messages */
+.messages .success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.messages .info {
+    background-color: #cce5ff;
+    color: #004085;
+}
+
+.messages .error {
+    background-color: #f8d7da;
+    color: #721c24;
 }

@@ -7,6 +7,10 @@ body {
     padding: 0;
     color: #121212;
     position: relative; /* Ensure the header positioning is relative to the page */
+    background-image: url('https://img.freepik.com/premium-photo/abstract-background-design-hd-light-bud-green_851755-26376.jpg'); /* Add your image path here */
+    background-size: cover; /* Ensure the image covers the entire background */
+    background-position: center; /* Center the background image */
+    background-repeat: no-repeat; /* Prevent the image from repeating */
 }
 
 .header {
