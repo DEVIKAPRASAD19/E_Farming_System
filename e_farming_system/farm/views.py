@@ -113,7 +113,17 @@ def register(request):
         user = Registeruser(name=name, contact=contact, place=place, email=email, password=password, role=role)
         user.save()
 
-        messages.success(request, 'Registration successful! Please log in.')
+       # Send welcome email to the registered user
+        subject = 'Welcome to eFarming System'
+        message = f'Hello {name},\n\nThank you for registering with our eFarming system. You can now log in with your credentials.\n\nBest regards,\nThe eFarming Team'
+        from_email = settings.DEFAULT_FROM_EMAIL
+        recipient_list = [email]
+
+        try:
+            send_mail(subject, message, from_email, recipient_list)
+            """ messages.success(request, 'Registration successful! A welcome email has been sent to your email address. Please log in.') """
+        except Exception as e:
+            messages.warning(request, 'Registration successful, but there was an error sending the welcome email. Please check your email configuration.')
         return redirect('login')
     
     return render(request, 'register.html')
@@ -287,7 +297,7 @@ def updatebuyer(request):
         user.save()
         return redirect('buyer_dashboard')
     else:
-        return render(request, 'updateprofile.html', {'user':user})
+        return render(request, 'updatebuyer.html', {'user':user})
 
 
 
@@ -304,6 +314,7 @@ def addcrops(request):
         name = request.POST.get('name')
         description = request.POST.get('description')
         price = request.POST.get('price')
+        stock = int(request.POST['stock'])  # Capture stock from form
         category = request.POST.get('category')
         
         # Get user_id from the session
@@ -578,35 +589,66 @@ def search_crops(request):
 
 
 
+# Add a crop to the cart
 def add_to_cart(request, crop_id):
-    # Debug statement
-    print("User is authenticated:", request.user.is_authenticated)  
-    
-    if request.user.is_authenticated:  # Check if user is logged in
-        crop = get_object_or_404(Crop, id=crop_id)
-        cart_item, created = Cart.objects.get_or_create(crop=crop, user=request.user)
-        
-        if not created:  # If the crop is already in the cart, increase the quantity
-            cart_item.quantity += 1
-            cart_item.save()
-            messages.success(request, 'Crop quantity updated in your cart.')
-        else:
-            messages.success(request, 'Crop has been added to your cart!')
-        
-        return redirect('crop_details', crop_id=crop.id)  # Redirect back to crop details
-    else:
-        print("User is not authenticated, redirecting to login")  # Debugging line
-        return redirect('login')  # Redirect to the login page if not authenticated
 
-def remove_from_cart(request, crop_id):
-    cart_item = get_object_or_404(Cart, crop__id=crop_id)
-    cart_item.delete()
-    
-    return redirect('cart_page')  # Redirect to the cart page or wherever you want
+    # Get the user from the session
+    user_id = request.session.get('user_id')
+    user = get_object_or_404(Registeruser, pk=user_id)  # Assuming you have a `Registeruser` model
 
-def cart_page(request):
-    cart_items = Cart.objects.all()  # Get all cart items
-    return render(request, 'cart_page.html', {'cart_items': cart_items})
+    # Fetch the crop you want to add to the cart
+    crop = get_object_or_404(Crop, id=crop_id)
+
+    # Check if the crop is already in the user's cart
+    cart_item, created = Cart.objects.get_or_create(
+        user=user,  # The logged-in user
+        crop=crop,  # The crop to be added
+        defaults={'quantity': 1}  # Set default quantity if it's a new entry
+    )
+
+    if not created:  # If the crop already exists in the cart, update the quantity
+        cart_item.quantity += 1
+        cart_item.save()
+
+    # Redirect to the cart view with a success message
+    messages.success(request, 'Crop added to cart successfully.')
+    return redirect('viewcart')  # Redirect to the cart page
+
+
+# View the cart
+def viewcart(request):
+    user_id = request.session['user_id']  # Assuming the user is logged in
+    user = get_object_or_404(Registeruser, pk=user_id)  # Fetch the user from session
+    cart_items = Cart.objects.filter(user=user)  # Fetch the cart items for the user
+
+    # Calculate the total price of the cart
+    total_price = sum([item.get_total_price() for item in cart_items])
+
+    context = {
+        'cart_items': cart_items,
+        'total_price': total_price
+    }
+    return render(request, 'viewcart.html', context)  # Render the cart view
+
+# Update the quantity of a crop in the cart
+def update_cart(request, cart_id):
+    if request.method == 'POST':
+        cart_item = get_object_or_404(Cart, pk=cart_id)  # Fetch the cart item by its ID
+        quantity = int(request.POST.get('quantity', 1))  # Get the new quantity from POST data
+
+        if quantity > 0:
+            cart_item.quantity = quantity  # Update the cart item quantity
+            cart_item.save()  # Save the changes
+
+        return redirect('viewcart')  # Redirect to the cart view
+
+# Remove a crop from the cart
+def delete_from_cart(request, cart_id):
+    cart_item = get_object_or_404(Cart, pk=cart_id)  # Fetch the cart item by its ID
+    cart_item.delete()  # Remove the cart item
+    messages.success(request, f"{cart_item.crop.name} removed from cart.")  # Success message
+    return redirect('viewcart')  # Redirect to the cart view
+
 
 
 def deactivate_crop(request, crop_id):
@@ -670,7 +712,7 @@ def wishlist(request):
 
 
 
-def add_to_cart(request, crop_id):
+""" def add_to_cart(request, crop_id):
     if request.method == "POST":
         quantity = int(request.POST.get('quantity', 1))  # Get quantity from POST data, default to 1 if not provided
         cart = request.session.get('cart', {})
@@ -740,4 +782,4 @@ def remove_from_cart(request, crop_id):
         request.session['cart'] = cart
 
     # Redirect to the cart page after removal
-    return redirect('cart')
+    return redirect('cart') """

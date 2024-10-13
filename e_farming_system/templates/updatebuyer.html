@@ -6,31 +6,113 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Update Profile</title>
     <link rel="stylesheet" href="{% static 'css/updateprofile.css' %}">
+    <style>
+        .error-message {
+            color: red;
+            font-size: 0.9em;
+        }
+        .invalid {
+            border-color: red;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <h1>Update Profile</h1>
-        <form id="updateProfileForm" action="{% url 'updateprofile' %}" method="POST">
+        <form id="updatebuyerForm" action="{% url 'updatebuyer' %}" method="POST" novalidate>
             {% csrf_token %}
             <div class="form-group">
                 <label for="name">Name:</label>
                 <input type="text" id="name" name="name" value="{{ user.name }}" required>
+                <span id="nameError" class="error-message"></span>
             </div>
 
             <div class="form-group">
                 <label for="phone">Contact:</label>
                 <input type="tel" id="phone" name="contact" value="{{ user.contact }}" required>
+                <span id="contactError" class="error-message"></span>
             </div>
 
             <div class="form-group">
                 <label for="address">Place:</label>
                 <input type="text" id="place" name="place" value="{{ user.place }}" required>
+                <span id="placeError" class="error-message"></span>
             </div>
 
-            <button type="submit" class="btn">Update Profile</button>
+            <button type="submit" class="btn" id="submitBtn">Update Profile</button>
         </form>
     </div>
 
-    <script src="{% static 'js/updateprofile.js' %}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.getElementById('updatebuyerForm');
+            const nameInput = document.getElementById('name');
+            const phoneInput = document.getElementById('phone');
+            const placeInput = document.getElementById('place');
+            const submitBtn = document.getElementById('submitBtn');
+
+            const nameError = document.getElementById('nameError');
+            const contactError = document.getElementById('contactError');
+            const placeError = document.getElementById('placeError');
+
+            // Name validation
+            nameInput.addEventListener('input', function() {
+                const nameValue = nameInput.value.trim();
+                if (!/^[a-zA-Z\s]+$/.test(nameValue)) {
+                    nameError.textContent = 'Name can only contain letters and spaces.';
+                    nameInput.classList.add('invalid');
+                } else {
+                    nameError.textContent = '';
+                    nameInput.classList.remove('invalid');
+                }
+                checkFormValidity();
+            });
+
+            // Contact validation (must be exactly 10 digits, start with 6-9, and not be repetitive like 2222222222)
+            phoneInput.addEventListener('input', function() {
+                const phoneValue = phoneInput.value.trim();
+                const repetitivePattern = /^(\d)\1{9}$/; // Pattern for repetitive digits like 2222222222
+
+                if (!/^[6-9]\d{9}$/.test(phoneValue)) {
+                    contactError.textContent = 'Contact must start with 6, 7, 8, or 9 and be exactly 10 digits.';
+                    phoneInput.classList.add('invalid');
+                } else if (repetitivePattern.test(phoneValue)) {
+                    contactError.textContent = 'Contact number cannot have all the same digits.';
+                    phoneInput.classList.add('invalid');
+                } else {
+                    contactError.textContent = '';
+                    phoneInput.classList.remove('invalid');
+                }
+                checkFormValidity();
+            });
+
+            // Place validation (cannot be empty)
+            placeInput.addEventListener('input', function() {
+                const placeValue = placeInput.value.trim();
+                if (placeValue === '') {
+                    placeError.textContent = 'Place cannot be empty.';
+                    placeInput.classList.add('invalid');
+                } else {
+                    placeError.textContent = '';
+                    placeInput.classList.remove('invalid');
+                }
+                checkFormValidity();
+            });
+
+            // Check overall form validity
+            function checkFormValidity() {
+                if (nameInput.classList.contains('invalid') || 
+                    phoneInput.classList.contains('invalid') || 
+                    placeInput.classList.contains('invalid')) {
+                    submitBtn.disabled = true;
+                } else {
+                    submitBtn.disabled = false;
+                }
+            }
+
+            // Disable submit if form has invalid fields initially
+            checkFormValidity();
+        });
+    </script>
 </body>
 </html>

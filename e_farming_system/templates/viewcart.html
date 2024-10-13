@@ -1,0 +1,35 @@
+<h2>Your Cart</h2>
+
+{% if cart_items %}
+    <table>
+        <thead>
+            <tr>
+                <th>Crop</th>
+                <th>Quantity</th>
+                <th>Price per Unit</th>
+                <th>Total Price</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in cart_items %}
+            <tr>
+                <td>{{ item.crop.name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>Rs.{{ item.crop.price }}</td>
+                <td>Rs.{{ item.get_total_price }}</td>
+                <td>
+                    {% comment %} <form action="{% url 'remove_from_cart' item.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit">Remove</button>
+                    </form> {% endcomment %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <p><strong>Total Price:</strong> Rs.{{ total_price }}</p>
+   {% comment %}  <a href="{% url 'checkout' %}">Proceed to Checkout</a> {% endcomment %}
+{% else %}
+    <p>Your cart is empty.</p>
+{% endif %}

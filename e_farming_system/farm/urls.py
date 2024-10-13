@@ -41,9 +41,10 @@ urlpatterns = [
     path('reject-crop/<int:crop_id>/', views.reject_crop, name='reject_crop'),
     path('wishlist/', views.wishlist, name='wishlist'),
 
+    path('viewcart', views.viewcart, name='viewcart'),
     path('cart/add/<int:crop_id>/', views.add_to_cart, name='add_to_cart'),
-    path('cart/', views.cart, name='cart'),
-    path('remove_from_cart/<int:crop_id>/',views.remove_from_cart, name='remove_from_cart'),  # Add this line
+    path('cart/update/<int:crop_id>/', views.update_cart, name='update_cart'),
+    path('cart/delete/<int:crop_id>/', views.delete_from_cart, name='delete_from_cart'),
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
