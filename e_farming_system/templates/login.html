@@ -27,41 +27,37 @@
          <button><a href="{% url 'index' %}" class="home-button">Home</a></button>
     </div>
 
-    <!-- Login Form -->
-    <div class="login-container">
-        <h2>Login to E-Farming System</h2>
-        <form action="{% url 'login' %}" method="post" onsubmit="return validateLoginForm()"> <!-- Form with validation -->
-            <div class="form-group">
-                {% csrf_token %}
-                <label for="email">Email:</label>
-                <input type="text" id="email" name="email" autocomplete="off" required>
-                <span class="error-message" id="email-error"></span>
-            </div>
-            <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" autocomplete="new-password" required minlength="8">
-                <span class="error-message" id="password-error"></span>
-            </div>
-            <button type="submit" class="login-button">Login</button>
-            <center><br>
-                <div class="forgot-password">
-                    <a href="{% url 'forgotpass' %}">Forgot Password?</a>
-                </div><br>
-                <div class="google-signin">
-                    <button type="button" class="google-button">Sign in with Google</button>
+    <main>
+        <!-- Login Form -->
+        <div class="login-container">
+            <h2>Login to E-Farming System</h2>
+            <form action="{% url 'login' %}" method="post" onsubmit="return validateLoginForm()"> <!-- Form with validation -->
+                <div class="form-group">
+                    {% csrf_token %}
+                    <label for="email">Email:</label>
+                    <input type="text" id="email" name="email" autocomplete="off" required aria-label="Email">
+                    <span class="error-message" id="email-error"></span>
                 </div>
-                <p class="signup-link">Don't have an account? <a href="{% url 'register' %}">Register</a></p>
-            </center>
-        </form>
-    </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" autocomplete="new-password" required minlength="8" aria-label="Password">
+                    <span class="error-message" id="password-error"></span>
+                </div>
+                <button type="submit" class="login-button">Login</button>
+                <center><br>
+                    <div class="forgot-password">
+                        <a href="{% url 'forgotpass' %}">Forgot Password?</a>
+                    </div><br>
+                    <div class="google-signin">
+                        <button type="button" class="google-button">Sign in with Google</button>
+                    </div>
+                    <p class="signup-link">Don't have an account? <a href="{% url 'enter_email' %}">Register</a></p>
+                </center>
+            </form>
+        </div>
+    </main>
     
     <script>
-        // Reset form fields on page load
-        window.onload = function() {
-            document.getElementById("email").value = "";
-            document.getElementById("password").value = "";
-        };
-
         // Validate login form
         function validateLoginForm() {
             let isValid = true;

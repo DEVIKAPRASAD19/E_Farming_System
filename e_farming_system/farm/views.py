@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login as auth_login
+from django.contrib.auth.hashers import make_password, check_password
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -11,11 +12,11 @@ from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.contrib.auth.tokens import default_token_generator as custom_token_generator
 from django.utils.html import strip_tags
-from .models import Registeruser, Adminm
+from .models import Registeruser, Adminm, Cart, Wishlist
 from .forms import SetPasswordForm
 from .tokens import custom_token_generator
 from django.contrib.sites.shortcuts import get_current_site
-import logging
+from django.contrib.auth.decorators import login_required
 from django.utils.crypto import get_random_string
 from django.urls import reverse
 from django.contrib.auth.models import User
@@ -24,8 +25,9 @@ from django.contrib.auth import logout
 from .models import Crop, CropImage
 from django.views.decorators.cache import cache_control
 from django.shortcuts import get_object_or_404
-
-
+from django.http import HttpResponse
+from decimal import Decimal  # Add this import statement
+import random
 
 
 
@@ -42,6 +44,7 @@ def contact(request):
 
 def adminfarm(request):
     return render(request,'adminfarm.html')
+
 
 
 def login(request):
@@ -86,13 +89,14 @@ def login(request):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-def user_logout(request):
+def logout(request):
     request.session.flush()  # Clears the session data
     return redirect('index')  # Redirects to the login page
 
                
 
 def register(request):
+    email = request.session.get('email','')
     if request.method == 'POST':
         name = request.POST['name']
         contact = request.POST['contact']
@@ -110,10 +114,93 @@ def register(request):
         user = Registeruser(name=name, contact=contact, place=place, email=email, password=password, role=role)
         user.save()
 
-        #messages.success(request, 'Registration successful! Please log in.')
+       # Send welcome email to the registered user
+        subject = 'Welcome to eFarming System'
+        message = f'Hello {name},\n\nThank you for registering with our eFarming system. You can now log in with your credentials.\n\nBest regards,\nThe eFarming Team'
+        from_email = settings.DEFAULT_FROM_EMAIL
+        recipient_list = [email]
+
+        try:
+            send_mail(subject, message, from_email, recipient_list)
+            """ messages.success(request, 'Registration successful! A welcome email has been sent to your email address. Please log in.') """
+        except Exception as e:
+            messages.warning(request, 'Registration successful, but there was an error sending the welcome email. Please check your email configuration.')
         return redirect('login')
     
-    return render(request, 'register.html')
+    return render(request, 'register.html', {'email': email})
+
+
+
+# Dictionary to store OTPs temporarily
+otp_storage = {}
+
+def send_otp_email(user_email):
+    # Generate a random 4-digit OTP
+    otp = random.randint(1000, 9999)
+    
+    # Store the OTP associated with the user's email in otp_storage
+    otp_storage[user_email] = otp
+
+    # Define email subject, message, and sender/recipient details
+    subject = 'Your OTP for Email Verification'
+    message = f'Your OTP is {otp}. Please use this to verify your email.'
+    from_email = 'rambutanwarehouse@gmail.com'  # Replace with your own email
+    recipient_list = [user_email]
+
+    # Send the OTP email using Django's send_mail function
+    send_mail(subject, message, from_email, recipient_list)
+
+# View to handle email input and OTP sending
+def enter_email(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+
+        # Check if email is already registered in the Registeruser model
+        if Registeruser.objects.filter(email=email).exists():
+            messages.info(request, "Email is already registered. Please log in.")
+            return redirect('login')
+
+        # Send OTP to the email address
+        send_otp_email(email)
+
+        # Store the email in session for OTP verification later
+        request.session['user_email'] = email
+
+        # Redirect to the OTP verification page
+        return redirect('verify_otp')
+
+    return render(request, 'enter_email.html')
+
+# View to handle OTP verification
+def verify_otp(request):
+    # Get the email from the session (set during email input)
+    email = request.session.get('user_email')
+
+    # If email is not in session, redirect to the email entry page
+    if not email:
+        messages.error(request, "Session expired. Please enter your email again.")
+        return redirect('enter_email')
+
+    if request.method == 'POST':
+        otp_input = request.POST.get('otp')
+
+        # Check if the entered OTP matches the one sent to the user's email
+        if otp_storage.get(email) and otp_storage[email] == int(otp_input):
+            # OTP is valid, remove it from storage and mark email as verified
+            del otp_storage[email]
+            request.session['email'] = email
+
+            # Redirect to the registration page
+            return redirect('register')
+
+        else:
+            # OTP is invalid, show an error message
+            messages.error(request, "Invalid OTP. Please try again.")
+
+    return render(request, 'verify_otp')
+
+
+
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -283,7 +370,7 @@ def updatebuyer(request):
         user.save()
         return redirect('buyer_dashboard')
     else:
-        return render(request, 'updateprofile.html', {'user':user})
+        return render(request, 'updatebuyer.html', {'user':user})
 
 
 
@@ -300,6 +387,7 @@ def addcrops(request):
         name = request.POST.get('name')
         description = request.POST.get('description')
         price = request.POST.get('price')
+        stock = request.POST.get('stock')  # Capture stock from form
         category = request.POST.get('category')
         
         # Get user_id from the session
@@ -330,7 +418,8 @@ def addcrops(request):
             description=description,
             price=price,
             category=category,
-            farmer=register_user  # Now this is a User instance
+            farmer=register_user,  # Now this is a User instance
+            stock=stock
         )
         
         # Handle crop images
@@ -348,14 +437,44 @@ def addcrops(request):
 
 
 def crops_page(request):
-    crops = Crop.objects.all()  # Fetch all crops
+    query = request.GET.get('query')
+    category = request.GET.get('category')
+    
+    # Filter crops by status and any search criteria
+    crops = Crop.objects.filter(status=1,is_verified=1)  # Only get activated crops
+
+    if query:
+        crops = crops.filter(name__icontains=query)  # Filter by search query
+    if category:
+        crops = crops.filter(category=category)  # Filter by category
+
     return render(request, 'crops_page.html', {'crops': crops})
 
+
 def crop_details(request, id):
-    # Fetch the crop object based on the id
-    crop_instance = Crop.objects.get(id=id)
+    # Fetch the crop object based on the id and ensure it's activated (status=1)
+    crop_instance = get_object_or_404(Crop, id=id, status=True, is_verified=True)  # Assuming status=True is for active crops
+
+    if request.method == 'POST':
+        if 'add_to_wishlist' in request.POST:
+            user_id = request.session.get('user_id')  # Fetch the user ID from session
+            if user_id:
+                user = get_object_or_404(Registeruser, user_id=user_id)  # Get the user
+                # Add crop to the wishlist or fetch it if it already exists
+                wishlist_item, created = Wishlist.objects.get_or_create(user=user, crop=crop_instance)
+
+                if created:
+                    messages.success(request, 'Crop added to your wishlist!')
+                else:
+                    messages.info(request, 'This crop is already in your wishlist.')
+            else:
+                messages.error(request, 'You need to log in to add crops to your wishlist.')
+
     # Render the crop details page with the fetched crop instance
-    return render(request, 'crop_details.html', {'crop': crop_instance})
+    context = {
+        'crop': crop_instance,
+    }
+    return render(request, 'crop_details.html', context)
 
 # View to list farmers or buyers based on role
 def manage_users(request, role):
@@ -364,46 +483,91 @@ def manage_users(request, role):
     return render(request, 'manage_users.html', {'users': users, 'role': role})
 
 
-def farmer_crops_view(request):
-    # Get the logged-in farmer's Registeruser instance
-    farmer_user_id = request.session.get('user_id')  # Ensure this matches how you're storing the user ID
-    try:
-        register_user = Registeruser.objects.get(user_id=farmer_user_id)  # Fetch the farmer's Registeruser instance
-        crops = Crop.objects.filter(farmer=register_user)  # Filter crops by this Registeruser instance
-    except Registeruser.DoesNotExist:
-        crops = []  # No crops if the user does not exist
+def farmer_crops(request):
+    # Check if user_id is in the session; if not, redirect to login
+    if not request.session.get('user_id'):
+        return redirect('login')
+
+    # Fetch the logged-in farmer using the session's user_id
+    farmer = get_object_or_404(Registeruser, user_id=request.session['user_id'])
+
+    # Ensure the user is a farmer
+    if farmer.role != 'farmer':
+        return redirect('home')  # Redirect non-farmer users to another page
+
+    # Check if the user wants to view inactive crops
+    show_inactive = request.GET.get('show_inactive', 'false') == 'true'
+
+    # Filter crops based on the show_inactive toggle
+    if show_inactive:
+        crops = Crop.objects.filter(farmer=farmer)  # Fetch all crops
+    else:
+        crops = Crop.objects.filter(farmer=farmer, status=True)  # Only fetch active crops
+
+    # Display a message if no crops are found
+    if not crops.exists():
+        messages.info(request, 'You have no crops.')  # Inform the user
 
     context = {
-        'crops': crops
+        'crops': crops,
+        'show_inactive': show_inactive  # Pass the toggle state to the template
     }
-    return render(request, 'farmercrops.html', context) 
+
+    return render(request, 'farmer_crops.html', context)
+
+
+
+def verify_crops(request):
+    crops = Crop.objects.filter(is_verified=False)  # Get crops that are not verified
+    return render(request, 'verify_crops.html', {'crops': crops})
+
+def approve_crop(request, crop_id):
+    try:
+        crop = Crop.objects.get(id=crop_id)
+        crop.is_verified = True  # Mark as verified
+        crop.save()
+        return HttpResponse("Crop has been approved!")
+    except Crop.DoesNotExist:
+        return HttpResponse("Crop not found")
+
+def reject_crop(request, crop_id):
+    try:
+        # Fetch the crop by its ID
+        crop = Crop.objects.get(id=crop_id)
+        
+        # Update the crop's status to False (0) to mark it as rejected
+        crop.status = False
+        crop.save()  # Save the changes
+        
+        return HttpResponse("Crop has been rejected and its status is now inactive!")
+    
+    except Crop.DoesNotExist:
+        return HttpResponse("Crop not found")
 
 
 
 
-def farmeredit_crop(request, crop_id):
-    # Check if the user is authenticated
-    if not request.user.is_authenticated:
-        # Redirect or return a 403 Forbidden response if not authenticated
-        return redirect('login')  # or use HttpResponseForbidden()
-
-    # Fetch the crop object; adjust query according to your model relationships
-    crop = get_object_or_404(Crop, id=crop_id, farmer=request.user)
+def update_crop(request, id):
+    crop_instance = get_object_or_404(Crop, id=id)
 
     if request.method == 'POST':
-        # Handle the form submission to update the crop details
-        crop.name = request.POST.get('name')
-        crop.description = request.POST.get('description')
-        crop.price = request.POST.get('price')
-        # Add other fields as necessary
+        # Update crop details
+        crop_instance.name = request.POST.get('name')
+        crop_instance.description = request.POST.get('description')
+        crop_instance.price = request.POST.get('price')
+        crop_instance.category = request.POST.get('category')
 
-        crop.save()  # Save the updated crop
+        # Handle image update
+        if 'image' in request.FILES:
+            crop_instance.images.all().delete()  # Optionally delete old images
+            # Assuming you have a related CropImage model
+            for image in request.FILES.getlist('image'):
+                CropImage.objects.create(crop=crop_instance, image=image)
+        
+        crop_instance.save()  # Save the updated crop instance
+        return redirect('farmercrops')  # Redirect to your crops list page
 
-        # Redirect to a success page or the updated crop's detail page
-        return redirect('farmercrops')  # Replace with the desired redirect target
-
-    # Render the edit crop form with the existing crop data
-    return render(request, 'farmeredit_crop.html', {'crop': crop})
+    return render(request, 'update_crop.html', {'crop': crop_instance})
 
 
 # View to update user
@@ -425,19 +589,55 @@ def deactivate_user(request, user_id):
     user = get_object_or_404(Registeruser, user_id=user_id)
     user.status = False  # Deactivate the user
     user.save()
-    messages.success(request, f'User {user.name} has been deactivated.')
 
-    # Redirect to manage_users with the user's role
-    return redirect('manage_users', role=user.role)  # Ensure user.role is defined in your Registeruser model
+    # Send deactivation email
+    send_mail(
+    subject='Important: Your Account Has Been Deactivated',
+    message=(
+        f"Dear {user.name},\n\n"
+        "We regret to inform you that your account has been deactivated by our admin team. "
+        "This action means you will no longer be able to access your account or its features at this time.\n\n"
+        "If you believe this is a mistake or if you have any questions, please feel free to contact us, and we will be happy to assist you.\n\n"
+        "Best regards,\n"
+        "The E-Farming Team\n"
+        f"Contact us: {settings.DEFAULT_FROM_EMAIL}"
+    ),
+    from_email=settings.DEFAULT_FROM_EMAIL,
+    recipient_list=[user.email],  # User's email
+    fail_silently=False,
+)
+
+
+    messages.success(request, f'User {user.name} has been deactivated.')
+    return redirect('manage_users', role=user.role)
 
 def activate_user(request, user_id):
     user = get_object_or_404(Registeruser, user_id=user_id)
     user.status = True  # Activate the user
     user.save()
-    messages.success(request, f'User {user.name} has been activated.')
 
-    # Redirect to manage_users with the user's role
-    return redirect('manage_users', role=user.role)  # Ensure user.role is defined in your Registeruser model
+    # Send activation email
+    send_mail(
+    subject='Your Account Has Been Activated!',
+    message=(
+        f"Dear {user.name},\n\n"
+        "We are happy to inform you that your account has been successfully activated by our admin team.\n"
+        "You can now log in to your account and continue using all the features available to you.\n\n"
+        "If you have any questions or require assistance, feel free to reach out to our support team.\n\n"
+        "Best regards,\n"
+        "The E-Farming Team\n"
+        f"Contact us: {settings.DEFAULT_FROM_EMAIL}"
+    ),
+    from_email=settings.DEFAULT_FROM_EMAIL,
+    recipient_list=[user.email],  # User's email
+    fail_silently=False,
+)
+
+
+    messages.success(request, f'User {user.name} has been activated.')
+    return redirect('manage_users', role=user.role)
+
+
 
 
 
@@ -449,27 +649,211 @@ def view_profile(request, user_id):
 def search_crops(request):
     query = request.GET.get('query', '')
     category = request.GET.get('category', '')
-    
-    crops = Crop.objects.all()  # Start with all crops
-    
+
+    # Filter crops based on query and category, ensuring only activated crops are included
+    crops = Crop.objects.filter(status=1, is_verified=1)  # Ensure only activated crops are considered
+
     if query:
-        crops = crops.filter(name__icontains=query)  # Filter by name
-    
+        crops = crops.filter(name__icontains=query)  # Search by name if query is provided
+
     if category:
-        crops = crops.filter(category__iexact=category)  # Filter by category
-    
-    return render(request, 'search_results.html', {'crops': crops})
+        crops = crops.filter(category=category)  # Filter by category if specified
+
+    return render(request, 'crops_page.html', {'crops': crops})
 
 
+
+# Add a crop to the cart
 def add_to_cart(request, crop_id):
-    crop = get_object_or_404(Crop, id=crop_id)
-    # Logic to add the crop to the cart
-    # For example, you might use the session to store cart items
-    cart = request.session.get('cart', [])
-    cart.append(crop_id)  # Assuming you store crop IDs in the cart
-    request.session['cart'] = cart
-    return redirect('cart_view')  # Redirect to an appropriate page
 
-def cart_view(request):
-    # Logic for your cart view goes here
-    return render(request, 'cart_view.html') 
+    # Get the user from the session
+    user_id = request.session.get('user_id')
+    user = get_object_or_404(Registeruser, pk=user_id)  # Assuming you have a `Registeruser` model
+
+    # Fetch the crop you want to add to the cart
+    crop = get_object_or_404(Crop, id=crop_id)
+
+    # Check if the crop is already in the user's cart
+    cart_item, created = Cart.objects.get_or_create(
+        user=user,  # The logged-in user
+        crop=crop,  # The crop to be added
+        defaults={'quantity': 1}  # Set default quantity if it's a new entry
+    )
+
+    if not created:  # If the crop already exists in the cart, update the quantity
+        cart_item.quantity += 1
+        cart_item.save()
+
+    # Redirect to the cart view with a success message
+    messages.success(request, 'Crop added to cart successfully.')
+    return redirect('viewcart')  # Redirect to the cart page
+
+
+# View the cart
+def viewcart(request):
+    user_id = request.session['user_id']  # Assuming the user is logged in
+    user = get_object_or_404(Registeruser, pk=user_id)  # Fetch the user from session
+    cart_items = Cart.objects.filter(user=user)  # Fetch the cart items for the user
+
+    # Calculate the total price of the cart
+    total_price = sum([item.get_total_price() for item in cart_items])
+
+    context = {
+        'cart_items': cart_items,
+        'total_price': total_price
+    }
+    return render(request, 'viewcart.html', context)  # Render the cart view
+
+# Update the quantity of a crop in the cart
+def update_cart(request, cart_id):
+    if request.method == 'POST':
+        cart_item = get_object_or_404(Cart, pk=cart_id)  # Fetch the cart item by its ID
+        quantity = int(request.POST.get('quantity', 1))  # Get the new quantity from POST data
+
+        if quantity > 0:
+            cart_item.quantity = quantity  # Update the cart item quantity
+            cart_item.save()  # Save the changes
+
+        return redirect('viewcart')  # Redirect to the cart view
+
+# Remove a crop from the cart
+def delete_from_cart(request, cart_id):
+    cart_item = get_object_or_404(Cart, pk=cart_id)  # Fetch the cart item by its ID
+    cart_item.delete()  # Remove the cart item
+    messages.success(request, f"{cart_item.crop.name} removed from cart.")  # Success message
+    return redirect('viewcart')  # Redirect to the cart view
+
+
+
+def deactivate_crop(request, crop_id):
+    # Get the crop object
+    crop = get_object_or_404(Crop, id=crop_id)
+
+    # Set the crop's status to 0 (inactive)
+    crop.status = 0
+    crop.save()
+
+    # Redirect to the crops list page or wherever you want
+    return redirect('farmercrops')  # Update with the correct URL name for the crops list
+
+
+def activate_crop(request, crop_id):
+    # Get the crop object
+    crop = get_object_or_404(Crop, id=crop_id)
+
+    # Set the crop's status to 1 (active)
+    crop.status = 1
+    crop.save()
+
+    # Redirect to the crops list page or wherever you want
+    return redirect('farmercrops')  # Update with the correct URL name for the crops list
+
+
+
+
+def wishlist(request):
+    user_id = request.session.get('user_id')
+    
+    if user_id:
+        # Fetch the user from Registeruser model
+        user = get_object_or_404(Registeruser, user_id=user_id)
+        
+        if request.method == 'POST':
+            crop_id = request.POST.get('remove_crop_id')  # Get the crop ID from POST data
+            if crop_id:
+                try:
+                    wishlist_item = Wishlist.objects.get(user_id=user_id, crop_id=crop_id)
+                    wishlist_item.delete()  # Remove the crop from the wishlist
+                    messages.success(request, 'Crop removed from your wishlist.')
+                except Wishlist.DoesNotExist:
+                    messages.error(request, 'This crop is not in your wishlist.')
+        
+        # Fetch all wishlist items associated with the user
+        wishlist_items = Wishlist.objects.filter(user_id=user_id)
+        context = {
+            'crops': [item.crop for item in wishlist_items],  # Change variable name here to crops
+            'error': None
+        }
+    else:
+        messages.error(request, "You need to log in to view your wishlist.")
+        context = {
+            'crops': [],  # Change variable name here as well
+            'error': "You need to log in to view your wishlist."
+        }
+    
+    return render(request, 'wishlist.html', context)
+
+
+
+
+""" def add_to_cart(request, crop_id):
+    if request.method == "POST":
+        quantity = int(request.POST.get('quantity', 1))  # Get quantity from POST data, default to 1 if not provided
+        cart = request.session.get('cart', {})
+
+        # Update the cart with the new quantity
+        if crop_id in cart:
+            cart[crop_id] += quantity  # Increment existing quantity
+        else:
+            cart[crop_id] = quantity  # Add new crop with its quantity
+
+        # Save the updated cart back to the session
+        request.session['cart'] = cart
+
+    return redirect('cart')  # Redirect to the cart page after adding
+
+
+
+
+def cart(request):
+    # Get the cart from the session
+    cart = request.session.get('cart', {})
+
+    # Initialize total price using Decimal for accuracy with money calculations
+    total_price = Decimal('0.00')
+    cart_items = []
+
+    # Loop through each crop in the cart
+    for crop_id, item in cart.items():
+        crop = get_object_or_404(Crop, id=crop_id)
+        
+        # Ensure quantity is correctly retrieved from the session
+        if isinstance(item, dict):
+            quantity = item.get('quantity', 1)
+        else:
+            quantity = item  # If not a dict, it's already an integer
+
+        # Calculate total price for the current item
+        item_total_price = crop.price * quantity  # crop.price is Decimal, quantity is int
+        
+        # Append to cart items list
+        cart_items.append({
+            'crop': crop,
+            'quantity': quantity,
+            'item_total_price': item_total_price
+        })
+
+        # Add to the total price of the cart
+        total_price += item_total_price
+
+    # Render the cart template with cart items and total price
+    return render(request, 'cart.html', {'cart_items': cart_items, 'total_price': total_price})
+
+
+def remove_from_cart(request, crop_id):
+    # Convert crop_id to string because session data is usually stored as strings
+    crop_id_str = str(crop_id)
+
+    # Get the cart from the session
+    cart = request.session.get('cart', {})
+
+    # Check if the crop is in the cart
+    if crop_id_str in cart:
+        # Remove the crop from the cart
+        del cart[crop_id_str]
+
+        # Save the updated cart back to the session
+        request.session['cart'] = cart
+
+    # Redirect to the cart page after removal
+    return redirect('cart') """

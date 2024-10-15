@@ -21,8 +21,7 @@ class Registeruser(models.Model):
     status = models.BooleanField(default=True)  # Boolean field, defaulting to True (e.g., for active users)
     created_at = models.DateTimeField(default=timezone.now)  # Automatically sets the current time for existing records
     updated_at = models.DateTimeField(auto_now=True)  # Automatically updates the timestamp whenever the record is updated
-
-
+    last_login = models.DateTimeField(null=True, blank=True)
     reset_token = models.CharField(max_length=100, blank=True, null=True)
 
     def set_password(self, raw_password):
@@ -70,6 +69,12 @@ class Crop(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     category = models.CharField(max_length=100)
     farmer = models.ForeignKey(Registeruser, on_delete=models.CASCADE)  # Link to the User model
+    stock = models.IntegerField(default=0)  # Stock for available quantity
+    status = models.BooleanField(default=True)         # 1 if available, else 0
+    is_verified = models.BooleanField(default=False)  # Admin verification field
+    added_at = models.DateTimeField(auto_now_add=True) # Timestamp for when the product is added
+    updated_at = models.DateTimeField(auto_now=True)   # Timestamp for when the product is last updated
+    
 
     def __str__(self):
         return self.name
@@ -82,6 +87,21 @@ class CropImage(models.Model):
         return f"Image for {self.crop.name}"
     
 
+class Cart(models.Model):
+    user = models.ForeignKey(Registeruser, on_delete=models.CASCADE)
+    crop = models.ForeignKey(Crop, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'crop')  # Prevent duplicates for the same user and crop
+
+    def __str__(self):
+        return f"{self.quantity} of {self.crop.name} in cart"
+    
+    def get_total_price(self):
+        return self.quantity * self.crop.price
+    
 
 class Adminm(models.Model):
     email = models.EmailField(max_length=254, unique=True)
@@ -96,3 +116,10 @@ class Adminm(models.Model):
     def __str__(self):
         return f"{self.quantity} of {self.crop.name}"
  """
+
+class Wishlist(models.Model):
+    crop = models.ForeignKey(Crop, on_delete=models.CASCADE)
+    user = models.ForeignKey(Registeruser, on_delete=models.CASCADE)  # Use ForeignKey to associate with the user
+    added_date = models.DateTimeField(auto_now_add=True)
+
+    

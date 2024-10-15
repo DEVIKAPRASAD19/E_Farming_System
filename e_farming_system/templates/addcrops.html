@@ -27,7 +27,7 @@
         </div>
         
         <div class="form-group">
-            <label for="price">Price:</label>
+            <label for="price">Price:(per kg)</label>
             <input type="number" step="0.01" id="price" name="price" min="0.01" required>
             <span class="error-message" id="price-error"></span>
         </div>
@@ -50,7 +50,8 @@
             <input type="file" id="crop_photos" name="crop_photos" accept="image/*" required>
             <span class="error-message" id="image-error"></span>
         </div>
-        
+        <label for="stock">Stock(in kg):</label>
+        <input type="number" id="stock" name="stock" min="0" required>
         <button type="submit">Add Crop</button>
     </form>
 </div>

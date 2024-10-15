@@ -1,0 +1,50 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart</title>
+    <link rel="stylesheet" href="{% static 'css/viewcart.css' %}">
+    <!-- Link to external CSS -->
+</head>
+<body>
+
+<div class="cart-container">
+    <h2>Your Cart</h2>
+
+    <!-- Cart items table -->
+    {% if cart_items %}
+    <table>
+        <thead>
+            <tr>
+                <th>Crop</th>
+                <th>Quantity</th>
+                <th>Price per Unit</th>
+                <th>Total Price</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in cart_items %}
+            <tr>
+                <td data-label="Crop">{{ item.crop.name }}</td>
+                <td data-label="Quantity">{{ item.quantity }}</td>
+                <td data-label="Price per Unit">Rs.{{ item.crop.price }}</td>
+                <td data-label="Total Price">Rs.{{ item.get_total_price }}</td>
+                <td data-label="Actions">
+                    <button>Remove</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <p><strong>Total Price:</strong> Rs.{{ total_price }}</p>
+    <a href="#">Proceed to Checkout</a>
+    {% else %}
+    <p>Your cart is empty.</p>
+    {% endif %}
+</div>
+
+</body>
+</html>

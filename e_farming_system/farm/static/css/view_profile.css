@@ -4,11 +4,15 @@ body {
     padding: 0;
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
+    background-image: url('https://c0.wallpaperflare.com/preview/154/907/657/paddy-field-paddy-crop-agriculture-paddy.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 /* Header styles */
 .header {
-    background-color: #4CAF50; /* Green background */
+    background-color: #784a4b; /* Green background */
     color: white; /* White text */
     padding: 20px;
     text-align: center;

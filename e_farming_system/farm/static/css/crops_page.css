@@ -7,6 +7,10 @@ body {
     padding: 0;
     color: #121212;
     position: relative; /* Ensure the header positioning is relative to the page */
+    background-image: url('https://img.freepik.com/premium-photo/abstract-background-design-hd-light-bud-green_851755-26376.jpg'); /* Add your image path here */
+    background-size: cover; /* Ensure the image covers the entire background */
+    background-position: center; /* Center the background image */
+    background-repeat: no-repeat; /* Prevent the image from repeating */
 }
 
 .header {
@@ -132,4 +136,24 @@ p {
     .crop-item {
         width: 90%; /* Adjusts to fit smaller screens */
     }
+}
+/* Wishlist Button */
+.wishlist-btn {
+    position: absolute; /* Positioning it on top of the crop item */
+    bottom: 15px; /* Position from the bottom of the crop item */
+    left: 15px; /* Position from the left of the crop item */
+    font-size: 24px; /* Size of the heart */
+    color: #4CAF50; /* Default color */
+    transition: color 0.3s ease, transform 0.3s ease; /* Smooth color and transform transition */
+    text-decoration: none; /* Remove underline */
+}
+
+.wishlist-btn:hover {
+    color: #e63946; /* Change color on hover */
+    transform: scale(1.2); /* Slightly enlarge on hover */
+}
+
+/* Additional styles for the crop item if necessary */
+.crop-item {
+    position: relative; /* Ensure child elements can be positioned */
 }

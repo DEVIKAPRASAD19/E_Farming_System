@@ -20,18 +20,45 @@
                 {% if crop.images.first %}
                     <img src="{{ crop.images.first.image.url }}" alt="{{ crop.name }}" class="crop-image">
                 {% else %}
-                    <img src="{% static 'images/default_crop.jpg' %}" alt="Default Image" class="crop-image"> <!-- Use a default image if no images exist -->
+                    <img src="{% static 'images/default_crop.jpg' %}" alt="Default Image" class="crop-image">
                 {% endif %}
                 <h2>{{ crop.name }}</h2>
                 <p>{{ crop.description|truncatewords:20 }}</p>
                 <p class="price">Price: Rs.{{ crop.price }}</p>
                 <p class="category">Category: {{ crop.category }}</p>
-                <!-- Uncomment when you want to enable editing -->
-                <!-- <a href="{% url 'farmeredit_crop' crop.id %}">Edit</a> -->
+
+                <!-- Display verification status -->
+                <p>Status: 
+                    {% if crop.is_verified %}
+                        <span class="verified">Verified</span>
+                    {% else %}
+                        <span class="not-verified">Not Verified</span>
+                    {% endif %}
+                </p>
+
+                <!-- Update Link -->
+                {% if crop.status %}
+                    <a href="{% url 'update_crop' crop.id %}" class="update-button">Update</a>
+                {% else %}
+                    <button class="update-button" disabled>Update</button>
+                {% endif %}
+
+                <!-- Conditional Deactivate/Reactivate Button -->
+                {% if crop.status %}
+                    <form action="{% url 'deactivate_crop' crop.id %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="deactivate-button" onclick="return confirm('Are you sure you want to deactivate this crop?');">Delete</button>
+                    </form>
+                {% else %}
+                    <form action="{% url 'activate_crop' crop.id %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="activate-button" onclick="return confirm('Are you sure you want to reactivate this crop?');">Activate</button>
+                    </form>
+                {% endif %}
             </div>
             {% endfor %}
         {% else %}
-            <p>No crops found.</p> <!-- Message if no crops exist -->
+            <p>No crops found.</p>
         {% endif %}
     </div>
 </body>

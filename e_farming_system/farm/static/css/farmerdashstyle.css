@@ -1,9 +1,12 @@
 /* General Styling */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Arial', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f7f9f4;
+    background-image: url('https://t4.ftcdn.net/jpg/07/75/20/05/360_F_775200560_qOxvvSrh7kuCJy5P4KdVNETaptESOINa.jpg');
+    background-size: cover;
+    background-position: center;
+    color: #333;
 }
 
 /* Wrapper to hold sidebar and content */
@@ -13,8 +16,8 @@ body {
 
 /* Sidebar Styling */
 .sidebar {
-    min-width: 200px;
-    background: #5d5e36;
+    min-width: 220px;
+    background: #4CAF50;
     color: white;
     height: 100vh;
     padding: 20px 0;
@@ -22,6 +25,7 @@ body {
 
 .sidebar-header {
     text-align: center;
+    margin-bottom: 20px;
 }
 
 .components {
@@ -30,47 +34,61 @@ body {
 }
 
 .components li {
-    padding: 10px 15px;
+    padding: 15px 20px;
 }
 
 .components li a {
     color: white;
     text-decoration: none;
-    display: block;
+    display: flex;
+    align-items: center; /* Center the icon and text vertically */
+}
+
+.components li a i {
+    margin-right: 10px; /* Space between icon and text */
 }
 
 .components li a:hover {
-    background: #ece6e6;
+    background: #e0e0e0;
+    color: #333; /* Change text color on hover */
 }
 
 /* Page Content Styling */
 #content {
     flex-grow: 1;
     padding: 20px;
-    background: white;
+    background: rgba(255, 255, 255, 0.9); /* Semi-transparent background for content */
     min-height: 100vh;
     position: relative; /* For dropdown positioning */
-    background-image: url('https://t4.ftcdn.net/jpg/07/75/20/05/360_F_775200560_qOxvvSrh7kuCJy5P4KdVNETaptESOINa.jpg'); /* Add your image path here */
-    background-size: cover; /* Ensure the image covers the content area */
-    background-position: center; /* Center the background image */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for content */
+}
+
+/* Navigation Bar Styling */
+.navbar {
+    display: flex;
+    justify-content: space-between; /* Space between title and profile icon */
+    align-items: center; /* Center items vertically */
+    background-color: #4CAF50; /* Navbar background color */
+    color: white; /* Text color */
+    padding: 10px 20px; /* Padding around the navbar */
+}
+
+.navbar h1 {
+    margin: 0; /* Remove default margin */
+    font-size: 1.5rem; /* Font size for welcome message */
 }
 
 /* Profile Dropdown Styling */
 .profile-dropdown {
-    position: absolute; /* Positioning at the top right */
-    top: 20px; /* Distance from the top */
-    right: 20px; /* Distance from the right */
+    position: relative; /* Ensure dropdown is positioned relative to the navbar */
 }
 
 .dropbtn {
     background-color: transparent;
-    color: #333;
     border: none;
     cursor: pointer;
-    padding: 10px 15px;
-    text-align: left;
-    font-size: 16px;
-    position: relative; /* For dropdown */
+    padding: 10px;
+    margin-left: 15px; /* Space between title and icon */
 }
 
 .dropdown-content {
@@ -95,18 +113,6 @@ body {
 
 .profile-dropdown:hover .dropdown-content {
     display: block; /* Show on hover */
-}
-
-header {
-    margin-bottom: 20px;
-}
-
-h1 {
-    color: #095d33;
-}
-
-section {
-    margin-bottom: 30px;
 }
 
 footer {
