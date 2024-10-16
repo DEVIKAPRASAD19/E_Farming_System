@@ -9,35 +9,92 @@
 </head>
 <body>
 
-<h2>Checkout</h2>
+<div class="container">
+    <h2>Billing Details</h2>
 
-<table>
-    <thead>
-        <tr>
-            <th>Crop</th>
-            <th>Quantity</th>
-            <th>Price per Unit</th>
-            <th>Total Price</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for item in cart_items %}
-        <tr>
-            <td>{{ item.crop.name }}</td>
-            <td>{{ item.quantity }}</td>
-            <td>Rs.{{ item.crop.price }}</td>
-            <td>Rs.{{ item.get_total_price }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+    <!-- User Details Form (Editable) -->
+    <form method="post" action="{% url 'update_user_details' %}">
+        {% csrf_token %}
+        <div class="user-details">
+            <h3>Your Details</h3>
 
-<p><strong>Total Price:</strong> Rs.{{ total_price }}</p>
+            <!-- Name -->
+            <label for="name"><strong>Name:</strong></label>
+            <input type="text" id="name" name="name" value="{{ user.name }}" required><br>
 
-<form method="post">
-    {% csrf_token %}
-    <button type="submit">Confirm Purchase</button>
-</form>
+            <!-- Contact -->
+            <label for="contact"><strong>Contact:</strong></label>
+            <input type="text" id="contact" name="contact" value="{{ user.contact }}" required><br>
+
+            <!-- Email -->
+            <label for="email"><strong>Email:</strong></label>
+            <input type="email" id="email" name="email" value="{{ user.email }}" required><br>
+
+            <!-- Place -->
+            <label for="place"><strong>Place:</strong></label>
+            <input type="text" id="place" name="place" value="{{ user.place }}" required><br>
+
+            <!-- Pincode -->
+            <label for="pincode"><strong>Pincode:</strong></label>
+            <input type="text" id="pincode" name="pincode" value="{{ user.pincode }}" required><br>
+
+            <!-- Delivery Address -->
+            <label for="delivery_address"><strong>Delivery Address:</strong></label>
+            <textarea id="delivery_address" name="delivery_address" rows="3" required>{{ user.delivery_address }}</textarea><br>
+
+            <!-- Update Button -->
+            <button type="submit">Update Details</button>
+        </div>
+    </form>
+
+    <hr>
+
+    <!-- Cart Items Section -->
+    <h3>Items You Ordered</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Crop</th>
+                <th>Quantity</th>
+                <th>Price per Unit</th>
+                <th>Total Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in cart_items %}
+            <tr>
+                <td>{{ item.crop.name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>Rs.{{ item.crop.price }}</td>
+                <td>Rs.{{ item.get_total_price }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <p><strong>Total Price:</strong> Rs.{{ total_price }}</p>
+
+    <!-- Order Form -->
+    <h3>Order Details</h3>
+    <form method="post" action="{% url 'place_order' %}">
+        {% csrf_token %}
+        
+        <!-- Delivery Address (Filled automatically from updated form) -->
+        <label for="address">Delivery Address:</label>
+        <textarea id="address" name="address" rows="3" required>{{ user.delivery_address }}</textarea><br>
+
+        <!-- Payment Method -->
+        <h4>Payment Method:</h4>
+        <input type="radio" id="cod" name="payment_method" value="cod" checked>
+        <label for="cod">Cash on Delivery</label><br>
+        
+        <input type="radio" id="online" name="payment_method" value="online">
+        <label for="online">Online Payment</label><br>
+
+        <!-- Submit Button -->
+        <button type="submit">Confirm Purchase</button>
+    </form>
+</div>
 
 </body>
 </html>

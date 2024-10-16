@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation</title>
+    <link rel="stylesheet" href="{% static 'css/order_success.css' %}"> <!-- Optional CSS -->
+</head>
+<body>
+
+<div class="container">
+    <h2>Order Confirmation</h2>
+    
+    <h3>Order Details</h3>
+    <p><strong>Order ID:</strong> {{ order.id }}</p>
+    <p><strong>Name:</strong> {{ order.name }}</p>
+    <p><strong>Contact:</strong> {{ order.contact }}</p>
+    <p><strong>Email:</strong> {{ order.email }}</p>
+    <p><strong>Delivery Address:</strong> {{ order.delivery_address }}</p>
+    <p><strong>Pincode:</strong> {{ order.pincode }}</p>
+    <p><strong>Payment Method:</strong> {{ order.payment_method }}</p>
+    <p><strong>Total Price:</strong> Rs.{{ order.total_price }}</p>
+
+    <h4>Items Ordered:</h4>
+    <ul>
+        {% for item in order.items.all %}
+        <li>{{ item.crop.name }} - Quantity: {{ item.quantity }} - Price: Rs.{{ item.get_total_price }}</li>
+        {% endfor %}
+    </ul>
+
+    <h4>Status:</h4>
+    <p>{{ order.status }}</p>
+
+    <p>Thank you for your purchase! Your order will be processed shortly.</p>
+    <a href="{% url 'home' %}">Back to Home</a>  <!-- Link back to home or another page -->
+</div>
+
+</body>
+</html>

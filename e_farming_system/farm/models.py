@@ -19,6 +19,8 @@ class Registeruser(models.Model):
     password = models.CharField(max_length=128)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES)
     status = models.BooleanField(default=True)  # Boolean field, defaulting to True (e.g., for active users)
+    delivery_address = models.TextField(blank=True, null=True)  # Field for delivery address
+    pincode = models.CharField(max_length=10, blank=True, null=True)  #
     created_at = models.DateTimeField(default=timezone.now)  # Automatically sets the current time for existing records
     updated_at = models.DateTimeField(auto_now=True)  # Automatically updates the timestamp whenever the record is updated
     last_login = models.DateTimeField(null=True, blank=True)
@@ -120,6 +122,17 @@ class Wishlist(models.Model):
 
 class Order(models.Model):
     user = models.ForeignKey(Registeruser, on_delete=models.CASCADE)
-    total_price = models.DecimalField(max_digits=10, decimal_places=2)
+    name = models.CharField(max_length=100)
+    contact = models.CharField(max_length=15)
+    email = models.EmailField()
+    place = models.CharField(max_length=100)
+    pincode = models.CharField(max_length=10)  # Pincode for the delivery
+    delivery_address = models.TextField()  # Delivery address for the order
     items = models.ManyToManyField(Cart)  # Store cart items in order
-    created_at = models.DateTimeField(auto_now_add=True)
+    crop = models.ForeignKey(Crop, on_delete=models.CASCADE)  # Link to the crop being ordered
+    quantity = models.PositiveIntegerField()  # Quantity of the crop
+    total_price = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_method = models.CharField(max_length=50, choices=[('cod', 'Cash on Delivery'), ('online', 'Online Payment')])  # Payment method chosen
+    status = models.CharField(max_length=50, default='Pending')  # Status of the order (Pending, Shipped, Delivered, etc.)
+    created_at = models.DateTimeField(auto_now_add=True)  # Order created timestamp
+    updated_at = models.DateTimeField(auto_now=True)  # Last updated timestamp

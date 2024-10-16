@@ -662,7 +662,6 @@ def search_crops(request):
 
 # Add a crop to the cart
 def add_to_cart(request, crop_id):
-
     # Get the user from the session
     user_id = request.session.get('user_id')
     user = get_object_or_404(Registeruser, pk=user_id)  # Assuming you have a `Registeruser` model
@@ -670,15 +669,18 @@ def add_to_cart(request, crop_id):
     # Fetch the crop you want to add to the cart
     crop = get_object_or_404(Crop, id=crop_id)
 
+    # Get the quantity from the POST request, if no quantity provided, default to 1
+    quantity = int(request.POST.get('quantity', 1))
+
     # Check if the crop is already in the user's cart
     cart_item, created = Cart.objects.get_or_create(
         user=user,  # The logged-in user
         crop=crop,  # The crop to be added
-        defaults={'quantity': 1}  # Set default quantity if it's a new entry
+        defaults={'quantity': quantity}  # Set default quantity if it's a new entry
     )
 
     if not created:  # If the crop already exists in the cart, update the quantity
-        cart_item.quantity += 1
+        cart_item.quantity += quantity
         cart_item.save()
 
     # Redirect to the cart view with a success message
@@ -784,44 +786,136 @@ def wishlist(request):
 
 
 def check_out(request):
-    # Check if user_id is stored in the session
-    if 'user_id' not in request.session:
-        messages.error(request, 'You need to be logged in to proceed with checkout.')
-        return redirect('login')  # Redirect to login page if not authenticated
-
-    # Get the user from the session
-    user_id = request.session['user_id']
-    try:
-        user = Registeruser.objects.get(user_id=user_id)
-    except Registeruser.DoesNotExist:
-        messages.error(request, 'User does not exist.')
-        return redirect('login')
-
-    # Get the cart items for the user
-    cart_items = Cart.objects.filter(user=user)
-    total_price = sum([item.get_total_price() for item in cart_items])
+    # Fetch the user based on session ID
+    user = Registeruser.objects.get(user_id=request.session['user_id'])
+    cart_items = Cart.objects.filter(user=user)  # Fetch cart items for the user
+    total_price = sum(item.get_total_price() for item in cart_items)
 
     if request.method == 'POST':
-        # Create an order for the user
-        order = Order.objects.create(user=user, total_price=total_price)
+        # Get data from the checkout form
+        delivery_address = request.POST['delivery_address']
+        pincode = request.POST['pincode']
+        payment_method = request.POST['payment_method']
 
-        # Add each cart item to the order
+        # Create the order
+        order = Order.objects.create(
+            user=user,
+            name=user.name,  # Get name from user profile
+            contact=user.contact,  # Get contact from user profile
+            email=user.email,  # Get email from user profile
+            place=user.place,  # Get place from user profile
+            pincode=pincode,  # Delivery pincode
+            delivery_address=delivery_address,  # Delivery address from the form
+            total_price=total_price,  # Total price calculated from cart items
+            payment_method=payment_method  # Payment method from the form
+        )
+
+        # Add cart items to the order
         for item in cart_items:
-            order.items.add(item)
+            order.items.add(item)  # Associate each cart item with the order
+        
+        # Clear the cart after placing the order
+        request.session['cart_items'] = []
 
-        # Clear the user's cart after successful checkout
-        cart_items.delete()
+        # Redirect to a success page or thank you page
+        return redirect('order_success')
 
-        # Redirect to a confirmation page or home
-        return redirect('checkout_confirmation')
-
-    # Pass the cart items and total price to the template
-    context = {
+    return render(request, 'check_out.html', {
+        'user': user,
         'cart_items': cart_items,
-        'total_price': total_price,
-    }
-    return render(request, 'check_out.html', context)
+        'total_price': total_price
+    })
 
 
-def checkout_confirmation(request):
-    return render(request, 'checkout_confirmation.html')
+
+def update_user_details(request):
+    if request.method == 'POST':
+        user = Registeruser.objects.get(user_id=request.session['user_id'])
+        
+        # Print the incoming data for debugging
+        print(f"Updating user: {user.user_id}")
+        print(f"Name: {request.POST['name']}, Contact: {request.POST['contact']}, Email: {request.POST['email']}, Place: {request.POST['place']}, Pincode: {request.POST['pincode']}, Address: {request.POST['delivery_address']}")
+        
+        # Update user details
+        user.name = request.POST['name']
+        user.contact = request.POST['contact']
+        user.email = request.POST['email']
+        user.place = request.POST['place']
+        user.pincode = request.POST['pincode']
+        user.delivery_address = request.POST['delivery_address']
+        user.save()
+        
+        print("User details updated successfully.")
+        return redirect('check_out')  # Redirect back to the checkout page after updating
+    return redirect('check_out')
+
+
+def order_success(request, order_id):
+    # Fetch the order based on the order_id passed in the URL
+    order = get_object_or_404(Order, id=order_id)
+    
+    # Render the order success template with the order details
+    return render(request, 'order_success.html', {'order': order})
+
+
+def place_order(request):
+    if request.method == 'POST':
+        # Get the user_id from the session
+        user_id = request.session.get('user_id')
+
+        # Check if user_id exists in the session
+        if not user_id:
+            messages.error(request, "You must be logged in to place an order.")
+            return redirect('login')
+
+        # Get the user object from the user_id
+        try:
+            user = Registeruser.objects.get(user_id=user_id)
+        except Registeruser.DoesNotExist:
+            messages.error(request, "User does not exist.")
+            return redirect('login')
+
+        # Get the delivery address and other POST data
+        delivery_address = request.POST.get('delivery_address')
+        payment_method = request.POST.get('payment_method')
+
+        # Ensure the delivery address is not empty
+        if not delivery_address:
+            messages.error(request, "Please provide a valid delivery address.")
+            return redirect('check_out')
+
+        # Get the cart items for the user
+        cart_items = Cart.objects.filter(user=user)
+
+        if cart_items.exists():
+            # Create the order first
+            total_price = sum(item.get_total_price() for item in cart_items)  # Calculate total price
+
+            # Create the Order object
+            order = Order.objects.create(
+                user=user,
+                delivery_address=delivery_address,
+                total_price=total_price,
+                payment_method=payment_method,
+                status='Pending'  # Or 'Processing', as per your workflow
+            )
+
+            # Loop through the cart items and create OrderItems
+            for item in cart_items:
+                Order.objects.create(
+                    order=order,  # Associate the Order
+                    crop=item.crop,
+                    quantity=item.quantity,
+                    price=item.get_total_price()  # Use total price for this item
+                )
+
+            # Clear the cart after placing the order
+            cart_items.delete()
+
+            # Redirect to order success page
+            return redirect('order_success')
+        else:
+            messages.error(request, "Your cart is empty.")
+            return redirect('check_out')
+
+    return redirect('check_out')
