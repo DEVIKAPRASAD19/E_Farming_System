@@ -379,7 +379,6 @@ def farmercrops(request):
     return render(request, 'farmercrops.html', {'crops': crops})
 
 
-
 def addcrops(request):
     if request.method == 'POST':
         name = request.POST.get('name')
