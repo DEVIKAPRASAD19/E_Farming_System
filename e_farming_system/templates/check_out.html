@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <link rel="stylesheet" href="{% static 'css/checkout.css' %}">
+</head>
+<body>
+
+<h2>Checkout</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Crop</th>
+            <th>Quantity</th>
+            <th>Price per Unit</th>
+            <th>Total Price</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in cart_items %}
+        <tr>
+            <td>{{ item.crop.name }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>Rs.{{ item.crop.price }}</td>
+            <td>Rs.{{ item.get_total_price }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<p><strong>Total Price:</strong> Rs.{{ total_price }}</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">Confirm Purchase</button>
+</form>
+
+</body>
+</html>

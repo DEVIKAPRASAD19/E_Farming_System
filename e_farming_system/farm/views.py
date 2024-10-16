@@ -12,7 +12,7 @@ from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.contrib.auth.tokens import default_token_generator as custom_token_generator
 from django.utils.html import strip_tags
-from .models import Registeruser, Adminm, Cart, Wishlist
+from .models import Registeruser, Adminm, Cart, Wishlist, Order
 from .forms import SetPasswordForm
 from .tokens import custom_token_generator
 from django.contrib.sites.shortcuts import get_current_site
@@ -175,7 +175,7 @@ def enter_email(request):
 # View to handle OTP verification
 def verify_otp(request):
     # Get the email from the session (set during email input)
-    email = request.session.get('email')
+    email = request.session.get('user_email')
 
     # If email is not in session, redirect to the email entry page
     if not email:
@@ -783,74 +783,45 @@ def wishlist(request):
 
 
 
-""" def add_to_cart(request, crop_id):
-    if request.method == "POST":
-        quantity = int(request.POST.get('quantity', 1))  # Get quantity from POST data, default to 1 if not provided
-        cart = request.session.get('cart', {})
+def check_out(request):
+    # Check if user_id is stored in the session
+    if 'user_id' not in request.session:
+        messages.error(request, 'You need to be logged in to proceed with checkout.')
+        return redirect('login')  # Redirect to login page if not authenticated
 
-        # Update the cart with the new quantity
-        if crop_id in cart:
-            cart[crop_id] += quantity  # Increment existing quantity
-        else:
-            cart[crop_id] = quantity  # Add new crop with its quantity
+    # Get the user from the session
+    user_id = request.session['user_id']
+    try:
+        user = Registeruser.objects.get(user_id=user_id)
+    except Registeruser.DoesNotExist:
+        messages.error(request, 'User does not exist.')
+        return redirect('login')
 
-        # Save the updated cart back to the session
-        request.session['cart'] = cart
+    # Get the cart items for the user
+    cart_items = Cart.objects.filter(user=user)
+    total_price = sum([item.get_total_price() for item in cart_items])
 
-    return redirect('cart')  # Redirect to the cart page after adding
+    if request.method == 'POST':
+        # Create an order for the user
+        order = Order.objects.create(user=user, total_price=total_price)
 
+        # Add each cart item to the order
+        for item in cart_items:
+            order.items.add(item)
 
+        # Clear the user's cart after successful checkout
+        cart_items.delete()
 
+        # Redirect to a confirmation page or home
+        return redirect('checkout_confirmation')
 
-def cart(request):
-    # Get the cart from the session
-    cart = request.session.get('cart', {})
-
-    # Initialize total price using Decimal for accuracy with money calculations
-    total_price = Decimal('0.00')
-    cart_items = []
-
-    # Loop through each crop in the cart
-    for crop_id, item in cart.items():
-        crop = get_object_or_404(Crop, id=crop_id)
-        
-        # Ensure quantity is correctly retrieved from the session
-        if isinstance(item, dict):
-            quantity = item.get('quantity', 1)
-        else:
-            quantity = item  # If not a dict, it's already an integer
-
-        # Calculate total price for the current item
-        item_total_price = crop.price * quantity  # crop.price is Decimal, quantity is int
-        
-        # Append to cart items list
-        cart_items.append({
-            'crop': crop,
-            'quantity': quantity,
-            'item_total_price': item_total_price
-        })
-
-        # Add to the total price of the cart
-        total_price += item_total_price
-
-    # Render the cart template with cart items and total price
-    return render(request, 'cart.html', {'cart_items': cart_items, 'total_price': total_price})
+    # Pass the cart items and total price to the template
+    context = {
+        'cart_items': cart_items,
+        'total_price': total_price,
+    }
+    return render(request, 'check_out.html', context)
 
 
-def remove_from_cart(request, crop_id):
-    # Convert crop_id to string because session data is usually stored as strings
-    crop_id_str = str(crop_id)
-
-    # Get the cart from the session
-    cart = request.session.get('cart', {})
-
-    # Check if the crop is in the cart
-    if crop_id_str in cart:
-        # Remove the crop from the cart
-        del cart[crop_id_str]
-
-        # Save the updated cart back to the session
-        request.session['cart'] = cart
-
-    # Redirect to the cart page after removal
-    return redirect('cart') """
+def checkout_confirmation(request):
+    return render(request, 'checkout_confirmation.html')

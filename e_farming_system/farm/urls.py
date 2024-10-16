@@ -27,8 +27,6 @@ urlpatterns = [
     path('addcrops', views.addcrops, name='addcrops'),
     path('crops/', views.crops_page, name='crops_page'),  # For listing all crops
     path('crops/<int:id>/', views.crop_details, name='crop_details'),  # For crop details
-    
-  
     path('search/', views.search_crops, name='search_crops'),
     path('manage-users/<str:role>/', views.manage_users, name='manage_users'),
     path('update-user/<int:user_id>/', views.update_user, name='update_user'),
@@ -46,6 +44,7 @@ urlpatterns = [
     path('cart/delete/<int:crop_id>/', views.delete_from_cart, name='delete_from_cart'),
     path('verify-otp/', views.verify_otp, name='verify_otp'),
     path('enter-email/', views.enter_email, name='enter_email'),
+    path('check_out/', views.check_out, name='check_out'),
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
