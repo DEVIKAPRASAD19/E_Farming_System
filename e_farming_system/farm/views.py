@@ -32,6 +32,7 @@ import random
 
 
 
+
 # Create your views here.
 def index(request):
     return render(request,'index.html')
@@ -144,7 +145,7 @@ def send_otp_email(user_email):
     # Define email subject, message, and sender/recipient details
     subject = 'Your OTP for Email Verification'
     message = f'Your OTP is {otp}. Please use this to verify your email.'
-    from_email = 'rambutanwarehouse@gmail.com'  # Replace with your own email
+    from_email = 'efarming2024@gmail.com'  # Replace with your own email
     recipient_list = [user_email]
 
     # Send the OTP email using Django's send_mail function
@@ -174,7 +175,7 @@ def enter_email(request):
 # View to handle OTP verification
 def verify_otp(request):
     # Get the email from the session (set during email input)
-    email = request.session.get('user_email')
+    email = request.session.get('email')
 
     # If email is not in session, redirect to the email entry page
     if not email:
@@ -197,10 +198,7 @@ def verify_otp(request):
             # OTP is invalid, show an error message
             messages.error(request, "Invalid OTP. Please try again.")
 
-    return render(request, 'verify_otp')
-
-
-
+    return render(request, 'verify_otp.html')
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)

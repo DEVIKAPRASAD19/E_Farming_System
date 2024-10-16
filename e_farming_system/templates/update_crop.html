@@ -91,9 +91,6 @@
                 <option value="other" {% if crop.category == 'other' %}selected{% endif %}>Other</option>
             </select>
 
-            <label for="stock">Stock(in kg):</label>
-            <input type="number" id="stock" name="stock" value="{{ crop.stock }}" required>
-
             <label for="image">Update Image:</label>
             <input type="file" id="image" name="image" multiple>
 

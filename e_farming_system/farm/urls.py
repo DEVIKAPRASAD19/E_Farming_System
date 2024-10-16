@@ -27,6 +27,8 @@ urlpatterns = [
     path('addcrops', views.addcrops, name='addcrops'),
     path('crops/', views.crops_page, name='crops_page'),  # For listing all crops
     path('crops/<int:id>/', views.crop_details, name='crop_details'),  # For crop details
+    
+  
     path('search/', views.search_crops, name='search_crops'),
     path('manage-users/<str:role>/', views.manage_users, name='manage_users'),
     path('update-user/<int:user_id>/', views.update_user, name='update_user'),
@@ -38,7 +40,6 @@ urlpatterns = [
     path('approve-crop/<int:crop_id>/', views.approve_crop, name='approve_crop'),
     path('reject-crop/<int:crop_id>/', views.reject_crop, name='reject_crop'),
     path('wishlist/', views.wishlist, name='wishlist'),
-
     path('viewcart', views.viewcart, name='viewcart'),
     path('cart/add/<int:crop_id>/', views.add_to_cart, name='add_to_cart'),
     path('cart/update/<int:crop_id>/', views.update_cart, name='update_cart'),

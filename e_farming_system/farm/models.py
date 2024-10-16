@@ -22,6 +22,7 @@ class Registeruser(models.Model):
     created_at = models.DateTimeField(default=timezone.now)  # Automatically sets the current time for existing records
     updated_at = models.DateTimeField(auto_now=True)  # Automatically updates the timestamp whenever the record is updated
     last_login = models.DateTimeField(null=True, blank=True)
+    last_login = models.DateTimeField(null=True, blank=True)
     reset_token = models.CharField(max_length=100, blank=True, null=True)
 
     def set_password(self, raw_password):
@@ -86,7 +87,8 @@ class CropImage(models.Model):
     def __str__(self):
         return f"Image for {self.crop.name}"
     
-
+    
+    
 class Cart(models.Model):
     user = models.ForeignKey(Registeruser, on_delete=models.CASCADE)
     crop = models.ForeignKey(Crop, on_delete=models.CASCADE)
@@ -101,7 +103,7 @@ class Cart(models.Model):
     
     def get_total_price(self):
         return self.quantity * self.crop.price
-    
+
 
 class Adminm(models.Model):
     email = models.EmailField(max_length=254, unique=True)
