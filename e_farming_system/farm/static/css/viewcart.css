@@ -108,3 +108,19 @@
         margin-top: 10px;
     }
 }
+.back-button {
+    position: absolute; /* Position it relative to the nearest positioned ancestor */
+    top: 20px; /* Adjusts the distance from the top of the page */
+    right: 20px; /* Adjusts the distance from the right edge of the page */
+    padding: 10px 15px; /* Adds padding for better touch area */
+    background-color: #007BFF; /* Bootstrap primary color */
+    color: white; /* Text color */
+    text-decoration: none; /* Removes underline from links */
+    border-radius: 5px; /* Rounds the corners of the button */
+    font-weight: bold; /* Makes the font bold */
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+.back-button:hover {
+    background-color: #0056b3; /* Darker shade on hover for feedback */
+}

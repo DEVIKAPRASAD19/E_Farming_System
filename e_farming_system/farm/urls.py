@@ -45,12 +45,11 @@ urlpatterns = [
     path('verify-otp/', views.verify_otp, name='verify_otp'),
     path('enter-email/', views.enter_email, name='enter_email'),
     path('check_out/', views.check_out, name='check_out'),
-   
-    path('update_user/', views.update_user_details, name='update_user_details'),
-
+    path('update-user-details/', views.update_user_details, name='update_user_details'),
     path('place-order/', views.place_order, name='place_order'),
-    path('order-success/<int:order_id>/', views.order_success, name='order_success'),  # Order confirmation URL
+    path('order-summary/<int:order_id>/', views.order_summary, name='order_summary'),
 
+   
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

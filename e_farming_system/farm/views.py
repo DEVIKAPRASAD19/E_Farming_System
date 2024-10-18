@@ -28,6 +28,8 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from decimal import Decimal  # Add this import statement
 import random
+from django.utils import timezone
+
 
 
 
@@ -828,15 +830,12 @@ def check_out(request):
 
 
 
+# Update user details and save them in session
 def update_user_details(request):
     if request.method == 'POST':
         user = Registeruser.objects.get(user_id=request.session['user_id'])
         
-        # Print the incoming data for debugging
-        print(f"Updating user: {user.user_id}")
-        print(f"Name: {request.POST['name']}, Contact: {request.POST['contact']}, Email: {request.POST['email']}, Place: {request.POST['place']}, Pincode: {request.POST['pincode']}, Address: {request.POST['delivery_address']}")
-        
-        # Update user details
+        # Update user details in the Registeruser model
         user.name = request.POST['name']
         user.contact = request.POST['contact']
         user.email = request.POST['email']
@@ -844,78 +843,80 @@ def update_user_details(request):
         user.pincode = request.POST['pincode']
         user.delivery_address = request.POST['delivery_address']
         user.save()
-        
-        print("User details updated successfully.")
-        return redirect('check_out')  # Redirect back to the checkout page after updating
+
+        # Save updated details to session for further use during order placement
+        request.session['updated_user_details'] = {
+            'name': user.name,
+            'contact': user.contact,
+            'email': user.email,
+            'place': user.place,
+            'pincode': user.pincode,
+            'delivery_address': user.delivery_address
+        }
+
+        return redirect('check_out')  # Redirect back to the checkout page
     return redirect('check_out')
 
 
-def order_success(request, order_id):
-    # Fetch the order based on the order_id passed in the URL
-    order = get_object_or_404(Order, id=order_id)
-    
-    # Render the order success template with the order details
-    return render(request, 'order_success.html', {'order': order})
-
-
+# Place order after updating user details and confirming purchase
 def place_order(request):
     if request.method == 'POST':
-        # Get the user_id from the session
-        user_id = request.session.get('user_id')
+        user = Registeruser.objects.get(user_id=request.session['user_id'])
 
-        # Check if user_id exists in the session
-        if not user_id:
-            messages.error(request, "You must be logged in to place an order.")
-            return redirect('login')
+        # Capture user details from session
+        user_details = request.session.get('updated_user_details', None)
 
-        # Get the user object from the user_id
-        try:
-            user = Registeruser.objects.get(user_id=user_id)
-        except Registeruser.DoesNotExist:
-            messages.error(request, "User does not exist.")
-            return redirect('login')
-
-        # Get the delivery address and other POST data
-        delivery_address = request.POST.get('delivery_address')
-        payment_method = request.POST.get('payment_method')
-
-        # Ensure the delivery address is not empty
-        if not delivery_address:
-            messages.error(request, "Please provide a valid delivery address.")
+        # If session details are missing, return an error or handle accordingly
+        if not user_details:
             return redirect('check_out')
 
-        # Get the cart items for the user
+        # Retrieve additional form data (payment method, delivery address, etc.)
+        delivery_address = request.POST['address']
+        payment_method = request.POST['payment_method']
+
+        # Fetch cart items and calculate total price
         cart_items = Cart.objects.filter(user=user)
+        total_price = sum(item.get_total_price() for item in cart_items)
 
-        if cart_items.exists():
-            # Create the order first
-            total_price = sum(item.get_total_price() for item in cart_items)  # Calculate total price
+        # Create the order with updated details
+        order = Order.objects.create(
+            user=user,
+            name=user_details['name'],
+            contact=user_details['contact'],
+            email=user_details['email'],
+            place=user_details['place'],
+            pincode=user_details['pincode'],
+            delivery_address=delivery_address,  # Address from the form
+            total_price=total_price,  # Calculated total price
+            payment_method=payment_method  # Payment method
+        )
 
-            # Create the Order object
-            order = Order.objects.create(
-                user=user,
-                delivery_address=delivery_address,
-                total_price=total_price,
-                payment_method=payment_method,
-                status='Pending'  # Or 'Processing', as per your workflow
-            )
+        # Add cart items to the order
+        for item in cart_items:
+            order.items.add(item)
+        
+        cart_items.delete()
 
-            # Loop through the cart items and create OrderItems
-            for item in cart_items:
-                Order.objects.create(
-                    order=order,  # Associate the Order
-                    crop=item.crop,
-                    quantity=item.quantity,
-                    price=item.get_total_price()  # Use total price for this item
-                )
-
-            # Clear the cart after placing the order
-            cart_items.delete()
-
-            # Redirect to order success page
-            return redirect('order_success')
-        else:
-            messages.error(request, "Your cart is empty.")
-            return redirect('check_out')
+        # Clear the cart session and redirect to success page
+        request.session['cart'] = []
+        return redirect('order_summary', order_id=order.id) # Redirect to the order summary or success page
 
     return redirect('check_out')
+
+
+
+def order_summary(request, order_id):
+    # Fetch the specific order
+    order = get_object_or_404(Order, id=order_id)
+
+    # Get all items related to the order
+    cart_items = order.items.all()
+
+    context = {
+        'order': order,
+        'cart_items': cart_items,   # Make sure this matches the name in the template
+        'total_price': order.total_price,
+        'payment_method': order.payment_method,
+    }
+
+    return render(request, 'order_summary.html', context)

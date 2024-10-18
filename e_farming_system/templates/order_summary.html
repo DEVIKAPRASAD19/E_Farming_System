@@ -1,0 +1,62 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Summary</title>
+    <link rel="stylesheet" href="{% static 'css/ordersummary.css' %}">
+</head>
+<body>
+    <!-- Back Button -->
+    <a href="{% url 'viewcart' %}" class="back-button">Back</a>
+
+    <div class="container">
+        <h2>Order Summary</h2>
+
+        <h3>Your Details</h3>
+        <p><strong>Name:</strong> {{ order.user.name}}</p>
+        <p><strong>Contact:</strong> {{ order.user.contact }}</p>
+        <p><strong>Email:</strong> {{ order.user.email }}</p>
+        <p><strong>Place:</strong> {{ order.user.place }}</p>
+        <p><strong>Pincode:</strong> {{ order.pincode }}</p>
+        <p><strong>Delivery Address:</strong> {{ order.delivery_address }}</p>
+
+        <hr>
+
+        <h3>Items You Ordered</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Crop</th>
+                    <th>Quantity</th>
+                    <th>Price per Unit</th>
+                    <th>Total Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                <tr>
+                    <td>{{ item.crop.name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>Rs.{{ item.crop.price }}</td>
+                    <td>Rs.{{ item.get_total_price }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <p><strong>Total Price:</strong> Rs.{{ total_price }}</p>
+
+        <h3>Payment Method</h3>
+        <p>{{ payment_method }}</p>
+
+        <h3>Order Status</h3>
+        <p>Your order has been placed successfully!</p>
+
+        <!-- Navigation Button -->
+        <a href="{% url 'buyer_dashboard' %}" class="back-button">Return to Home</a>
+    </div>
+
+</body>
+</html>

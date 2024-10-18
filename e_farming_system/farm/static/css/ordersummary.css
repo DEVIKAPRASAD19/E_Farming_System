@@ -1,0 +1,100 @@
+/* Reset some default styles */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f8f8;
+}
+
+.container {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Heading styles */
+h2 {
+    text-align: center;
+    color: #333;
+}
+
+h3 {
+    color: #007BFF; /* Bootstrap Primary Color */
+    margin-bottom: 10px;
+}
+
+/* Paragraph styles */
+p {
+    color: #555;
+    line-height: 1.6;
+}
+
+/* Back button styles */
+.back-button {
+    display: inline-block;
+    margin-bottom: 20px;
+    padding: 10px 20px;
+    color: #fff;
+    background-color: #007BFF;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+.back-button:hover {
+    background-color: #0056b3; /* Darker shade on hover */
+}
+
+/* Table styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #f2f2f2;
+    color: #333;
+}
+
+tr:hover {
+    background-color: #f9f9f9; /* Light gray on row hover */
+}
+
+/* Total price and payment method styles */
+strong {
+    color: #007BFF;
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+    .container {
+        padding: 10px;
+    }
+
+    h2 {
+        font-size: 24px;
+    }
+
+    h3 {
+        font-size: 20px;
+    }
+
+    .back-button {
+        padding: 8px 16px;
+    }
+
+    th, td {
+        padding: 8px;
+    }
+}
