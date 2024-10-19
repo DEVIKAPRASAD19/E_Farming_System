@@ -1,0 +1,174 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Order History</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Poppins:wght@600&display=swap" rel="stylesheet">
+    <style>
+        /* General Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f6f9;
+            padding: 20px 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 28px;
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        /* Order Card Styles */
+        .order-card {
+            background-color: #fafafa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            padding: 20px;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .order-card:hover {
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .order-details {
+            margin-top: 15px;
+        }
+
+        .order-header div {
+            font-size: 16px;
+            color: #333;
+        }
+
+        .order-header div span {
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .order-items {
+            margin-top: 10px;
+        }
+
+        .order-items strong {
+            font-size: 16px;
+            color: #4CAF50;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .order-items ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .order-items ul li {
+            font-size: 15px;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .order-items ul li span {
+            color: #333;
+            font-weight: 500;
+        }
+
+        /* No Orders */
+        .no-orders {
+            text-align: center;
+            font-size: 18px;
+            color: #999;
+            margin-top: 20px;
+        }
+
+        /* Back Button */
+        .back-button {
+            display: block;
+            width: fit-content;
+            margin: 30px auto;
+            padding: 12px 25px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        .back-button:hover {
+            background-color: #45a049;
+        }
+
+        /* Media Queries */
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+            }
+
+            .order-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Your Order History</h2>
+        {% if orders %}
+            {% for order in orders %}
+            <div class="order-card">
+                <div class="order-header">
+                    <div>Order ID: <span>{{ order.id }}</span></div>
+                    <div>Date: <span>{{ order.order_date }}</span></div>
+                    <div>Total Price: <span>Rs.{{ order.total_price }}</span></div>
+                </div>
+                <div class="order-details">
+                    <div>Delivery Address: {{ order.delivery_address }}</div>
+                    <div>Payment Method: {{ order.payment_method }}</div>
+                </div>
+                <div class="order-items">
+                    <strong>Items Ordered:</strong>
+                    <ul>
+                        {% for item in order.order_items.all %}
+                        <li>{{ item.crop.name }} (Qty: {{ item.quantity }}) - <span>Rs.{{ item.price }}</span></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="no-orders">You have no previous orders.</p>
+        {% endif %}
+        <a href="{% url 'buyer_dashboard' %}" class="back-button">Back to Home</a>
+    </div>
+</body>
+</html>

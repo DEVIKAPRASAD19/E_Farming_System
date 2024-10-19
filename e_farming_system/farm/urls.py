@@ -48,6 +48,7 @@ urlpatterns = [
     path('update-user-details/', views.update_user_details, name='update_user_details'),
     path('place-order/', views.place_order, name='place_order'),
     path('order-summary/<int:order_id>/', views.order_summary, name='order_summary'),
+    path('order-history/', views.order_history, name='order_history'),
 
    
 

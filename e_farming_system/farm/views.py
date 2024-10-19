@@ -12,7 +12,7 @@ from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.contrib.auth.tokens import default_token_generator as custom_token_generator
 from django.utils.html import strip_tags
-from .models import Registeruser, Adminm, Cart, Wishlist, Order
+from .models import Registeruser, Adminm, Cart, Wishlist, Order, OrderItem
 from .forms import SetPasswordForm
 from .tokens import custom_token_generator
 from django.contrib.sites.shortcuts import get_current_site
@@ -862,23 +862,17 @@ def update_user_details(request):
 def place_order(request):
     if request.method == 'POST':
         user = Registeruser.objects.get(user_id=request.session['user_id'])
-
-        # Capture user details from session
         user_details = request.session.get('updated_user_details', None)
 
-        # If session details are missing, return an error or handle accordingly
         if not user_details:
             return redirect('check_out')
 
-        # Retrieve additional form data (payment method, delivery address, etc.)
         delivery_address = request.POST['address']
         payment_method = request.POST['payment_method']
 
-        # Fetch cart items and calculate total price
         cart_items = Cart.objects.filter(user=user)
         total_price = sum(item.get_total_price() for item in cart_items)
 
-        # Create the order with updated details
         order = Order.objects.create(
             user=user,
             name=user_details['name'],
@@ -886,37 +880,90 @@ def place_order(request):
             email=user_details['email'],
             place=user_details['place'],
             pincode=user_details['pincode'],
-            delivery_address=delivery_address,  # Address from the form
-            total_price=total_price,  # Calculated total price
-            payment_method=payment_method  # Payment method
+            delivery_address=delivery_address,
+            total_price=total_price,
+            payment_method=payment_method
         )
 
-        # Add cart items to the order
+        # Add cart items as order items
         for item in cart_items:
-            order.items.add(item)
-        
-        cart_items.delete()
+            OrderItem.objects.create(
+                order=order,
+                crop=item.crop,  # Assuming the Cart model has a crop reference
+                quantity=item.quantity,
+                price=item.get_total_price()  # or item.crop.price
+            )
 
-        # Clear the cart session and redirect to success page
+        cart_items.delete()
         request.session['cart'] = []
-        return redirect('order_summary', order_id=order.id) # Redirect to the order summary or success page
+
+        # Send confirmation email
+        order_details = f"Order ID: {order.id}\nTotal Price: Rs. {total_price}\nPayment Method: {payment_method}\nDelivery Address: {delivery_address}"
+        send_order_confirmation_email(order.email, order_details)
+
+        return redirect('order_summary', order_id=order.id)
 
     return redirect('check_out')
 
 
+def send_order_confirmation_email(user_email, order_details):
+    subject = 'Order Confirmation'
+    message = f'Your order has been placed successfully!\n\nOrder Details:\n{order_details}'
+    from_email = settings.EMAIL_HOST_USER
+
+    send_mail(
+        subject,
+        message,
+        from_email,
+        [user_email],
+        fail_silently=False,
+    )
+
+
+
 
 def order_summary(request, order_id):
-    # Fetch the specific order
     order = get_object_or_404(Order, id=order_id)
+    
+    # Calculate total prices for each order item and format the price
+    order_items = order.order_items.all()
+    
+    # Format the item prices and calculate total price
+    formatted_order_items = []
+    total_price = 0
 
-    # Get all items related to the order
-    cart_items = order.items.all()
+    for item in order_items:
+        formatted_price = f"{item.price:.2f}"  # Format price to two decimal places
+        total_item_price = item.price * item.quantity
+        formatted_total_item_price = f"{total_item_price:.2f}"  # Format total item price
+        total_price += total_item_price
+        
+        formatted_order_items.append({
+            'crop_name': item.crop.name,
+            'quantity': item.quantity,
+            'formatted_price': formatted_price,
+            'formatted_total_item_price': formatted_total_item_price,
+        })
+    
+    formatted_total_price = f"{total_price:.2f}"  # Format total price
 
     context = {
         'order': order,
-        'cart_items': cart_items,   # Make sure this matches the name in the template
-        'total_price': order.total_price,
-        'payment_method': order.payment_method,
+        'order_items': formatted_order_items,
+        'total_price': formatted_total_price,
+        'payment_method': order.payment_method,  # Pass payment method if needed
     }
-
+    
     return render(request, 'order_summary.html', context)
+
+
+def order_history(request):
+    # Check if the user ID is stored in the session
+    user_id = request.session.get('user_id')
+    
+    if user_id:
+        # Fetch orders for the user based on the user ID from the session
+        orders = Order.objects.filter(user_id=user_id)
+        return render(request, 'order_history.html', {'orders': orders})
+    else:
+        return redirect('login')  # Redirect to login if user ID is not found in session

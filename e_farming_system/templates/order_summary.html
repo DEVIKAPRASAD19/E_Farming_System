@@ -15,10 +15,10 @@
         <h2>Order Summary</h2>
 
         <h3>Your Details</h3>
-        <p><strong>Name:</strong> {{ order.user.name}}</p>
-        <p><strong>Contact:</strong> {{ order.user.contact }}</p>
-        <p><strong>Email:</strong> {{ order.user.email }}</p>
-        <p><strong>Place:</strong> {{ order.user.place }}</p>
+        <p><strong>Name:</strong> {{ order.name }}</p>
+        <p><strong>Contact:</strong> {{ order.contact }}</p>
+        <p><strong>Email:</strong> {{ order.email }}</p>
+        <p><strong>Place:</strong> {{ order.place }}</p>
         <p><strong>Pincode:</strong> {{ order.pincode }}</p>
         <p><strong>Delivery Address:</strong> {{ order.delivery_address }}</p>
 
@@ -35,23 +35,36 @@
                 </tr>
             </thead>
             <tbody>
-                {% for item in cart_items %}
+                {% for item in order_items %}
                 <tr>
-                    <td>{{ item.crop.name }}</td>
+                    <td>{{ item.crop_name }}</td>
                     <td>{{ item.quantity }}</td>
-                    <td>Rs.{{ item.crop.price }}</td>
-                    <td>Rs.{{ item.get_total_price }}</td>
+                    <td>Rs. {{ item.formatted_price }}</td>
+                    <td>Rs. {{ item.formatted_total_item_price }}</td> <!-- Using the formatted total price -->
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">No items ordered.</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
 
-        <p><strong>Total Price:</strong> Rs.{{ total_price }}</p>
+        <p><strong>Total Price:</strong> Rs. {{ total_price }}</p>
 
         <h3>Payment Method</h3>
-        <p>{{ payment_method }}</p>
+        <p>{{ order.payment_method }}</p>
 
         <h3>Order Status</h3>
+
+        <!-- Pay Button for Online Payment -->
+        {% if order.payment_method == 'online' %}
+            {% comment %} <form method="POST" action="{% url 'process_payment' order.id %}"> {% endcomment %}
+                {% csrf_token %}
+                <button type="submit" class="pay-button">Pay Now</button>
+            </form>
+        {% endif %}
+
         <p>Your order has been placed successfully!</p>
 
         <!-- Navigation Button -->
