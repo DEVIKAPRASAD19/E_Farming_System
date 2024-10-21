@@ -4,56 +4,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout</title>
+    <title>Checkout - Order & Payment</title>
     <link rel="stylesheet" href="{% static 'css/checkout.css' %}">
     <!-- Include SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .payment-options {
+            display: flex;
+            align-items: center;
+            gap: 40px; /* Adjust spacing between payment methods */
+        }
+
+        .payment-option {
+            display: flex;
+            align-items: center;
+        }
+
+        .payment-option input[type="radio"] {
+            margin-right: 8px; /* Spacing between radio button and label */
+        }
+    </style>
 </head>
 <body>
     <!-- Back Button -->
-    <a href="{% url 'viewcart' %}" class="back-button">Back</a>
+    <a href="{% url 'check_out_step1' %}" class="back-button">Back</a>
 
     <div class="container">
-        <h2>Billing Details</h2>
-
-        <!-- User Details Form (Editable) -->
-        <form id="user-details-form" method="post" action="{% url 'update_user_details' %}">
-            {% csrf_token %}
-            <div class="user-details">
-                <h3>Your Details</h3>
-
-                <!-- Name -->
-                <label for="name"><strong>Name:</strong></label>
-                <input type="text" id="name" name="name" value="{{ user.name }}" required><br>
-
-                <!-- Contact -->
-                <label for="contact"><strong>Contact:</strong></label>
-                <input type="text" id="contact" name="contact" value="{{ user.contact }}" required><br>
-
-                <!-- Email -->
-                <label for="email"><strong>Email:</strong></label>
-                <input type="email" id="email" name="email" value="{{ user.email }}" required><br>
-
-                <!-- Place -->
-                <label for="place"><strong>Place:</strong></label>
-                <input type="text" id="place" name="place" value="{{ user.place }}" required><br>
-
-                <!-- Pincode -->
-                <label for="pincode"><strong>Pincode:</strong></label>
-                <input type="text" id="pincode" name="pincode" value="{{ user.pincode }}" required><br>
-
-                <!-- Delivery Address -->
-                <label for="delivery_address"><strong>Delivery Address:</strong></label>
-                <textarea id="delivery_address" name="delivery_address" rows="3" required>{{ user.delivery_address }}</textarea><br>
-
-                <!-- Update Button -->
-                <button type="submit">Update Details</button>
-            </div>
-        </form>
-
-        <hr>
-
         <!-- Cart Items Section -->
         <h3>Items You Ordered</h3>
         <table>
@@ -89,12 +66,17 @@
             <textarea id="address" name="address" rows="3" required>{{ user.delivery_address }}</textarea><br>
 
             <!-- Payment Method -->
-            <h4>Payment Method:</h4>
-            <input type="radio" id="Cash" name="payment_method" value="Cash" checked>
-            <label for="Cash ">Cash on Delivery</label><br>
-            
-            <input type="radio" id="online" name="payment_method" value="online">
-            <label for="online">Online Payment</label><br>
+            <h4>Payment Method:</h4><br>
+            <div class="payment-options">
+                <div class="payment-option">
+                    <input type="radio" id="Cash" name="payment_method" value="Cash" checked>
+                    <label for="Cash">Cash on Delivery</label>
+                </div>
+                <div class="payment-option">
+                    <input type="radio" id="online" name="payment_method" value="online">
+                    <label for="online">Online Payment</label>
+                </div>
+            </div><br>
 
             <!-- Submit Button -->
             <button type="button" id="confirm-purchase">Confirm Purchase</button>

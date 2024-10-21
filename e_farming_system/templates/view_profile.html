@@ -8,7 +8,9 @@
     <link rel="stylesheet" href="{% static 'css/view_profile.css' %}"> <!-- Link to your CSS file -->
 </head>
 <body>
+    
     <div class="header">
+        <button class="back-button" onclick="window.history.back();">Back</button>
         <h1>Profile of {{ user.name }}</h1>
 {% comment %}         <a href="{% url 'edit_profile' user.user_id %}" class="edit-btn">Edit Profile</a> {% endcomment %}
         {% comment %} <a href="{% url 'index' %}" class="back-button">Back</a> {% endcomment %}

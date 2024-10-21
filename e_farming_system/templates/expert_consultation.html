@@ -1,0 +1,113 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expert Consultation</title>
+    <link rel="stylesheet" href="{% static 'css/consultationstyle.css' %}">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 0;
+        }
+        .back-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            margin: 20px;
+        }
+
+        .back-button:hover {
+            background-color: #45a049;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .expert-card {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            background: #f9f9f9;
+            transition: box-shadow 0.3s;
+        }
+
+        .expert-card:hover {
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .expert-name {
+            font-size: 20px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .expert-details {
+            margin: 10px 0;
+        }
+
+        .expert-contact {
+            font-size: 16px;
+            color: #333;
+        }
+
+        .contact-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .contact-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <!-- Back Button -->
+    <a href="{% url 'farmer_dashboard' %}" class="back-button">Back</a>
+    <div class="container">
+        <h2>Expert Consultation</h2>
+
+        {% for expert in experts %}
+        <div class="expert-card">
+            <p class="expert-name">{{ expert.name }}</p>
+            <p class="expert-details">Expertise: {{ expert.expertise }}</p>
+            <p class="expert-contact">Contact: {{ expert.contact }}</p>
+            <a href="mailto:{{ expert.email }}" class="contact-button">Contact Expert</a>
+        </div>
+        {% endfor %}
+
+        {% if not experts %}
+            <p>No experts available for consultation at the moment.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

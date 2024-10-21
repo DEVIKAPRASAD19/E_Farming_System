@@ -19,17 +19,22 @@
     <!-- Search form -->
     <div class="search-section">
         <form method="GET" action="{% url 'search_crops' %}">
-            <input type="text" name="query" placeholder="Search for crops..." class="search-bar">
+            <!-- Keep the search query if it was submitted -->
+            <input type="text" name="query" placeholder="Search for crops..." class="search-bar" value="{{ request.GET.query }}">
+    
+            <!-- Keep the selected category if it was submitted -->
             <select name="category" class="search-category">
-                <option value="">All Categories</option>
-                <option value="fruit">Fruits</option>
-                <option value="vegetable">Vegetables</option>
-                <option value="grain">Grains</option>
-                <option value="Other">Other</option>
+                <option value="" {% if not request.GET.category %}selected{% endif %}>All Categories</option>
+                <option value="fruit" {% if request.GET.category == "fruit" %}selected{% endif %}>Fruits</option>
+                <option value="vegetable" {% if request.GET.category == "vegetable" %}selected{% endif %}>Vegetables</option>
+                <option value="grain" {% if request.GET.category == "grain" %}selected{% endif %}>Grains</option>
+                <option value="Other" {% if request.GET.category == "Other" %}selected{% endif %}>Other</option>
             </select>
+    
             <button type="submit" class="search-btn">Search</button>
         </form>
     </div>
+    
 
     <!-- Crops List -->
     <div class="crops-list">

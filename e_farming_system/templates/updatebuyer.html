@@ -14,9 +14,28 @@
         .invalid {
             border-color: red;
         }
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .back-button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
+    <button class="back-button" onclick="window.history.back();">Back</button>
     <div class="container">
         <h1>Update Profile</h1>
         <form id="updatebuyerForm" action="{% url 'updatebuyer' %}" method="POST" novalidate>

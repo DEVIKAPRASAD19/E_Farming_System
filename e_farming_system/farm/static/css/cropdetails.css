@@ -4,7 +4,7 @@ body {
     margin: 0;
     padding: 0;
     background-color: #f4f4f4;
-    background-image: url('https://www.novethic.fr/wp-content/uploads/fileadmin/ecologie-agriculture-benefices-646x407.jpg'); /* Background image */
+    background-image: url('https://www.novethic.fr/wp-content/uploads/fileadmin/ecologie-agriculture-benefices-646x407.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -14,7 +14,7 @@ body {
     max-width: 900px;
     margin: 50px auto;
     padding: 20px;
-    background-color: rgba(255, 255, 255, 0.9); /* White with transparency */
+    background-color: rgba(255, 255, 255, 0.9);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
 }
@@ -75,28 +75,28 @@ h1 {
 }
 
 .top-right .back-button {
-    display: inline-block; /* Ensures it behaves like a button */
-    padding: 10px 20px; /* Button padding */
+    display: inline-block;
+    padding: 10px 20px;
     text-decoration: none;
     color: #04162a; /* Blue color */
     font-weight: bold;
-    border: 2px solid #072342; /* Border styling */
-    border-radius: 5px; /* Rounded corners */
-    transition: background-color 0.3s, color 0.3s; /* Transition effects */
+    border: 2px solid #072342;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 .top-right .back-button:hover {
     background-color: #7b8a99; /* Blue background on hover */
-    color: white; /* White text on hover */
+    color: white;
 }
 
 /* Action buttons container */
 .action-buttons {
     margin-top: 30px;
     text-align: center;
-    display: flex; /* Aligns the buttons in a row */
-    justify-content: center; /* Centers the buttons */
-    gap: 10px; /* Adds space between buttons */
+    display: flex;
+    justify-content: center;
+    gap: 15px; /* Adds space between buttons */
 }
 
 /* Button styling */
@@ -108,17 +108,7 @@ h1 {
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s;
-}
-
-/* Buy button styling */
-.buy-btn {
-    background-color: #28a745; /* Green background */
-    color: white;
-}
-
-.buy-btn:hover {
-    background-color: #218838; /* Darker green on hover */
-    transform: scale(1.05); /* Slightly enlarge on hover */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* Add to Cart button styling */
@@ -129,6 +119,17 @@ h1 {
 
 .add-to-cart-btn:hover {
     background-color: #0069d9; /* Darker blue on hover */
+    transform: scale(1.05);
+}
+
+/* Buy button styling */
+.buy-btn {
+    background-color: #28a745; /* Green background */
+    color: white;
+}
+
+.buy-btn:hover {
+    background-color: #218838; /* Darker green on hover */
     transform: scale(1.05);
 }
 

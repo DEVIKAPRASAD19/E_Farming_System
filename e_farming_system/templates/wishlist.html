@@ -22,11 +22,13 @@
         {% for crop in crops %}
             <li class="wishlist-item">
                 <div class="crop-image">
-                    {% if crop.images.all %}
-                        <img src="{{ crop.images.first.image.url }}" alt="{{ crop.name }}">
-                    {% else %}
-                        <p>No image available</p>
-                    {% endif %}
+                    <a href="{% url 'crop_details' crop.id %}">  <!-- Link to the crop detail page -->
+                        {% if crop.images.all %}
+                            <img src="{{ crop.images.first.image.url }}" alt="{{ crop.name }}">
+                        {% else %}
+                            <p>No image available</p>
+                        {% endif %}
+                    </a>
                 </div>
                 <div class="crop-info">
                     <h2>{{ crop.name }}</h2>

@@ -77,10 +77,14 @@ class Crop(models.Model):
     is_verified = models.BooleanField(default=False)  # Admin verification field
     added_at = models.DateTimeField(auto_now_add=True) # Timestamp for when the product is added
     updated_at = models.DateTimeField(auto_now=True)   # Timestamp for when the product is last updated
-    
 
+    class Meta:
+        unique_together = ('name', 'farmer')  # Ensure that the same crop cannot be added by the same farmer
+    
     def __str__(self):
         return self.name
+    
+    
 
 class CropImage(models.Model):
     crop = models.ForeignKey(Crop, related_name='images', on_delete=models.CASCADE)
@@ -89,6 +93,8 @@ class CropImage(models.Model):
     def __str__(self):
         return f"Image for {self.crop.name}"
     
+
+
     
     
 class Cart(models.Model):
@@ -120,37 +126,6 @@ class Wishlist(models.Model):
     user = models.ForeignKey(Registeruser, on_delete=models.CASCADE)  # Use ForeignKey to associate with the user
     added_date = models.DateTimeField(auto_now_add=True)
 
-    
-
-""" class Order(models.Model):
-    PAYMENT_CHOICES = (
-        ('cod', 'Cash on Delivery'),
-        ('online', 'Online Payment'),
-    )
-    STATUS_CHOICES = (
-        ('Pending', 'Pending'),
-        ('Confirmed', 'Confirmed'),
-        ('Shipped', 'Shipped'),
-        ('Delivered', 'Delivered'),
-    )
-
-    user = models.ForeignKey('Registeruser', on_delete=models.CASCADE)
-    name = models.CharField(max_length=255, null=False, blank=False)
-    contact = models.CharField(max_length=20)
-    email = models.EmailField()
-    place = models.CharField(max_length=255)
-    pincode = models.CharField(max_length=6)
-    delivery_address = models.TextField()
-    total_price = models.DecimalField(max_digits=10, decimal_places=2)
-    payment_method = models.CharField(max_length=10, choices=PAYMENT_CHOICES)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Pending')
-    order_date = models.DateTimeField(auto_now_add=True)
-
-    # Store the related cart items (many-to-many relation)
-    items = models.ManyToManyField(Cart)
-
-    def __str__(self):
-        return f"Order {self.id} - {self.user.name}" """
     
 
 class Order(models.Model):
@@ -189,3 +164,14 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f"{self.crop.name} (x{self.quantity})"
+
+
+class Notification(models.Model):
+    farmer = models.ForeignKey(Registeruser, on_delete=models.CASCADE)
+    message = models.TextField()
+    crop = models.ForeignKey(Crop, on_delete=models.CASCADE, null=True, blank=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    is_read = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Notification for {self.farmer.name}: {self.message}"

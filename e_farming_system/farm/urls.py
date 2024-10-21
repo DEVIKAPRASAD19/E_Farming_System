@@ -41,15 +41,24 @@ urlpatterns = [
     path('viewcart', views.viewcart, name='viewcart'),
     path('cart/add/<int:crop_id>/', views.add_to_cart, name='add_to_cart'),
     path('cart/update/<int:crop_id>/', views.update_cart, name='update_cart'),
-    path('cart/delete/<int:crop_id>/', views.delete_from_cart, name='delete_from_cart'),
+    path('delete/<int:cart_id>/', views.delete_from_cart, name='delete_from_cart'),
     path('verify-otp/', views.verify_otp, name='verify_otp'),
     path('enter-email/', views.enter_email, name='enter_email'),
-    path('check_out/', views.check_out, name='check_out'),
+    
+    path('stock/', views.crop_stock_details, name='stock'),
+    path('stockfarmer/', views.stockfarmer, name='stockfarmer'),
+    path('checkout/step1/', views.check_out_step1, name='check_out_step1'),
+    path('checkout/step2/', views.check_out_step2, name='check_out_step2'),
+    
     path('update-user-details/', views.update_user_details, name='update_user_details'),
     path('place-order/', views.place_order, name='place_order'),
     path('order-summary/<int:order_id>/', views.order_summary, name='order_summary'),
     path('order-history/', views.order_history, name='order_history'),
 
+    path('weather/', views.weather_update, name='weather_update'),
+    path('consultation/', views.expert_consultation, name='expert_consultation'),
+    path('notifications/', views.farmer_notifications, name='farmer_notifications'),
+    path('buy/<int:crop_id>/', views.buy_crop, name='buy_crop'),  # Add this line
    
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

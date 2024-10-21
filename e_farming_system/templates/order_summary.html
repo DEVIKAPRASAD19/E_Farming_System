@@ -6,6 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order Summary</title>
     <link rel="stylesheet" href="{% static 'css/ordersummary.css' %}">
+    <script>
+        function printOrderSummary() {
+            window.print(); // Open the print dialog
+        }
+    </script>
 </head>
 <body>
     <!-- Back Button -->
@@ -29,7 +34,7 @@
             <thead>
                 <tr>
                     <th>Crop</th>
-                    <th>Quantity</th>
+                    <th>Quantity(kg)</th>
                     <th>Price per Unit</th>
                     <th>Total Price</th>
                 </tr>
@@ -66,6 +71,9 @@
         {% endif %}
 
         <p>Your order has been placed successfully!</p>
+
+        <!-- Print Button -->
+        <button onclick="printOrderSummary()" class="print-button">Print Order Summary</button>
 
         <!-- Navigation Button -->
         <a href="{% url 'buyer_dashboard' %}" class="back-button">Return to Home</a>

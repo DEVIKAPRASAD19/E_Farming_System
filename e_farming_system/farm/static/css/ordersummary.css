@@ -4,6 +4,10 @@ body {
     padding: 0;
     font-family: 'Arial', sans-serif;
     background-color: #f8f8f8;
+    background-image: url('https://t4.ftcdn.net/jpg/02/10/45/95/360_F_210459536_XmLDEcKq2DpeNLVmheuWeu9NM9aGKnih.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 .container {
@@ -97,4 +101,19 @@ strong {
     th, td {
         padding: 8px;
     }
+}
+.print-button {
+    background-color: #5f4c14; /* Yellow background */
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 16px;
+    margin: 20px 0; /* Add some spacing around the button */
+}
+
+.print-button:hover {
+    background-color: hsl(45, 63%, 23%); /* Darker yellow on hover */
 }

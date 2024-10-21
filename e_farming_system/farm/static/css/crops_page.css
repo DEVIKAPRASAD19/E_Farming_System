@@ -24,7 +24,7 @@ body {
 .back-button {
     position: absolute;
     top: 15px;
-    right: 15px;
+    left: 15px;
     background-color: #134114;
     color: white;
     padding: 10px 20px;

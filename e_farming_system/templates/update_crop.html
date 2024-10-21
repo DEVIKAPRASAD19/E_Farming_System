@@ -14,6 +14,7 @@
             const priceInput = document.getElementById("price");
             const categorySelect = document.getElementById("category");
             const imageInput = document.getElementById("image");
+            const stockInput = document.getElementById("stock");  // New stock input
             const updateButton = document.querySelector(".update-button");
 
             function validateForm() {
@@ -38,6 +39,13 @@
                     alert("Price must be a positive number.");
                 }
 
+                // Validate Stock (must be a non-negative integer)
+                const stockValue = parseInt(stockInput.value);
+                if (isNaN(stockValue) || stockValue < 0) {
+                    valid = false;
+                    alert("Stock must be a non-negative number.");
+                }
+
                 // Validate Image Type
                 const validImageTypes = ["image/jpeg", "image/png", "image/gif"];
                 const files = imageInput.files;
@@ -58,6 +66,7 @@
             nameInput.addEventListener("input", validateForm);
             descriptionTextarea.addEventListener("input", validateForm);
             priceInput.addEventListener("input", validateForm);
+            stockInput.addEventListener("input", validateForm);  // Add event listener for stock input
             imageInput.addEventListener("change", validateForm);
 
             // Initial validation on page load
@@ -68,7 +77,7 @@
 <body>
     <div class="header">
         <h1>Update Crop: {{ crop.name }}</h1>
-        <a href="{% url 'farmercrops' %}" class="back-button">Back to My Crops</a>
+        <button class="back-button" onclick="window.history.back();">Back</button>
     </div>
 
     <div class="update-form">
@@ -80,7 +89,7 @@
             <label for="description">Description:</label>
             <textarea id="description" name="description" required>{{ crop.description }}</textarea>
 
-            <label for="price">Price:</label>
+            <label for="price">Price(Rs.):</label>
             <input type="number" id="price" name="price" value="{{ crop.price }}" required>
 
             <label for="category">Category:</label>
@@ -94,24 +103,12 @@
             <label for="image">Update Image:</label>
             <input type="file" id="image" name="image" multiple>
 
+            <!-- New field to update stock -->
+            <label for="stock">Update Stock(kg):</label>
+            <input type="number" id="stock" name="stock" value="{{ crop.stock }}" min="0" required>
+
             <button type="submit" class="update-button" disabled>Update Crop</button>
         </form>
     </div>
 </body>
 </html>
-
-{% comment %} <label for="current_images">Current Images:</label>
-<div class="current-images">
-    {% if images %}
-        <div class="image-container">
-            {% for image in images %}
-                <img src="{{ image.image.url }}" alt="Product Image" class="image-preview">
-            {% endfor %}
-        </div>
-    {% else %}
-        <p class="no-image">No image uploaded.</p>
-    {% endif %}
-</div>
-
-<label for="product_images">Upload New Image (Optional):</label>
-<input type="file" id="product_images" name="product_images"> {% endcomment %}

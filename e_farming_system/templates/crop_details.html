@@ -38,15 +38,18 @@
                 <p><strong>Stock Available:</strong> <span id="stockAvailable">{{ crop.stock }} kg</span></p>
                 <p><strong>Farmer:</strong> <span id="farmerName">{{ crop.farmer.name }}</span></p>
                 <p><strong>Added At:</strong> <span id="addedAt">{{ crop.added_at }}</span></p>
-                {% comment %} <p><strong>Updated At:</strong> <span id="updatedAt">{{ crop.updated_at }}</span></p> {% endcomment %}
                 
-                <!-- Add to Cart Form -->
+                <!-- Add to Cart and Buy Form -->
+            <div class="action-buttons">
                 <form method="POST" action="{% url 'add_to_cart' crop.id %}">
                     {% csrf_token %}
                     <label for="quantity"><b>Quantity:</b></label>
                     <input type="number" id="quantity" name="quantity" min="1" max="{{ crop.stock }}" required>
                     <button type="submit" class="btn add-to-cart-btn">Add to Cart</button>
+                    <button type="submit" name="buy" class="btn buy-btn">Buy</button>
                 </form>
+            </div>
+
             </div>
         </div>
         
@@ -55,10 +58,7 @@
                 {% csrf_token %}
                 <button type="submit" name="add_to_wishlist" class="btn add-to-wishlist-btn">Add to Wishlist</button>
             </form>
-        
-            <button class="btn buy-btn">Buy</button>
         </div>
-        
     </div>
 </body>
 </html>

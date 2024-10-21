@@ -1,0 +1,134 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Updates</title>
+    <link rel="stylesheet" href="{% static 'css/weatherstyle.css' %}">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 0;
+            background-image: url('https://t4.ftcdn.net/jpg/06/41/91/85/360_F_641918542_bL3O5qWqKmaVrxM12Qa1pp1owFvKKP3k.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        input[type="text"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: darkgreen; /* Red color */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .back-button:hover {
+            background-color: darkgreen; /* Darker red on hover */
+        }
+
+        .error {
+            color: #ff0000;
+            margin-top: 20px;
+        }
+
+        .weather-info {
+            margin-top: 20px;
+            border-top: 2px solid #4CAF50;
+            padding-top: 20px;
+        }
+
+        .city,
+        .temperature,
+        .description {
+            font-size: 20px;
+            margin: 10px 0;
+        }
+
+        .weather-icon {
+            margin-top: 10px;
+            width: 100px; /* Adjust size as needed */
+        }
+    </style>
+</head>
+<body>
+    <a href="{% url 'farmer_dashboard' %}" class="back-button">Back</a>
+    
+    <div class="container">
+        <h2>Weather Updates</h2>
+        <form method="POST" action="{% url 'weather_update' %}">
+            {% csrf_token %}
+            <label for="location">Enter Location:</label>
+            <input type="text" id="location" name="location" placeholder="e.g., Kottayam" required>
+            <button type="submit">Get Weather</button>
+        </form>
+
+        {% if weather_data.error %}
+            <p class="error">{{ weather_data.error }}</p>
+        {% else %}
+            <div class="weather-info">
+                <p class="city">City: <strong>{{ weather_data.city }}</strong></p>
+                <p class="temperature">Temperature: <strong>{{ weather_data.temperature }} °C</strong></p>
+                <p class="description">Description: <strong>{{ weather_data.description }}</strong></p>
+                <img class="weather-icon" src="http://openweathermap.org/img/wn/{{ weather_data.icon }}@2x.png" alt="Weather Icon">
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

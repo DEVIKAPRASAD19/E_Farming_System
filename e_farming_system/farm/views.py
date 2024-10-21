@@ -12,7 +12,7 @@ from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.contrib.auth.tokens import default_token_generator as custom_token_generator
 from django.utils.html import strip_tags
-from .models import Registeruser, Adminm, Cart, Wishlist, Order, OrderItem
+from .models import Registeruser, Adminm, Cart, Wishlist, Order, OrderItem, Notification
 from .forms import SetPasswordForm
 from .tokens import custom_token_generator
 from django.contrib.sites.shortcuts import get_current_site
@@ -29,9 +29,6 @@ from django.http import HttpResponse
 from decimal import Decimal  # Add this import statement
 import random
 from django.utils import timezone
-
-
-
 
 
 
@@ -376,9 +373,9 @@ def updatebuyer(request):
 
 
 
-def farmercrops(request):
+""" def farmercrops(request):
     crops = Crop.objects.all()  # Fetch all crops
-    return render(request, 'farmercrops.html', {'crops': crops})
+    return render(request, 'farmercrops.html', {'crops': crops}) """
 
 
 def addcrops(request):
@@ -386,7 +383,7 @@ def addcrops(request):
         name = request.POST.get('name')
         description = request.POST.get('description')
         price = request.POST.get('price')
-        stock = request.POST.get('stock')  # Capture stock from form
+        stock = int(request.POST.get('stock', 0))  # Capture stock from form and convert to int
         category = request.POST.get('category')
         
         # Get user_id from the session
@@ -406,32 +403,35 @@ def addcrops(request):
                     email=register_user.email,
                     password='set_a_default_password_here'  # Set a password if needed, ideally use hashing
                 )
-                # Optionally set more user fields here, like first_name, etc.
         
         except Registeruser.DoesNotExist:
+            messages.error(request, 'User not found.')
             return redirect('error_page')  # Handle user not found
 
-        # Create the Crop instance
-        crop_instance = Crop.objects.create(
-            name=name,
-            description=description,
-            price=price,
-            category=category,
-            farmer=register_user,  # Now this is a User instance
-            stock=stock
-        )
+        try:
+            # Create the Crop instance
+            crop_instance = Crop.objects.create(
+                name=name,
+                description=description,
+                price=price,
+                category=category,
+                farmer=register_user,  # Linking to Registeruser
+                stock=stock
+            )
+            
+            # Handle crop images
+            crop_photos = request.FILES.getlist('crop_photos')  # Handling multiple image files
+            for photo in crop_photos:
+                CropImage.objects.create(crop=crop_instance, image=photo)  # Saving each image to CropImage
+            
+            messages.success(request, 'Crop added successfully.')
         
-        # Handle crop images
-        crop_photos = request.FILES.getlist('crop_photos')  # Handling multiple image files
-        for photo in crop_photos:
-            CropImage.objects.create(crop=crop_instance, image=photo)  # Saving each image to CropImage
-
-        #messages.success(request, 'Crop added successfully')
+        except Exception as e:
+            messages.error(request, 'Error adding crop: ' + str(e))  # Handle exceptions
         
         return redirect('farmer_dashboard')  # Redirect to the farmer dashboard after crop addition
     
     return render(request, 'addcrops.html')  # Render the crop addition form
-
 
 
 
@@ -475,6 +475,8 @@ def crop_details(request, id):
     }
     return render(request, 'crop_details.html', context)
 
+
+
 # View to list farmers or buyers based on role
 def manage_users(request, role):
     # Filter users based on role (farmer, buyer, etc.)
@@ -482,7 +484,7 @@ def manage_users(request, role):
     return render(request, 'manage_users.html', {'users': users, 'role': role})
 
 
-def farmer_crops(request):
+def farmercrops(request):
     # Check if user_id is in the session; if not, redirect to login
     if not request.session.get('user_id'):
         return redirect('login')
@@ -512,7 +514,7 @@ def farmer_crops(request):
         'show_inactive': show_inactive  # Pass the toggle state to the template
     }
 
-    return render(request, 'farmer_crops.html', context)
+    return render(request, 'farmercrops.html', context)
 
 
 
@@ -555,6 +557,7 @@ def update_crop(request, id):
         crop_instance.description = request.POST.get('description')
         crop_instance.price = request.POST.get('price')
         crop_instance.category = request.POST.get('category')
+        crop_instance.stock = request.POST.get('stock') 
 
         # Handle image update
         if 'image' in request.FILES:
@@ -725,6 +728,29 @@ def delete_from_cart(request, cart_id):
     return redirect('viewcart')  # Redirect to the cart view
 
 
+def crop_stock_details(request):
+    crops = Crop.objects.all()  # Retrieve all crops
+    return render(request, 'stock.html', {'crops': crops})
+
+
+def stockfarmer(request):
+    # Check if user_id is in the session; if not, redirect to login
+    if not request.session.get('user_id'):
+        return redirect('login')
+
+    # Fetch the logged-in farmer using the session's user_id
+    farmer = get_object_or_404(Registeruser, user_id=request.session['user_id'])
+
+    # Ensure the user is a farmer
+    if farmer.role != 'farmer':
+        return redirect('home')  # Redirect non-farmer users to another page
+
+    # Retrieve only the crops added by the logged-in farmer
+    crops = Crop.objects.filter(farmer=farmer)
+
+    return render(request, 'stockfarmer.html', {'crops': crops})
+
+
 
 def deactivate_crop(request, crop_id):
     # Get the crop object
@@ -787,42 +813,20 @@ def wishlist(request):
 
 
 
-def check_out(request):
-    # Fetch the user based on session ID
+def check_out_step1(request):
+    user = Registeruser.objects.get(user_id=request.session['user_id'])
+
+    return render(request, 'checkout_step1.html', {
+        'user': user,
+    })
+
+
+def check_out_step2(request):
     user = Registeruser.objects.get(user_id=request.session['user_id'])
     cart_items = Cart.objects.filter(user=user)  # Fetch cart items for the user
     total_price = sum(item.get_total_price() for item in cart_items)
 
-    if request.method == 'POST':
-        # Get data from the checkout form
-        delivery_address = request.POST['delivery_address']
-        pincode = request.POST['pincode']
-        payment_method = request.POST['payment_method']
-
-        # Create the order
-        order = Order.objects.create(
-            user=user,
-            name=user.name,  # Get name from user profile
-            contact=user.contact,  # Get contact from user profile
-            email=user.email,  # Get email from user profile
-            place=user.place,  # Get place from user profile
-            pincode=pincode,  # Delivery pincode
-            delivery_address=delivery_address,  # Delivery address from the form
-            total_price=total_price,  # Total price calculated from cart items
-            payment_method=payment_method  # Payment method from the form
-        )
-
-        # Add cart items to the order
-        for item in cart_items:
-            order.items.add(item)  # Associate each cart item with the order
-        
-        # Clear the cart after placing the order
-        request.session['cart_items'] = []
-
-        # Redirect to a success page or thank you page
-        return redirect('order_success')
-
-    return render(request, 'check_out.html', {
+    return render(request, 'checkout_step2.html', {
         'user': user,
         'cart_items': cart_items,
         'total_price': total_price
@@ -854,8 +858,40 @@ def update_user_details(request):
             'delivery_address': user.delivery_address
         }
 
-        return redirect('check_out')  # Redirect back to the checkout page
-    return redirect('check_out')
+        return redirect('check_out_step2')  # Redirect back to the checkout page
+    return redirect('check_out_step2')
+
+
+# Create an in-app notification for low stock
+def create_low_stock_notification(farmer, crop):
+    message = f"The stock for your crop '{crop.name}' has fallen below 5kg. Current Stock: {crop.stock} kg."
+    Notification.objects.create(
+        farmer=farmer,
+        crop=crop,
+        message=message,
+        created_at=timezone.now(),
+        is_read=False
+    )
+
+def mark_notification_as_read(request, notification_id):
+    notification = Notification.objects.get(id=notification_id, farmer=request.session['user_id'])
+    notification.is_read = True
+    notification.save()
+    return redirect('farmer_dashboard')
+
+
+
+
+def send_low_stock_notification(farmer, crop):
+    subject = 'Low Stock Alert for Your Crop'
+    message = f"Dear {farmer.name},\n\nThe stock for your crop '{crop.name}' has fallen below 5 kg.\nCurrent Stock: {crop.stock} kg\n\nPlease consider restocking."
+    send_mail(
+        subject,
+        message,
+        'from@example.com',  # Replace with your email
+        [farmer.email],  # Accessing the email directly from Registeruser model
+        fail_silently=False,
+    )
 
 
 # Place order after updating user details and confirming purchase
@@ -891,8 +927,18 @@ def place_order(request):
                 order=order,
                 crop=item.crop,  # Assuming the Cart model has a crop reference
                 quantity=item.quantity,
-                price=item.get_total_price()  # or item.crop.price
+                price=item.crop.price  # Store the unit price
             )
+            # Reduce the stock of the crop
+            item.crop.stock -= item.quantity
+            item.crop.save()  # Save the updated crop with reduced stock
+
+            # Check stock level and send notification if below 5 kg
+            if item.crop.stock < 5:
+                send_low_stock_notification(item.crop.farmer, item.crop)
+
+                # Create in-app notification
+                create_low_stock_notification(item.crop.farmer, item.crop)
 
         cart_items.delete()
         request.session['cart'] = []
@@ -904,6 +950,8 @@ def place_order(request):
         return redirect('order_summary', order_id=order.id)
 
     return redirect('check_out')
+
+
 
 
 def send_order_confirmation_email(user_email, order_details):
@@ -933,16 +981,16 @@ def order_summary(request, order_id):
     total_price = 0
 
     for item in order_items:
-        formatted_price = f"{item.price:.2f}"  # Format price to two decimal places
-        total_item_price = item.price * item.quantity
+        formatted_price = f"{item.price:.2f}"  # Format unit price to two decimal places
+        total_item_price = item.price * item.quantity  # Calculate total price for the item
         formatted_total_item_price = f"{total_item_price:.2f}"  # Format total item price
-        total_price += total_item_price
+        total_price += total_item_price  # Add to total order price
         
         formatted_order_items.append({
             'crop_name': item.crop.name,
             'quantity': item.quantity,
-            'formatted_price': formatted_price,
-            'formatted_total_item_price': formatted_total_item_price,
+            'formatted_price': formatted_price,  # Unit price formatted
+            'formatted_total_item_price': formatted_total_item_price,  # Total price for the item formatted
         })
     
     formatted_total_price = f"{total_price:.2f}"  # Format total price
@@ -957,6 +1005,7 @@ def order_summary(request, order_id):
     return render(request, 'order_summary.html', context)
 
 
+
 def order_history(request):
     # Check if the user ID is stored in the session
     user_id = request.session.get('user_id')
@@ -967,3 +1016,91 @@ def order_history(request):
         return render(request, 'order_history.html', {'orders': orders})
     else:
         return redirect('login')  # Redirect to login if user ID is not found in session
+
+
+
+
+
+
+import requests
+from django.shortcuts import render
+
+API_KEY = '1c192ab813182062b3023f96fc2ad1a6'  # Replace with your actual OpenWeatherMap API key
+
+def weather_update(request):
+    location = 'Kottayam'  # Default location
+
+    if request.method == 'POST':
+        location = request.POST.get('location')  # Get the user input location
+
+    # OpenWeatherMap API URL
+    url = f'http://api.openweathermap.org/data/2.5/weather?q={location}&appid={API_KEY}&units=metric'
+    
+    # Fetching data from the API
+    response = requests.get(url)
+    data = response.json()
+
+    # Parse the necessary weather information
+    if response.status_code == 200:
+        weather_data = {
+            'city': data['name'],
+            'temperature': data['main']['temp'],
+            'description': data['weather'][0]['description'],
+            'icon': data['weather'][0]['icon'],  # Weather icon
+        }
+    else:
+        weather_data = {'error': 'Could not retrieve weather data.'}
+
+    # Pass the data to the template
+    return render(request, 'weather.html', {'weather_data': weather_data})
+
+
+
+def expert_consultation(request):
+    # Sample expert data
+    experts = [
+        {'name': 'Dr. A. Kumar', 'expertise': 'Agronomy', 'contact': '+91 98765 43210', 'email': 'a.kumar@example.com'},
+        {'name': 'Ms. B. Sharma', 'expertise': 'Horticulture', 'contact': '+91 87654 32109', 'email': 'b.sharma@example.com'},
+        {'name': 'Mr. C. Verma', 'expertise': 'Soil Science', 'contact': '+91 76543 21098', 'email': 'c.verma@example.com'},
+    ]
+
+    return render(request, 'expert_consultation.html', {'experts': experts})
+
+
+def buy_crop(request, crop_id):
+    crop = get_object_or_404(Crop, pk=crop_id)  # Get the crop
+
+    if request.method == 'POST':
+        quantity = int(request.POST.get('quantity', 0))  # Get the quantity from the form
+
+        # Check if quantity is valid
+        if quantity <= 0 or quantity > crop.stock:
+            messages.error(request, "Invalid quantity selected.")
+            return redirect('crop_details', crop_id=crop.id)
+
+        # Create an order record or cart entry (based on your design)
+        order = Order.objects.create(crop=crop, quantity=quantity)  # Example order creation
+
+        crop.stock -= quantity  # Deduct the purchased quantity from stock
+        crop.save()  # Save the updated crop
+
+        messages.success(request, f"You have successfully purchased {quantity} kg of {crop.name}.")
+
+        # Redirect to a checkout or confirmation page
+        return redirect('check_out')  # Change 'checkout_page' to your actual URL name
+
+
+
+def farmer_notifications(request):
+    user = Registeruser.objects.get(user_id=request.session['user_id'])
+    notifications = Notification.objects.filter(farmer=user).order_by('-created_at')
+
+    # Mark all unread notifications as read
+    unread_notifications = notifications.filter(is_read=False)
+    unread_notifications.update(is_read=True)
+
+    return render(request, 'farmer_notifications.html', {
+        'notifications': notifications,
+    })
+
+
