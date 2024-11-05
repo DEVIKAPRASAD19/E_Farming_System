@@ -406,7 +406,7 @@ def addcrops(request):
         
         except Registeruser.DoesNotExist:
             messages.error(request, 'User not found.')
-            return redirect('error_page')  # Handle user not found
+            return redirect('addcrops')  # Handle user not found
 
         try:
             # Create the Crop instance
