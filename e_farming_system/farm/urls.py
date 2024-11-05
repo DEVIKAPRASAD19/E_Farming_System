@@ -49,6 +49,7 @@ urlpatterns = [
     path('stockfarmer/', views.stockfarmer, name='stockfarmer'),
     path('checkout/step1/', views.check_out_step1, name='check_out_step1'),
     path('checkout/step2/', views.check_out_step2, name='check_out_step2'),
+     path("verify-payment/", views.verify_payment, name="verify_payment"),
     
     path('update-user-details/', views.update_user_details, name='update_user_details'),
     path('place-order/', views.place_order, name='place_order'),
@@ -59,7 +60,11 @@ urlpatterns = [
     path('consultation/', views.expert_consultation, name='expert_consultation'),
     path('notifications/', views.farmer_notifications, name='farmer_notifications'),
     path('buy/<int:crop_id>/', views.buy_crop, name='buy_crop'),  # Add this line
-   
+
+    path('order_details/<int:order_id>/', views.order_details, name='order_details'),
+    path('cancel_order/<int:order_id>/', views.cancel_order, name='cancel_order'),  # Cancel Order View
+    path('crop/<int:crop_id>/feedback/submit/', views.submit_feedback, name='submit_feedback'),
+    path('crop/<int:crop_id>/feedback/', views.display_feedback, name='display_feedback'),
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

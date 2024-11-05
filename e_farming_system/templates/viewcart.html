@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Cart</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/crops_page.css' %}">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         /* Base styles */
         body {
@@ -17,6 +20,51 @@
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            min-width: 250px;
+            background: #11601e; /* Main sidebar color */
+            color: white;
+            height: 100vh; /* Full height for sidebar */
+            padding: 20px 0;
+            position: fixed;
+        }
+
+        .sidebar-header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #e6e6e6;
+            font-size: 22px; /* Larger font size for the header */
+            font-weight: bold;
+            color: white;
+        }
+
+        .components {
+            list-style: none;
+            padding: 0;
+        }
+
+        .components li {
+            padding: 25px 20px;
+        }
+
+        .components li a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            font-size: 24px; /* Adjust the font size as needed */
+        }
+
+        .components li a i {
+            margin-right: 10px;
+        }
+
+        .main-content {
+            margin-left: 250px; /* Adjusts content to make room for sidebar */
+            padding: 20px;
         }
 
         .navbar {
@@ -133,6 +181,7 @@
         .checkout-button:hover {
             background-color: #218838;
         }
+        
         .continue-shopping-button {
             background-color: #007bff;
             margin-left: 10px;
@@ -142,7 +191,6 @@
             background-color: #0056b3;
         }
         
-
         @media (max-width: 768px) {
             .cart-container {
                 padding: 20px;
@@ -160,54 +208,98 @@
     </style>
 </head>
 <body>
-    <div class="navbar">
-        <a href="{% url 'crops_page' %}" class="back-button">
-            <i class="fas fa-arrow-left"></i> Back
-        </a>
-    </div>
-    <div class="cart-container">
-        <div class="cart-header">
-            <h2>Your Cart</h2>
-            <i class="fas fa-shopping-cart"></i>
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            Welcome to Crops World
         </div>
+        <ul class="components">
+            <li>
+                <a href="{% url 'buyer_dashboard' %}">
+                    <i class="fas fa-home"></i> Buyer Dashboard
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'crops_page' %}">
+                    <i class="fas fa-seedling"></i> Crops Page
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'wishlist' %}">
+                    <i class="fas fa-heart"></i> My Wishlists
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'viewcart' %}">
+                    <i class="fas fa-shopping-cart"></i> My Cart
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'order_history' %}">
+                    <i class="fas fa-box"></i> Your Orders
+                </a>
+            </li>
+        </ul>
+    </nav>
 
-        {% if cart_items %}
-        <table>
-            <thead>
-                <tr>
-                    <th>Crop</th>
-                    <th>Quantity (Kg)</th>
-                    <th>Price per Unit</th>
-                    <th>Total Price</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in cart_items %}
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="navbar">
+            {% comment %} <a href="{% url 'buyer_dashboard' %}" class="back-button">
+                <i class="fas fa-arrow-left"></i> Back
+            </a> {% endcomment %}
+        </div>
+        <div class="cart-container">
+            <!-- Success message block -->
+            {% if messages %}
+                <div>
+                    {% for message in messages %}
+                        <div style="padding: 10px; background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724; margin-bottom: 15px; border-radius: 5px;">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <div class="cart-header">
+                <h2>Your Cart</h2>
+                <i class="fas fa-shopping-cart"></i>
+            </div>
+
+            {% if cart_items %}
+            <table>
+                <thead>
                     <tr>
-                        <td data-label="Crop">{{ item.crop.name }}</td>
-                        <td data-label="Quantity">{{ item.quantity }}</td>
-                        <td data-label="Price per Unit">Rs.{{ item.crop.price }}</td>
-                        <td data-label="Total Price">Rs.{{ item.get_total_price }}</td>
-                        <td data-label="Actions">
-                            <form action="{% url 'delete_from_cart' item.id %}" method="post">
-                                {% csrf_token %}
-                                <button type="submit" class="remove-button">Remove</button>
-                            </form>
-                        </td>
+                        <th>Crop</th>
+                        <th>Quantity (Kg)</th>
+                        <th>Price per Unit</th>
+                        <th>Total Price</th>
+                        <th>Actions</th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <p class="total-price"><strong>Total Price:</strong> Rs.{{ total_price }}</p>
-        <a href="{% url 'check_out_step1' %}" class="checkout-button">Proceed to Checkout</a>
-        <a href="{% url 'crops_page' %}" class="checkout-button continue-shopping-button">Continue Shopping</a>
-        {% else %}
-        <p>Your cart is empty.</p>
-        {% endif %}
+                </thead>
+                <tbody>
+                    {% for item in cart_items %}
+                        <tr>
+                            <td data-label="Crop">{{ item.crop.name }}</td>
+                            <td data-label="Quantity">{{ item.quantity }}</td>
+                            <td data-label="Price per Unit">Rs.{{ item.crop.price }}</td>
+                            <td data-label="Total Price">Rs.{{ item.get_total_price }}</td>
+                            <td data-label="Actions">
+                                <form action="{% url 'delete_from_cart' item.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="remove-button">Remove</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <p class="total-price"><strong>Total Price:</strong> Rs.{{ total_price }}</p>
+            <a href="{% url 'check_out_step1' %}" class="checkout-button">Proceed to Checkout</a>
+            <a href="{% url 'crops_page' %}" class="checkout-button continue-shopping-button">Continue Shopping</a>
+            {% else %}
+                <p style="text-align: center;">Your cart is empty!</p>
+            {% endif %}
+        </div>
     </div>
-
-    <!-- Font Awesome for icons -->
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </body>
 </html>

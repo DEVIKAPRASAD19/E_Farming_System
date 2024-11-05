@@ -7,68 +7,136 @@
     <title>Crops</title>
     <link rel="stylesheet" href="{% static 'css/crops_page.css' %}">
     <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Sidebar Styling */
+        .sidebar {
+            min-width: 250px;
+            background: #11601e; /* Main sidebar color */
+            color: white;
+            height: 100vh; /* Full height for sidebar */
+            padding: 20px 0;
+            position: fixed;
+        }
+
+        .sidebar-header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #e6e6e6;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .components {
+            list-style: none;
+            padding: 0;
+        }
+
+        .components li {
+            padding: 25px 20px;
+        }
+
+        .components li a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            font-size: 24px; /* Adjust the font size as needed */
+        }
+        
+
+        .components li a i {
+            margin-right: 10px;
+        }
+
+        .main-content {
+            margin-left: 250px; /* Adjusts content to make room for sidebar */
+            padding: 20px;
+        }
+        .sidebar-header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #e6e6e6;
+            font-size: 22px; /* Larger font size for the header */
+            font-weight: bold;
+            color: white;
+        }
+    </style>
 </head>
 <body>
-    <div class="header">
-        <h1>Crops Available</h1>
-        <a href="{% url 'buyer_dashboard' %}" class="back-button">
-            <span>Back</span>
-        </a>
-    </div>
-
-    <!-- Search form -->
-    <div class="search-section">
-        <form method="GET" action="{% url 'search_crops' %}">
-            <!-- Keep the search query if it was submitted -->
-            <input type="text" name="query" placeholder="Search for crops..." class="search-bar" value="{{ request.GET.query }}">
-    
-            <!-- Keep the selected category if it was submitted -->
-            <select name="category" class="search-category">
-                <option value="" {% if not request.GET.category %}selected{% endif %}>All Categories</option>
-                <option value="fruit" {% if request.GET.category == "fruit" %}selected{% endif %}>Fruits</option>
-                <option value="vegetable" {% if request.GET.category == "vegetable" %}selected{% endif %}>Vegetables</option>
-                <option value="grain" {% if request.GET.category == "grain" %}selected{% endif %}>Grains</option>
-                <option value="Other" {% if request.GET.category == "Other" %}selected{% endif %}>Other</option>
-            </select>
-    
-            <button type="submit" class="search-btn">Search</button>
-        </form>
-    </div>
-    
-
-    <!-- Crops List -->
-    <div class="crops-list">
-        {% if crops %}
-            {% for crop in crops %}
-            <div class="crop-item">
-                <a href="{% url 'crop_details' crop.id %}">  <!-- Updated URL to match your detail view -->
-                    <img src="{{ crop.images.first.image.url }}" alt="{{ crop.name }}" class="crop-image">
-                    <h2>{{ crop.name }}</h2>
-                    {% comment %} <p>{{ crop.description|truncatewords:20 }}</p> {% endcomment %}
-                    {% comment %} <p class="price">Price: Rs.{{ crop.price }}</p>
-                    <p class="category">Category: {{ crop.category }}</p> {% endcomment %}
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            Welcome to Crops World
+        </div>
+        <ul class="components">
+            <li>
+                <a href="{% url 'buyer_dashboard' %}">
+                    <i class="fas fa-home"></i> Buyer Dashboard
                 </a>
-                <!-- Add to Wishlist Button -->
-                {% comment %} <a href="{% url 'wishlist' %}" class="wishlist-btn" title="Add to Wishlist">❤️</a> {% endcomment %}
-            </div>
-            {% endfor %}
-        {% else %}
-            <p>No crops found matching your search criteria.</p>
-        {% endif %}
+            </li>
+            <li>
+                <a href="{% url 'crops_page' %}">
+                    <i class="fas fa-seedling"></i> Crops Page
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'wishlist' %}">
+                    <i class="fas fa-heart"></i> My Wishlists
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'viewcart' %}">
+                    <i class="fas fa-shopping-cart"></i> My Cart
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'order_history' %}">
+                    <i class="fas fa-box"></i> Your Orders
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1>Crops Available</h1>
+            <a href="{% url 'buyer_dashboard' %}" class="back-button">
+                <span>Back</span>
+            </a>
+        </div>
+
+        <!-- Search form -->
+        <div class="search-section">
+            <form method="GET" action="{% url 'search_crops' %}">
+                <input type="text" name="query" placeholder="Search for crops..." class="search-bar" value="{{ request.GET.query }}">
+                <select name="category" class="search-category">
+                    <option value="" {% if not request.GET.category %}selected{% endif %}>All Categories</option>
+                    <option value="fruit" {% if request.GET.category == "fruit" %}selected{% endif %}>Fruits</option>
+                    <option value="vegetable" {% if request.GET.category == "vegetable" %}selected{% endif %}>Vegetables</option>
+                    <option value="grain" {% if request.GET.category == "grain" %}selected{% endif %}>Grains</option>
+                    <option value="Other" {% if request.GET.category == "Other" %}selected{% endif %}>Other</option>
+                </select>
+                <button type="submit" class="search-btn">Search</button>
+            </form>
+        </div>
+
+        <!-- Crops List -->
+        <div class="crops-list">
+            {% if crops %}
+                {% for crop in crops %}
+                <div class="crop-item">
+                    <a href="{% url 'crop_details' crop.id %}">
+                        <img src="{{ crop.images.first.image.url }}" alt="{{ crop.name }}" class="crop-image">
+                        <h2>{{ crop.name }}</h2>
+                    </a>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p>No crops found matching your search criteria.</p>
+            {% endif %}
+        </div>
     </div>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-

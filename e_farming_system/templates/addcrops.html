@@ -3,8 +3,7 @@
 {% block content %}
 <nav class="navbar">
     <div class="nav-container">
-        <a href="{% url 'farmer_dashboard' %}" class="nav-link">Back</a>
-        <a href="{% url 'index' %}" class="nav-link">Logout</a>
+        <button class="back-button" onclick="window.history.back()">Back</button>
     </div>
 </nav>
 

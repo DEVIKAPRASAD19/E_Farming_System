@@ -115,7 +115,7 @@
         <form method="POST" action="{% url 'weather_update' %}">
             {% csrf_token %}
             <label for="location">Enter Location:</label>
-            <input type="text" id="location" name="location" placeholder="e.g., Kottayam" required>
+            <input type="text" id="location" name="location" placeholder="Place" required>
             <button type="submit">Get Weather</button>
         </form>
 

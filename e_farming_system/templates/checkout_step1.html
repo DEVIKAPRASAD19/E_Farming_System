@@ -6,6 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout - Update Details</title>
     <link rel="stylesheet" href="{% static 'css/checkout.css' %}">
+    <style>
+        .error-message {
+            color: red;
+            font-size: 0.9em;
+            margin-top: 4px;
+            display: none;
+        }
+        .error {
+            border-color: red;
+        }
+    </style>
 </head>
 <body>
     <!-- Back Button -->
@@ -22,32 +33,104 @@
 
                 <!-- Name -->
                 <label for="name"><strong>Name:</strong></label>
-                <input type="text" id="name" name="name" value="{{ user.name }}" required><br>
+                <input type="text" id="name" name="name" value="{{ user.name }}" required>
+                <div class="error-message" id="name-error">Please enter a valid name.</div><br>
 
                 <!-- Contact -->
                 <label for="contact"><strong>Contact:</strong></label>
-                <input type="text" id="contact" name="contact" value="{{ user.contact }}" required><br>
+                <input type="text" id="contact" name="contact" value="{{ user.contact }}" required>
+                <div class="error-message" id="contact-error">Please enter a 10-digit contact number.</div><br>
 
                 <!-- Email -->
                 <label for="email"><strong>Email:</strong></label>
-                <input type="email" id="email" name="email" value="{{ user.email }}" required><br>
+                <input type="email" id="email" name="email" value="{{ user.email }}" required>
+                <div class="error-message" id="email-error">Please enter a valid email address.</div><br>
 
                 <!-- Place -->
                 <label for="place"><strong>Place:</strong></label>
-                <input type="text" id="place" name="place" value="{{ user.place }}" required><br>
+                <input type="text" id="place" name="place" value="{{ user.place }}" required>
+                <div class="error-message" id="place-error">Place cannot be empty.</div><br>
 
                 <!-- Pincode -->
                 <label for="pincode"><strong>Pincode:</strong></label>
-                <input type="text" id="pincode" name="pincode" value="{{ user.pincode }}" required><br>
+                <input type="text" id="pincode" name="pincode" value="{{ user.pincode }}" required>
+                <div class="error-message" id="pincode-error">Please enter a valid 6-digit pincode.</div><br>
 
                 <!-- Delivery Address -->
                 <label for="delivery_address"><strong>Delivery Address:</strong></label>
-                <textarea id="delivery_address" name="delivery_address" rows="3" required>{{ user.delivery_address }}</textarea><br>
+                <textarea id="delivery_address" name="delivery_address" rows="3" required>{{ user.delivery_address }}</textarea>
+                <div class="error-message" id="delivery_address-error">Address cannot be empty.</div><br>
 
                 <!-- Update Button -->
                 <button type="submit">Save Delivery Details</button>
             </div>
         </form>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('user-details-form');
+
+            form.addEventListener('input', function (e) {
+                validateField(e.target);
+            });
+
+            form.addEventListener('submit', function (e) {
+                if (!validateForm()) {
+                    e.preventDefault(); // Prevent form submission if validations fail
+                }
+            });
+
+            function validateField(field) {
+                let isValid = true;
+                const errorMessage = document.getElementById(field.id + '-error');
+
+                switch (field.id) {
+                    case 'name':
+                        isValid = /^[A-Za-z\s]+$/.test(field.value);
+                        break;
+                    case 'contact':
+                        isValid = /^\d{10}$/.test(field.value);
+                        break;
+                    case 'email':
+                        isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(field.value);
+                        break;
+                    case 'place':
+                        isValid = field.value.trim().length > 0;
+                        break;
+                    case 'pincode':
+                        isValid = /^\d{6}$/.test(field.value);
+                        break;
+                    case 'delivery_address':
+                        isValid = field.value.trim().length > 0;
+                        break;
+                }
+
+                if (isValid) {
+                    field.classList.remove('error');
+                    errorMessage.style.display = 'none';
+                } else {
+                    field.classList.add('error');
+                    errorMessage.style.display = 'block';
+                }
+
+                return isValid;
+            }
+
+            function validateForm() {
+                let isFormValid = true;
+                const fields = ['name', 'contact', 'email', 'place', 'pincode', 'delivery_address'];
+
+                fields.forEach(fieldId => {
+                    const field = document.getElementById(fieldId);
+                    if (!validateField(field)) {
+                        isFormValid = false;
+                    }
+                });
+
+                return isFormValid;
+            }
+        });
+    </script>
 </body>
 </html>

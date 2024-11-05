@@ -12,7 +12,7 @@ from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.contrib.auth.tokens import default_token_generator as custom_token_generator
 from django.utils.html import strip_tags
-from .models import Registeruser, Adminm, Cart, Wishlist, Order, OrderItem, Notification
+from .models import Registeruser, Adminm, Cart, Wishlist, Order, OrderItem, Notification, Feedback
 from .forms import SetPasswordForm
 from .tokens import custom_token_generator
 from django.contrib.sites.shortcuts import get_current_site
@@ -476,6 +476,43 @@ def crop_details(request, id):
     return render(request, 'crop_details.html', context)
 
 
+def submit_feedback(request, crop_id):
+    if request.method == 'POST':
+        crop = get_object_or_404(Crop, id=crop_id)
+        feedback_text = request.POST.get('feedback_text')
+        rating = request.POST.get('rating', 5)  # Default rating is 5 if not provided
+
+        # Check if user information is available in the session
+        user_id = request.session.get('user_id')
+        if user_id:
+            # Change 'id' to 'user_id' here
+            user = get_object_or_404(Registeruser, user_id=user_id)  # Use user_id instead of id
+        else:
+            # Handle case when user is not logged in; you might want to set a default user or redirect
+            return redirect('login')  # Or handle differently if you want a default behavior
+
+        # Create Feedback instance
+        feedback = Feedback(
+            user=user,  # Set to the user found in the session
+            crop=crop,
+            feedback_text=feedback_text,
+            rating=rating
+        )
+        
+        feedback.save()  # Now, user_id will not be null
+        return redirect('crop_details', id=crop_id)  # Redirect to an appropriate page after submission
+
+    return redirect('crops_page')  # Redirect if the request method is not POST
+
+# View to display all feedback for a crop
+def display_feedback(request, crop_id):
+    crop = get_object_or_404(Crop, id=crop_id)
+    feedback_list = Feedback.objects.filter(crop=crop).order_by('-submitted_at')
+    
+    return render(request, 'display_feedback.html', {'crop': crop, 'feedback_list': feedback_list})
+
+
+
 
 # View to list farmers or buyers based on role
 def manage_users(request, role):
@@ -589,29 +626,36 @@ def update_user(request, user_id):
 
 def deactivate_user(request, user_id):
     user = get_object_or_404(Registeruser, user_id=user_id)
-    user.status = False  # Deactivate the user
-    user.save()
 
-    # Send deactivation email
-    send_mail(
-    subject='Important: Your Account Has Been Deactivated',
-    message=(
-        f"Dear {user.name},\n\n"
-        "We regret to inform you that your account has been deactivated by our admin team. "
-        "This action means you will no longer be able to access your account or its features at this time.\n\n"
-        "If you believe this is a mistake or if you have any questions, please feel free to contact us, and we will be happy to assist you.\n\n"
-        "Best regards,\n"
-        "The E-Farming Team\n"
-        f"Contact us: {settings.DEFAULT_FROM_EMAIL}"
-    ),
-    from_email=settings.DEFAULT_FROM_EMAIL,
-    recipient_list=[user.email],  # User's email
-    fail_silently=False,
-)
+    if request.method == 'POST':
+        reason = request.POST.get('reason', '').strip()  # Get the reason from POST data
+        user.status = False  # Deactivate the user
+        user.save()
+
+        # Send deactivation email with reason
+        send_mail(
+            subject='Important: Your Account Has Been Deactivated',
+            message=(
+                f"Dear {user.name},\n\n"
+                "We regret to inform you that your account has been deactivated by our admin team. "
+                "This action means you will no longer be able to access your account or its features at this time.\n\n"
+                f"Reason for deactivation: {reason}\n\n"  # Include reason in the email
+                "If you believe this is a mistake or if you have any questions, please feel free to contact us, and we will be happy to assist you.\n\n"
+                "Best regards,\n"
+                "The E-Farming Team\n"
+                f"Contact us: {settings.DEFAULT_FROM_EMAIL}"
+            ),
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user.email],  # User's email
+            fail_silently=False,
+        )
+        
+        return redirect('manage_users', role=user.role)  # Redirect to a success page or user list
+
+    return render(request, 'deactivate_user.html', {'user': user})  
 
 
-    messages.success(request, f'User {user.name} has been deactivated.')
-    return redirect('manage_users', role=user.role)
+    
 
 def activate_user(request, user_id):
     user = get_object_or_404(Registeruser, user_id=user_id)
@@ -821,7 +865,7 @@ def check_out_step1(request):
     })
 
 
-def check_out_step2(request):
+""" def check_out_step2(request):
     user = Registeruser.objects.get(user_id=request.session['user_id'])
     cart_items = Cart.objects.filter(user=user)  # Fetch cart items for the user
     total_price = sum(item.get_total_price() for item in cart_items)
@@ -832,34 +876,32 @@ def check_out_step2(request):
         'total_price': total_price
     })
 
-
+ """
 
 # Update user details and save them in session
 def update_user_details(request):
     if request.method == 'POST':
         user = Registeruser.objects.get(user_id=request.session['user_id'])
         
-        # Update user details in the Registeruser model
-        user.name = request.POST['name']
-        user.contact = request.POST['contact']
-        user.email = request.POST['email']
-        user.place = request.POST['place']
-        user.pincode = request.POST['pincode']
-        user.delivery_address = request.POST['delivery_address']
-        user.save()
-
-        # Save updated details to session for further use during order placement
+        # Save updated details only in the session without updating the Registeruser model
         request.session['updated_user_details'] = {
-            'name': user.name,
-            'contact': user.contact,
-            'email': user.email,
-            'place': user.place,
-            'pincode': user.pincode,
-            'delivery_address': user.delivery_address
+            'name': request.POST.get('name', user.name),
+            'contact': request.POST.get('contact', user.contact),
+            'email': request.POST.get('email', user.email),
+            'place': request.POST.get('place', user.place),
+            'pincode': request.POST.get('pincode', user.pincode),
+            'delivery_address': request.POST.get('delivery_address', '')
         }
+        
+        # Debugging print statement to check session data
+        print("Session data for updated user details:", request.session['updated_user_details'])
 
         return redirect('check_out_step2')  # Redirect back to the checkout page
-    return redirect('check_out_step2')
+    else:
+        # Redirect to the previous step if the request is not POST
+        return redirect('check_out_step1')
+
+
 
 
 # Create an in-app notification for low stock
@@ -906,6 +948,9 @@ def place_order(request):
         delivery_address = request.POST['address']
         payment_method = request.POST['payment_method']
 
+        # Retrieve pincode from the session, falling back to user details if not set
+        pincode = user_details.get('pincode') or request.POST.get('pincode') or request.session['updated_user_details'].get('pincode')
+
         cart_items = Cart.objects.filter(user=user)
         total_price = sum(item.get_total_price() for item in cart_items)
 
@@ -915,13 +960,13 @@ def place_order(request):
             contact=user_details['contact'],
             email=user_details['email'],
             place=user_details['place'],
-            pincode=user_details['pincode'],
+            pincode=pincode,  # Use the retrieved pincode here
             delivery_address=delivery_address,
             total_price=total_price,
             payment_method=payment_method
         )
 
-        # Add cart items as order items
+        # Add cart items as order items and remove from wishlist if present
         for item in cart_items:
             OrderItem.objects.create(
                 order=order,
@@ -932,6 +977,9 @@ def place_order(request):
             # Reduce the stock of the crop
             item.crop.stock -= item.quantity
             item.crop.save()  # Save the updated crop with reduced stock
+
+            # Remove from wishlist if the item is present
+            Wishlist.objects.filter(user=user, crop=item.crop).delete()
 
             # Check stock level and send notification if below 5 kg
             if item.crop.stock < 5:
@@ -950,6 +998,7 @@ def place_order(request):
         return redirect('order_summary', order_id=order.id)
 
     return redirect('check_out')
+
 
 
 
@@ -1011,12 +1060,11 @@ def order_history(request):
     user_id = request.session.get('user_id')
     
     if user_id:
-        # Fetch orders for the user based on the user ID from the session
-        orders = Order.objects.filter(user_id=user_id)
+        # Fetch orders for the user based on the user ID from the session and order by order_date descending
+        orders = Order.objects.filter(user_id=user_id).order_by('-order_date')
         return render(request, 'order_history.html', {'orders': orders})
     else:
         return redirect('login')  # Redirect to login if user ID is not found in session
-
 
 
 
@@ -1103,4 +1151,142 @@ def farmer_notifications(request):
         'notifications': notifications,
     })
 
+
+def order_details(request, order_id):
+    # Check if the user is logged in through session
+    user_id = request.session.get('user_id')  # Retrieve user ID from session
+
+    # Check if user_id exists in session
+    if user_id is None:
+        # Handle the case where the user is not logged in
+        return redirect('login')  # Redirect to your login page or handle as needed
+
+    # Retrieve the order details
+    order = get_object_or_404(Order, id=order_id)
+
+    # Compare user IDs using session data
+    if user_id != order.user.user_id:
+        # If the user does not match the order's user, redirect to order history
+        return redirect('order_history')  # Redirect to order history if not authorized
+
+    # Render the order details page
+    return render(request, 'order_details.html', {'order': order})
+
+
+
+def cancel_order(request, order_id):
+    # Get the order object
+    order = get_object_or_404(Order, id=order_id)
+
+    # Retrieve the user from session
+    user_id = request.session.get('user_id')  # Assuming you're saving user_id in session during login
+
+    # Debugging: Check order user
+    print(f'Order User: {order.user}')  # Should print the Registeruser object
+    print(f'User ID in session: {user_id}')  # Should print the user ID from session
+
+    # Check if the logged-in user is the buyer of this order
+    if user_id and user_id == order.user.user_id:  # Ensure this is correctly referencing the id
+        if order.status == 'Pending':
+            order.status = 'Cancelled'
+            order.save()
+           
+        else:
+            messages.info(request, 'This order cannot be cancelled as it is already completed or cancelled.')
+    else:
+        messages.error(request, 'You are not authorized to cancel this order.')
+
+    return redirect('order_details', order_id=order.id)
+
+
+
+import razorpay
+
+razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
+def check_out_step2(request):
+    user = Registeruser.objects.get(user_id=request.session['user_id'])
+    cart_items = Cart.objects.filter(user=user)
+
+    # Calculate total price in rupees
+    total_price = sum(item.get_total_price() for item in cart_items)
+
+    # Convert total_price to paise for Razorpay (without using multiply in HTML)
+    total_price_in_paise = int(total_price * 100)
+
+    # Create a Razorpay order
+    razorpay_order = razorpay_client.order.create({
+        "amount": total_price_in_paise,
+        "currency": "INR",
+        "payment_capture": "1"
+    })
+
+    # Save Razorpay order ID in the session to use it in the payment verification step
+    request.session['razorpay_order_id'] = razorpay_order['id']
+
+    return render(request, 'checkout_step2.html', {
+        'user': user,
+        'cart_items': cart_items,
+        'total_price': total_price,  # Keep in rupees for display
+        'razorpay_order_id': razorpay_order['id'],
+        'razorpay_key_id': settings.RAZORPAY_KEY_ID,
+    })
+
+
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+def verify_payment(request):
+    if request.method == "POST":
+        data = request.POST
+        params_dict = {
+            'razorpay_order_id': data['razorpay_order_id'],
+            'razorpay_payment_id': data['razorpay_payment_id'],
+            'razorpay_signature': data['razorpay_signature']
+        }
+        try:
+            # Verify the payment signature
+            razorpay_client.utility.verify_payment_signature(params_dict)
+            
+            # Retrieve the user and cart details
+            user = Registeruser.objects.get(user_id=request.session['user_id'])
+            cart_items = Cart.objects.filter(user=user)
+            total_price = sum(item.get_total_price() for item in cart_items)
+
+            # Create an order
+            order = Order.objects.create(
+                user=user,
+                name=request.session['updated_user_details']['name'],
+                contact=request.session['updated_user_details']['contact'],
+                email=request.session['updated_user_details']['email'],
+                place=request.session['updated_user_details']['place'],
+                pincode=request.session['updated_user_details']['pincode'],
+                delivery_address=request.session['updated_user_details']['delivery_address'],
+                total_price=total_price,
+                payment_method='Razorpay'
+            )
+
+            # Add cart items as order items and clear the cart
+            for item in cart_items:
+                OrderItem.objects.create(
+                    order=order,
+                    crop=item.crop,
+                    quantity=item.quantity,
+                    price=item.crop.price
+                )
+                item.crop.stock -= item.quantity
+                item.crop.save()
+
+            cart_items.delete()
+            request.session['cart'] = []
+
+            # Return success response
+            return JsonResponse({"status": "Payment Successful!", "order_id": order.id})
+        
+        except razorpay.errors.SignatureVerificationError:
+            return JsonResponse({"status": "Payment Verification Failed!"})
+    
+    return JsonResponse({"status": "Invalid Request"})
 

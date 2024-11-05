@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Order History</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Poppins:wght@600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/order_history.css' %}">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         /* General Styles */
         * {
@@ -18,8 +21,68 @@
             font-family: 'Roboto', sans-serif;
             background-color: #f4f6f9;
             padding: 20px 0;
+            background-image: url('https://img.freepik.com/free-photo/green-field-with-sun_1160-878.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
+        /* Sidebar Styling */
+        .sidebar {
+            min-width: 250px;
+            background: #11601e; /* Main sidebar color */
+            color: white;
+            height: 100vh; /* Full height for sidebar */
+            padding: 20px 0;
+            position: fixed;
+        }
+
+        .sidebar-header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #e6e6e6;
+            font-size: 22px; /* Larger font size for the header */
+            font-weight: bold;
+            color: white;
+        }
+
+        .components {
+            list-style: none;
+            padding: 0;
+        }
+
+        .components li {
+            padding: 25px 20px;
+        }
+
+        .components li a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            font-size: 24px; /* Adjust the font size as needed */
+        }
+
+        .components li a i {
+            margin-right: 10px;
+        }
+
+        .main-content {
+            margin-left: 250px; /* Adjusts content to make room for sidebar */
+            padding: 20px;
+        }
+
+        /* Top Navigation Bar */
+        .top-nav {
+            background-color: #4CAF50; /* Same color as buttons */
+            color: white;
+            padding: 20px 40px;
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        /* Order Card Styles */
         .container {
             width: 80%;
             margin: 20px auto;
@@ -37,7 +100,6 @@
             margin-bottom: 30px;
         }
 
-        /* Order Card Styles */
         .order-card {
             background-color: #fafafa;
             border: 1px solid #e0e0e0;
@@ -100,7 +162,23 @@
             font-weight: 500;
         }
 
-        /* No Orders */
+        .view-details-button {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        .view-details-button:hover {
+            background-color: #45a049;
+        }
+
         .no-orders {
             text-align: center;
             font-size: 18px;
@@ -108,7 +186,6 @@
             margin-top: 20px;
         }
 
-        /* Back Button */
         .back-button {
             display: block;
             width: fit-content;
@@ -141,34 +218,75 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Your Order History</h2>
-        {% if orders %}
-            {% for order in orders %}
-            <div class="order-card">
-                <div class="order-header">
-                    <div>Order ID: <span>{{ order.id }}</span></div>
-                    <div>Date: <span>{{ order.order_date }}</span></div>
-                    <div>Total Price: <span>Rs.{{ order.total_price }}</span></div>
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            Welcome to Crops World
+        </div>
+        <ul class="components">
+            <li>
+                <a href="{% url 'buyer_dashboard' %}">
+                    <i class="fas fa-home"></i> Buyer Dashboard
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'crops_page' %}">
+                    <i class="fas fa-seedling"></i> Crops Page
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'wishlist' %}">
+                    <i class="fas fa-heart"></i> My Wishlists
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'viewcart' %}">
+                    <i class="fas fa-shopping-cart"></i> My Cart
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'order_history' %}">
+                    <i class="fas fa-box"></i> Your Orders
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="top-nav">
+            Your Orders
+        </div>
+        <div class="container">
+            <h2>Your Order History</h2>
+            {% if orders %}
+                {% for order in orders %}
+                <div class="order-card">
+                    <div class="order-header">
+                        <div>Order ID: <span>{{ order.id }}</span></div>
+                        <div>Date: <span>{{ order.order_date }}</span></div>
+                        <div>Total Price: <span>Rs.{{ order.total_price }}</span></div>
+                    </div>
+                    <div class="order-details">
+                        <div>Delivery Address: {{ order.delivery_address }}</div>
+                        <div>Payment Method: {{ order.payment_method }}</div>
+                    </div>
+                    <div class="order-items">
+                        <strong>Items Ordered:</strong>
+                        <ul>
+                            {% for item in order.order_items.all %}
+                            <li>{{ item.crop.name }} (Qty: {{ item.quantity }}) - <span>Rs.{{ item.price }}</span></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <a href="{% url 'order_details' order.id %}" class="view-details-button">View Details</a> 
                 </div>
-                <div class="order-details">
-                    <div>Delivery Address: {{ order.delivery_address }}</div>
-                    <div>Payment Method: {{ order.payment_method }}</div>
-                </div>
-                <div class="order-items">
-                    <strong>Items Ordered:</strong>
-                    <ul>
-                        {% for item in order.order_items.all %}
-                        <li>{{ item.crop.name }} (Qty: {{ item.quantity }}) - <span>Rs.{{ item.price }}</span></li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-            {% endfor %}
-        {% else %}
-            <p class="no-orders">You have no previous orders.</p>
-        {% endif %}
-        <a href="{% url 'buyer_dashboard' %}" class="back-button">Back to Home</a>
+                {% endfor %}
+            {% else %}
+                <p class="no-orders">You have no previous orders.</p>
+            {% endif %}
+            <a href="{% url 'buyer_dashboard' %}" class="back-button">Back to Home</a>
+        </div>
     </div>
 </body>
 </html>

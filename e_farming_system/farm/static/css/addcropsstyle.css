@@ -6,44 +6,40 @@ body {
     padding: 0;
     display: flex;
     flex-direction: column;
-    height: 100vh; /* Full height of the viewport */
+    height: 100vh;
     background-color: #f8f9fa;
-    background-image: url('https://cdn.pixabay.com/photo/2018/07/06/19/40/field-3521063_960_720.jpg'); /* Add your image path here */
-    background-size: cover; /* Ensure the image covers the entire background */
-    background-position: center; /* Center the background image */
-    background-repeat: no-repeat; /* Prevent the image from repeating */
+    background-image: url('https://cdn.pixabay.com/photo/2018/07/06/19/40/field-3521063_960_720.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
-.navbar {
-    background-color: #333;
-    padding: 10px;
-    display: flex;
-    justify-content: flex-end; /* Aligns items to the right */
+.back-button {
+    position: absolute; /* Make the button position absolute */
+    top: 10px; /* Adjust top position */
+    left: 10px; /* Adjust left position */
+    background-color: #867777; /* Background color for the button */
+    color: white; /* Text color */
+    border: none; /* Remove border */
+    padding: 10px 15px; /* Padding */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Cursor style */
+    font-weight: bold; /* Bold text */
+    text-align: center; /* Center text */
 }
 
-.nav-container {
-    display: flex;
-    gap: 20px; /* Space between links */
-}
-
-.nav-link {
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-.nav-link:hover {
-    text-decoration: underline;
+.back-button:hover {
+    background-color: #736363; /* Darken on hover */
 }
 
 /* Form Container Styling */
 .form-container {
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Center vertically */
-    align-items: center; /* Center horizontally */
-    margin: auto; /* Auto margin for horizontal centering */
-    height: calc(100vh - 60px); /* Adjust for navbar height */
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    height: calc(100vh - 60px);
 }
 
 h2 {
@@ -57,7 +53,7 @@ form {
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     padding: 20px;
-    width: 400px; /* Fixed width for the form */
+    width: 400px;
 }
 
 .form-group {

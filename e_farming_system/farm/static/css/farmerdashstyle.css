@@ -25,7 +25,7 @@ body {
 
 .sidebar-header {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 40px;
 }
 
 .components {
@@ -42,6 +42,7 @@ body {
     text-decoration: none;
     display: flex;
     align-items: center; /* Center the icon and text vertically */
+    font-size: 22px;
 }
 
 .components li a i {
@@ -75,7 +76,7 @@ body {
 
 .navbar h1 {
     margin: 0; /* Remove default margin */
-    font-size: 1.5rem; /* Font size for welcome message */
+    font-size: 2.0rem; /* Font size for welcome message */
 }
 
 /* Profile Dropdown Styling */

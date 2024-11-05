@@ -6,23 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout - Order & Payment</title>
     <link rel="stylesheet" href="{% static 'css/checkout.css' %}">
-    <!-- Include SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <style>
         .payment-options {
             display: flex;
             align-items: center;
-            gap: 40px; /* Adjust spacing between payment methods */
+            gap: 40px;
         }
-
         .payment-option {
             display: flex;
             align-items: center;
         }
-
         .payment-option input[type="radio"] {
-            margin-right: 8px; /* Spacing between radio button and label */
+            margin-right: 8px;
         }
     </style>
 </head>
@@ -60,12 +58,14 @@
         <h3>Order Details</h3>
         <form id="order-form" method="post" action="{% url 'place_order' %}">
             {% csrf_token %}
-            
-            <!-- Delivery Address (Filled automatically from updated form) -->
             <label for="address">Delivery Address:</label>
-            <textarea id="address" name="address" rows="3" required>{{ user.delivery_address }}</textarea><br>
+<textarea id="address" name="address" rows="3" required>
+    {{ request.session.updated_user_details.delivery_address|default:user.delivery_address }}
+</textarea><br>
 
-            <!-- Payment Method -->
+<!-- Hidden input for pincode -->
+<input type="hidden" name="pincode" value="{{ request.session.updated_user_details.pincode|default:user.pincode }}">
+
             <h4>Payment Method:</h4><br>
             <div class="payment-options">
                 <div class="payment-option">
@@ -78,28 +78,119 @@
                 </div>
             </div><br>
 
-            <!-- Submit Button -->
             <button type="button" id="confirm-purchase">Confirm Purchase</button>
+            <button type="button" id="rzp-button1" style="display:none;">Pay with Razorpay</button>
         </form>
     </div>
 
     <script>
         document.getElementById('confirm-purchase').addEventListener('click', function() {
-            Swal.fire({
-                title: 'Confirm Purchase?',
-                text: "Are you sure you want to confirm your order?",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, confirm it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // If confirmed, submit the order form
-                    document.getElementById('order-form').submit();
-                }
-            });
+            const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+
+            if (paymentMethod === 'online') {
+                Swal.fire({
+                    title: 'Proceed to Online Payment?',
+                    text: "You'll be redirected to the payment gateway.",
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, proceed'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById('rzp-button1').click();
+                    }
+                });
+            } else {
+                Swal.fire({
+                    title: 'Confirm Purchase?',
+                    text: "Are you sure you want to confirm your order?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, confirm it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById('order-form').submit();
+                    }
+                });
+            }
         });
+
+        const options = {
+            "key": "{{ razorpay_key_id }}",
+            "amount": "{{ final_price|floatformat:2 }}",  
+            "currency": "INR",
+            "name": "E Farming System",
+            "description": "Order Payment",
+            "order_id": "{{ razorpay_order_id }}",
+            "handler": function (response) {
+                fetch("{% url 'verify_payment' %}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "X-CSRFToken": "{{ csrf_token }}",
+                    },
+                    body: new URLSearchParams({
+                        "razorpay_payment_id": response.razorpay_payment_id,
+                        "razorpay_order_id": response.razorpay_order_id,
+                        "razorpay_signature": response.razorpay_signature,
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === "Payment Successful!") {
+                        if (data.order_id) {
+                            window.location.href = "{% url 'order_summary' 0 %}".replace('0', data.order_id);
+                        } else {
+                            alert("Order ID not found in the response.");
+                        }
+                    } else {
+                        alert("Payment verification failed!");
+                    }
+                });
+            },
+            "prefill": {
+                "name": "{{ user.name }}",
+                "email": "",
+                "contact": ""
+            },
+            "theme": {
+                "color": "#3399cc"
+            },
+            "config": {
+                "display": {
+                    "blocks": {
+                        "utib": {
+                            "name": "Pay Using Axis Bank",
+                            "instruments": [
+                                { "method": "card", "issuers": ["UTIB"] },
+                                { "method": "netbanking", "banks": ["UTIB"] }
+                            ]
+                        },
+                        "other": {
+                            "name": "Other Payment Methods",
+                            "instruments": [
+                                { "method": "card", "issuers": ["ICIC", "HDFC", "SBI", "AXIS"] },
+                                { "method": "netbanking" },
+                                { "method": "upi", "issuers": ["googlepay", "paytm", "phonepe"] }
+                            ]
+                        }
+                    },
+                    "sequence": ["block.utib", "block.other"],
+                    "preferences": {
+                        "show_default_blocks": false
+                    }
+                }
+            }
+        };
+    
+        const rzp1 = new Razorpay(options);
+        document.getElementById('rzp-button1').onclick = function(e) {
+            e.preventDefault();
+            rzp1.open();
+        };
     </script>
 </body>
 </html>

@@ -8,19 +8,20 @@
     <link rel="stylesheet" href="{% static 'css/cropdetails.css' %}">
 </head>
 <body>
-    <div class="top-right">
+    <div class="top-left">
         <a href="{% url 'crops_page' %}" class="back-button">Back to Crops</a>
     </div>
     
     <div class="container">
         <!-- Message display block -->
         {% if messages %}
-            <ul class="messages">
-                {% for message in messages %}
-                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li class="wishlist-message{% if message.tags %} {{ message.tags }}{% endif %}">{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
 
         <h1 id="cropName">{{ crop.name }}</h1>
         <div class="crop-details">
@@ -38,27 +39,66 @@
                 <p><strong>Stock Available:</strong> <span id="stockAvailable">{{ crop.stock }} kg</span></p>
                 <p><strong>Farmer:</strong> <span id="farmerName">{{ crop.farmer.name }}</span></p>
                 <p><strong>Added At:</strong> <span id="addedAt">{{ crop.added_at }}</span></p>
-                
-                <!-- Add to Cart and Buy Form -->
-            <div class="action-buttons">
-                <form method="POST" action="{% url 'add_to_cart' crop.id %}">
-                    {% csrf_token %}
-                    <label for="quantity"><b>Quantity:</b></label>
-                    <input type="number" id="quantity" name="quantity" min="1" max="{{ crop.stock }}" required>
-                    <button type="submit" class="btn add-to-cart-btn">Add to Cart</button>
-                    <button type="submit" name="buy" class="btn buy-btn">Buy</button>
-                </form>
+                <br>
+                <!-- Add to Cart and Wishlist Form -->
+                <div class="action-buttons">
+                    <form method="POST" action="{% url 'add_to_cart' crop.id %}">
+                        {% csrf_token %}
+                        <label for="quantity"><b>Quantity (in kg):</b></label>
+                        <input type="number" id="quantity" name="quantity" min="1" max="{{ crop.stock }}" required>
+                        <button type="submit" class="btn add-to-cart-btn">Add to Cart</button>
+                    </form>
+                    <form method="POST" action="{% url 'crop_details' crop.id %}">
+                        {% csrf_token %}
+                        <button type="submit" name="add_to_wishlist" class="btn add-to-wishlist-btn">Add to Wishlist</button>
+                    </form>
+                </div>
             </div>
-
-            </div>
-        </div>
-        
-        <div class="action-buttons">
-            <form method="POST" action="{% url 'crop_details' crop.id %}">
-                {% csrf_token %}
-                <button type="submit" name="add_to_wishlist" class="btn add-to-wishlist-btn">Add to Wishlist</button>
-            </form>
         </div>
     </div>
+
+    <!-- Feedback Form Section -->
+    <div class="feedback-form-container">
+        <h2>Leave Your Feedback</h2>
+        <form action="{% url 'submit_feedback' crop.id %}" method="post">
+            {% csrf_token %}
+            <textarea name="feedback_text" placeholder="" required></textarea>
+            <label for="rating">Rate:</label>
+            <select name="rating" required>
+                <option value="5">5 - Excellent</option>
+                <option value="4">4 - Good</option>
+                <option value="3">3 - Average</option>
+                <option value="2">2 - Fair</option>
+                <option value="1">1 - Poor</option>
+            </select>
+            <button type="submit" class="btn submit-feedback-btn">Submit Feedback</button>
+        </form>
+    </div>
+
+    <!-- Display Feedback Section -->
+<div class="feedback-display-container">
+    <h2>Customer Feedbacks</h2>
+    <div class="feedback-display">
+        {% if crop.feedback_set.all %}
+            {% for feedback in crop.feedback_set.all %}
+                <div class="feedback-item">
+                    <div class="feedback-header">
+                        <div class="user-info">
+                            <span class="feedback-username">{{ feedback.user.username }}</span>
+                            <span class="feedback-date">Posted on: {{ feedback.submitted_at }}</span>
+                        </div>
+                        <div class="feedback-rating">
+                            <span class="rating-star">★</span> {{ feedback.rating }}
+                        </div>
+                    </div>
+                    <p class="feedback-text">{{ feedback.feedback_text }}</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="no-feedback">No feedback yet. Be the first to leave a review!</p>
+        {% endif %}
+    </div>
+</div>
+
 </body>
 </html>

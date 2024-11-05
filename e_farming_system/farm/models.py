@@ -38,27 +38,6 @@ class Registeruser(models.Model):
 
 
 
-""" from django.db import models
-
-class Crop(models.Model):
-    CROP_CATEGORIES = [
-        ('Vegetable', 'Vegetable'),
-        ('Fruit', 'Fruit'),
-        ('Grain', 'Grain'),
-        ('Herb', 'Herb'),
-        ('Other', 'Other'),
-    ]
-    
-    name = models.CharField(max_length=100)
-    description = models.TextField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    image = models.ImageField(upload_to='crop_images/')
-    category = models.CharField(max_length=50, choices=CROP_CATEGORIES)
-    added_by = models.ForeignKey('auth.User', on_delete=models.CASCADE)
-    date_added = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.name """
 
 
 
@@ -175,3 +154,14 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"Notification for {self.farmer.name}: {self.message}"
+    
+
+class Feedback(models.Model):
+    user = models.ForeignKey(Registeruser, on_delete=models.CASCADE)  # Must be linked to Registeruser model
+    crop = models.ForeignKey('Crop', on_delete=models.CASCADE)  # Linking to Crop model
+    feedback_text = models.TextField()
+    rating = models.IntegerField(choices=[(i, i) for i in range(1, 6)], default=5)  # Rating from 1 to 5
+    submitted_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user} - {self.rating} Stars"

@@ -1,0 +1,211 @@
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            background-image: url('https://img.freepik.com/free-photo/abstract-blur-green-nature_1150-27263.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        h2 {
+            color: #4CAF50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .order-details {
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            max-width: 600px;
+            margin: 20px auto;
+            transition: transform 0.3s;
+        }
+
+        .order-details:hover {
+            transform: translateY(-2px); /* Slightly lift on hover */
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .order-info {
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .order-info strong {
+            color: #4CAF50;
+        }
+
+        .button-container {
+            text-align: center;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+            transform: scale(1.05); /* Slight scale effect on hover */
+        }
+
+        .cancel-message {
+            color: #d9534f; /* Red color for message */
+            font-weight: bold;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        a {
+            color: #4CAF50;
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .back-button {
+            background-color: #fff;
+            color: #4CAF50;
+            border: 1px solid #4CAF50;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+            margin-bottom: 20px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .back-button:hover {
+            background-color: #4CAF50;
+            color: white;
+            transform: scale(1.05); /* Slight scale effect on hover */
+        }
+
+        /* Order items style */
+        .order-items {
+            margin-top: 15px;
+            padding: 10px 0;
+            border-top: 1px solid #e0e0e0; /* Add a border to separate items */
+            margin-top: 15px;
+        }
+
+        .order-items span {
+            display: inline; /* Ensure items are displayed inline */
+            margin-right: 5px; /* Space between items */
+        }
+
+        /* Additional order details */
+        .order-details-info {
+            margin-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            padding-top: 10px;
+        }
+
+        /* Positioning the back to order history button */
+        .back-to-history {
+            text-align: left;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <a href="{% url 'order_history' %}" class="back-button">← Back</a>
+
+    <div class="order-details">
+        <h2>Order Details</h2>
+
+        <div class="order-info">
+            <p><strong>Order ID:</strong> {{ order.id }}</p>
+            <div class="order-items">
+                <strong>Items Ordered:</strong>
+                {% for item in order.order_items.all %}
+                    <span>{{ item.crop.name }} (Qty: {{ item.quantity }})</span>
+                    {% if not forloop.last %}, {% endif %}  <!-- Add a comma except for the last item -->
+                {% endfor %}
+            </div>
+            <p><strong>Status:</strong> {{ order.status }}</p>
+            <p><strong>Order Date:</strong> {{ order.order_date }}</p>
+            <p><strong>Delivery Address:</strong> {{ order.delivery_address }}</p>
+            <p><strong>Payment Method:</strong> {{ order.payment_method }}</p>
+            <p><strong>Total Amount:</strong> Rs.{{ order.total_price }}</p>
+        </div>
+
+        <!-- Show the cancel button if the order is still pending -->
+        {% if order.status == 'Pending' %}
+            <div class="button-container">
+                <button onclick="confirmCancelOrder()">Cancel Order</button>
+            </div>
+        {% else %}
+            <p class="cancel-message">You cannot cancel this order as it is {{ order.status }}.</p>
+        {% endif %}
+    </div>
+
+    <div class="back-to-history">
+        <a href="{% url 'order_history' %}">Back to Order History</a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function confirmCancelOrder() {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'Do you really want to cancel this order?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, cancel it!',
+                cancelButtonText: 'No, keep it'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Create a form element to submit the cancel order action
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = "{% url 'cancel_order' order.id %}";  // Set the action URL
+
+                    // Create a CSRF token input
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = 'csrfmiddlewaretoken';
+                    csrfInput.value = '{{ csrf_token }}';  // Include the CSRF token
+
+                    // Append the CSRF token to the form
+                    form.appendChild(csrfInput);
+
+                    // Append the form to the body and submit it
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>
+{% endblock %}
