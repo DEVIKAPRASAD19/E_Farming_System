@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-jm%jsjx5v93+6#y8sa(#rdmpp@-7do^_ro6*1fftam5q*=ul7&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -43,6 +43,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -74,14 +75,25 @@ WSGI_APPLICATION = 'e_farming_system.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'farming_db',
+#         'USER': 'root',
+#         'PASSWORD':'',
+#         'HOST': 'localhost',
+#         'PORT': '3306',
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'farming_db',
-        'USER': 'root',
-        'PASSWORD':'',
-        'HOST': 'localhost',
-        'PORT': '3306',
+        'NAME': 'farming_chairranch',
+        'USER': 'farming_chairranch',
+        'PASSWORD':'9de8a976de80f72187d330c191fe5c011cc29edf',
+        'HOST': 'sc36o.h.filess.io',
+        'PORT': '3307',
     }
 }
 
@@ -163,6 +175,6 @@ LOGIN_REDIRECT_URL = '/buyer_dashboard/'  # Adjust this to where users should la
 LOGOUT_REDIRECT_URL = '/index/'  # Where users go after logout
 
 
-RAZORPAY_KEY_ID = '####'
-RAZORPAY_KEY_SECRET = '####'
+RAZORPAY_KEY_ID = 'rzp_test_K3m91dIeZXVDcE'
+RAZORPAY_KEY_SECRET = '5Pc3YEyRGnv8eASHMCzbs1tp'
 
