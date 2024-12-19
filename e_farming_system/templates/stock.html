@@ -4,18 +4,111 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crop Stock Details</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* General styling for the page */
+        /* General styling */
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f9;
-            color: #333;
+            background: url('https://t3.ftcdn.net/jpg/03/39/06/02/360_F_339060225_w8ob8LjMJzPdEqD9UFxbE6ibcKx8dFrP.jpg') no-repeat center center fixed;
+            background-size: cover;
+            font-family: 'Roboto', sans-serif;
             margin: 0;
             padding: 0;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
+        }
+
+        /* Top Navbar Styling */
+        .navbar {
+            background-color: #2e7d32;
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+        .navbar .navbar-brand {
+            font-size: 28px;
+            font-weight: 700;
+        }
+        .navbar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+        }
+        .navbar ul li {
+            margin-left: 20px;
+        }
+        .navbar ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+        }
+
+        /* Wrapper Styling */
+        .wrapper {
+            display: flex;
+            flex: 1;
+            margin-top: 76px;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            background-color: #388e3c;
+            color: white;
+            width: 250px;
+            padding: 20px;
+            position: fixed;
+            height: calc(100% - 72px);
+            top: 72px;
+            left: 0;
+            box-shadow: 2px 0 6px rgba(0, 0, 0, 0.2);
+        }
+        .sidebar .sidebar-header {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 22px;
+            font-weight: 700;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sidebar ul li {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: background-color 0.3s ease;
+        }
+        .sidebar ul li:hover {
+            background-color: #2e7d32;
+        }
+        .sidebar ul li a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            font-size: 18px;
+        }
+        .sidebar ul li a i {
+            margin-right: 15px;
+            font-size: 20px;
+        }
+
+        /* Main Content Styling */
+        .container {
+            margin-left: 290px;
+            padding: 20px;
+            width: calc(100% - 290px);
         }
 
         h1 {
@@ -27,10 +120,9 @@
             letter-spacing: 2px;
         }
 
-        /* Styling the table */
+        /* Table Styling */
         table {
-            width: 90%;
-            max-width: 1200px;
+            width: 100%;
             border-collapse: collapse;
             margin: 20px 0;
             background-color: #fff;
@@ -58,17 +150,15 @@
             color: #555;
         }
 
-        /* Row hover effect */
         tr:hover {
             background-color: #f1f1f1;
         }
 
-        /* Zebra striping for rows */
         tr:nth-child(even) {
             background-color: #f9f9f9;
         }
 
-        /* Style for available/unavailable status */
+        /* Status styling */
         .status-available {
             color: green;
             font-weight: bold;
@@ -77,26 +167,6 @@
         .status-unavailable {
             color: red;
             font-weight: bold;
-        }
-
-        /* Styling the back button */
-        .back-button {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 1rem;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .back-button:hover {
-            background-color: #45a049;
         }
 
         /* Responsive design */
@@ -119,46 +189,67 @@
                 padding: 10px 15px;
                 font-size: 0.85rem;
             }
-
-            .back-button {
-                padding: 8px 15px;
-                font-size: 0.9rem;
-            }
         }
     </style>
 </head>
 <body>
-    <button class="back-button" onclick="window.history.back();">Back</button>
-    <h1>Crop Stock Details</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Price</th>
-                <th>Category</th>
-                <th>Stock(Kg)</th>
-                <th>Status</th>
-                <th>Verified</th>
-                <th>Farmer</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for crop in crops %}
-            <tr>
-                <td>{{ crop.name }}</td>
-                <td>{{ crop.description }}</td>
-                <td>Rs.{{ crop.price }}</td>
-                <td>{{ crop.category }}</td>
-                <td>{{ crop.stock }}</td>
-                <td class="{% if crop.status %}status-available{% else %}status-unavailable{% endif %}">
-                    {{ crop.status|yesno:"Available,Unavailable" }}
-                </td>
-                <td>{{ crop.is_verified|yesno:"Verified,Not Verified" }}</td>
-                <td>{{ crop.farmer.name }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <!-- Top Navbar -->
+    <div class="navbar">
+        <span class="navbar-brand">E-Farming Admin Dashboard</span>
+        <ul>
+            <li><a href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+        </ul>
+    </div>
+
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">Admin Menu</div>
+            <ul>
+                <li><a href="{% url 'adminfarm' %}"><i class="fa-solid fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="{% url 'manage_users' 'farmer' %}"><i class="fa-solid fa-users"></i> Manage Farmers</a></li>
+                <li><a href="{% url 'manage_users' 'buyer' %}"><i class="fa-solid fa-users"></i> Manage Buyers</a></li>
+                <li><a href="{% url 'adminviews' %}"><i class="fa-solid fa-seedling"></i> View Crops</a></li>
+                <li><a href="{% url 'verify_crops' %}"><i class="fa-solid fa-clipboard-check"></i> Requests</a></li>
+                <li><a href="{% url 'admin_feedback' %}"><i class="fa-solid fa-comments"></i> View Feedbacks</a></li>
+                <li><a href="{% url 'stock' %}"><i class="fa-solid fa-boxes-stacked"></i> Stock Details</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="container">
+            <h1>Crop Stock Details</h1>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Price</th>
+                        <th>Category</th>
+                        <th>Stock(Kg)</th>
+                        <th>Status</th>
+                        <th>Verified</th>
+                        <th>Farmer</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for crop in crops %}
+                    <tr>
+                        <td>{{ crop.name }}</td>
+                        <td>{{ crop.description }}</td>
+                        <td>Rs.{{ crop.price }}</td>
+                        <td>{{ crop.category }}</td>
+                        <td>{{ crop.stock }}</td>
+                        <td class="{% if crop.status %}status-available{% else %}status-unavailable{% endif %}">
+                            {{ crop.status|yesno:"Available,Unavailable" }}
+                        </td>
+                        <td>{{ crop.is_verified|yesno:"Verified,Not Verified" }}</td>
+                        <td>{{ crop.farmer.name }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </body>
 </html>

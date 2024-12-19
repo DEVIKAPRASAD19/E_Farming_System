@@ -5,49 +5,268 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage {{ role|title }}s</title>
-    <link rel="stylesheet" href="{% static 'css/manageuser.css' %}">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Styles -->
+    <style>
+        /* General Styling */
+        body {
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(to bottom, #f0f4c3, #a5d6a7);
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Top Navbar Styling */
+        .navbar {
+            background-color: #2e7d32;
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .navbar .navbar-brand {
+            font-size: 28px;
+            font-weight: 700;
+        }
+        .navbar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+        }
+        .navbar ul li {
+            margin-left: 20px;
+        }
+        .navbar ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        .navbar ul li a:hover {
+            color: #c8e6c9;
+        }
+
+        /* Wrapper Styling */
+        .wrapper {
+            display: flex;
+            flex: 1;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            background-color: #388e3c;
+            color: white;
+            width: 250px;
+            padding: 20px;
+            position: fixed;
+            height: 100%;
+            box-shadow: 2px 0 6px rgba(0, 0, 0, 0.2);
+        }
+        .sidebar .sidebar-header {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 22px;
+            font-weight: 700;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sidebar ul li {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: background-color 0.3s ease;
+        }
+        .sidebar ul li:hover {
+            background-color: #2e7d32;
+            cursor: pointer;
+        }
+        .sidebar ul li a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            font-size: 18px;
+        }
+        .sidebar ul li a i {
+            margin-right: 15px;
+            font-size: 20px;
+        }
+
+        /* Main Content Styling */
+        #content {
+            margin-left: 270px; /* Adjusted for sidebar width */
+            padding: 40px;
+            flex: 1;
+            background-color: #f9fbe7;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1b5e20;
+        }
+        .back-button {
+            text-decoration: none;
+            background-color: #4caf50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s;
+        }
+        .back-button:hover {
+            background-color: #388e3c;
+        }
+
+        .users-list {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table th, table td {
+            text-align: left;
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        table th {
+            background-color: #4caf50;
+            color: white;
+        }
+        table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .edit-btn, .deactivate-btn, .reactivate-btn {
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 14px;
+            color: white;
+        }
+        .edit-btn {
+            background-color: #2196f3;
+        }
+        .deactivate-btn {
+            background-color: #e53935;
+        }
+        .reactivate-btn {
+            background-color: #43a047;
+        }
+        .edit-btn:hover {
+            background-color: #1976d2;
+        }
+        .deactivate-btn:hover {
+            background-color: #c62828;
+        }
+        .reactivate-btn:hover {
+            background-color: #2e7d32;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #2e7d32;
+            color: white;
+            font-size: 14px;
+            position: bottom;
+            bottom: 0;
+            width: 100%;
+            box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
 </head>
 <body>
-    <div class="header">
-        <h1>Manage {{ role|title }}s</h1>
-        <a href="{% url 'adminfarm' %}" class="back-button">
-            <span>Back</span>
-        </a>
+    <!-- Top Navbar -->
+    <div class="navbar">
+        <span class="navbar-brand">E-Farming Admin Dashboard</span>
+        <ul>
+            <li><a href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+        </ul>
     </div>
 
-    <div class="users-list">
-        <table>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Contact</th>
-                    <th>Place</th>
-                    <th>Email</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for user in users %}
-                <tr>
-                    <td>{{ user.name }}</td>
-                    <td>{{ user.contact }}</td>
-                    <td>{{ user.place }}</td>
-                    <td>{{ user.email }}</td>
-                    <td>
-                        <a href="{% url 'update_user' user.user_id %}" class="edit-btn">Edit</a>
-                        
-                        <!-- Conditional Deactivate/Reactivate Button -->
-                        {% if user.status %}
-                            <a href="{% url 'deactivate_user' user.user_id %}" class="deactivate-btn" onclick="return confirm('Are you sure you want to deactivate this user?');">Delete</a>
-                        {% else %}
-                            <a href="{% url 'activate_user' user.user_id %}" class="reactivate-btn" onclick="return confirm('Are you sure you want to reactivate this user?');">Activate</a>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">Admin Menu</div>
+            <ul>
+                <li><a href="{% url 'adminfarm' %}"><i class="fa-solid fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="{% url 'manage_users' 'farmer' %}"><i class="fa-solid fa-users"></i> Manage Farmers</a></li>
+                <li><a href="{% url 'manage_users' 'buyer' %}"><i class="fa-solid fa-users"></i> Manage Buyers</a></li>
+                <li><a href="{% url 'adminviews' %}"><i class="fa-solid fa-seedling"></i> View Crops</a></li>
+                <li><a href="{% url 'verify_crops' %}"><i class="fa-solid fa-clipboard-check"></i> Requests</a></li>
+                <li><a href="{% url 'admin_feedback' %}"><i class="fa-solid fa-comments"></i> View Feedbacks</a></li>
+                <li><a href="{% url 'stock' %}"><i class="fa-solid fa-boxes-stacked"></i> Stock Details</a></li>
+            </ul>
+        </nav>
+
+        <!-- Content Area -->
+        <div id="content">
+            <div class="header">
+                <h1>Manage {{ role|title }}s</h1>
+            </div>
+
+            <div class="users-list">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Contact</th>
+                            <th>Place</th>
+                            <th>Email</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>{{ user.name }}</td>
+                            <td>{{ user.contact }}</td>
+                            <td>{{ user.place }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>
+                                {% if user.status %}
+                                    <a href="{% url 'deactivate_user' user.user_id %}" class="deactivate-btn" onclick="return confirm('Are you sure you want to deactivate this user?');">Delete</a>
+                                {% else %}
+                                    <a href="{% url 'activate_user' user.user_id %}" class="reactivate-btn" onclick="return confirm('Are you sure you want to reactivate this user?');">Activate</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
+    <!-- Footer -->
+    {% comment %} <div class="footer">
+        &copy; 2024 E-Farming System. All rights reserved.
+    </div> {% endcomment %}
 </body>
 </html>

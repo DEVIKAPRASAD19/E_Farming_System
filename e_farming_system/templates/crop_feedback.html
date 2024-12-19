@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Feedback</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .feedback-section {
+            margin-bottom: 20px;
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .feedback-section h2 {
+            margin: 0 0 10px;
+            font-size: 20px;
+            color: #333;
+        }
+        .feedback-details {
+            margin: 10px 0;
+        }
+        .feedback-details ul {
+            list-style: none;
+            padding: 0;
+        }
+        .feedback-details ul li {
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .feedback-details ul li:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>My Crop Feedback</h1>
+    {% for crop_feedback in feedback_data %}
+    <div class="feedback-section">
+        <h2>{{ crop_feedback.crop.name }}</h2>
+        <p><strong>Description:</strong> {{ crop_feedback.crop.description }}</p>
+        <p>
+            <strong>Average Rating:</strong> {{ crop_feedback.average_rating }} / 5<br>
+            <strong>Total Feedback:</strong> {{ crop_feedback.feedback_count }}
+        </p>
+        <div class="feedback-details">
+            <h3>Feedback:</h3>
+            {% if crop_feedback.feedbacks %}
+            <ul>
+                {% for feedback in crop_feedback.feedbacks %}
+                <li>
+                    <strong>Buyer:</strong> {{ feedback.user.name if feedback.user else "Anonymous" }}<br>
+                    <strong>Rating:</strong> {{ feedback.rating }} / 5<br>
+                    <strong>Comment:</strong> {{ feedback.feedback_text }}<br>
+                    <em>Submitted on {{ feedback.submitted_at|date:"M d, Y" }}</em>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p>No feedback yet.</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</body>
+</html>

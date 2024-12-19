@@ -76,15 +76,15 @@ WSGI_APPLICATION = 'e_farming_system.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 # DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'farming_db',
-#         'USER': 'root',
-#         'PASSWORD':'',
-#         'HOST': 'localhost',
-#         'PORT': '3306',
-#     }
-# }
+#      'default': {
+#          'ENGINE': 'django.db.backends.mysql',
+#          'NAME': 'farming_db',
+#          'USER': 'root',
+#          'PASSWORD':'',
+#          'HOST': 'localhost',
+#          'PORT': '3306',
+#      }
+#  }
 
 DATABASES = {
     'default': {
@@ -122,11 +122,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
-
-USE_I18N = True
-
-USE_TZ = True
+TIME_ZONE = 'Asia/Kolkata'  # For Indian Standard Time
+USE_TZ =True
 
 
 # Static files (CSS, JavaScript, Images)

@@ -1,21 +1,17 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Farming Admin Dashboard</title>
-    <!-- Font Awesome for Icons -->
+    <title>Admin Feedback</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <!-- Styles -->
     <style>
         /* General Styling */
         body {
             margin: 0;
             font-family: 'Roboto', sans-serif;
-            background: url('https://static.vecteezy.com/system/resources/thumbnails/017/607/403/small/blur-abstract-image-with-shining-lights-green-bokeh-background-vector.jpg') no-repeat center center fixed;
+            background: url('https://thumbs.dreamstime.com/b/soft-pastel-smoky-gradient-background-featuring-smooth-transitions-colors-foggy-colorful-wallpaper-delicate-blend-323762478.jpg') no-repeat center center fixed;
             background-size: cover;
             min-height: 100vh;
             display: flex;
@@ -31,6 +27,11 @@
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
         }
         .navbar .navbar-brand {
             font-size: 28px;
@@ -50,14 +51,12 @@
             text-decoration: none;
             font-size: 18px;
         }
-        .navbar ul li a:hover {
-            color: #c8e6c9;
-        }
 
         /* Wrapper Styling */
         .wrapper {
             display: flex;
             flex: 1;
+            margin-top: 76px;
         }
 
         /* Sidebar Styling */
@@ -67,7 +66,9 @@
             width: 250px;
             padding: 20px;
             position: fixed;
-            height: 100%;
+            height: calc(100% - 72px);
+            top: 72px;
+            left: 0;
             box-shadow: 2px 0 6px rgba(0, 0, 0, 0.2);
         }
         .sidebar .sidebar-header {
@@ -89,7 +90,6 @@
         }
         .sidebar ul li:hover {
             background-color: #2e7d32;
-            cursor: pointer;
         }
         .sidebar ul li a {
             color: white;
@@ -104,64 +104,59 @@
         }
 
         /* Main Content Styling */
-        #content {
-            margin-left: 270px;
-            padding: 40px;
-            width: calc(100% - 270px);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        .content-header {
-            width: 100%;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .content-header h1 {
-            font-size: 32px;
-            font-weight: 700;
-            color: white;
-            background-color: #1b5e20;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        }
-        .cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-            width: 100%;
-        }
-        .card {
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        .container {
+            margin-left: 290px;
             padding: 20px;
+            width: calc(100% - 290px);
+        }
+
+        /* Table container */
+        .table-container {
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        /* Table styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        thead {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        th, td {
+            padding: 12px 15px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        /* No feedback message */
+        .no-feedback {
             text-align: center;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-        }
-        .card i {
-            font-size: 40px;
-            color: #388e3c;
-            margin-bottom: 15px;
-        }
-        .card h3 {
-            font-size: 20px;
-            margin: 10px 0;
-        }
-        .card a {
-            text-decoration: none;
             font-size: 16px;
-            color: #388e3c;
-            font-weight: 500;
+            color: #777;
+            padding: 20px 0;
         }
-        .card a:hover {
-            text-decoration: underline;
+
+        h1 {
+            color: #333;
+            margin: 20px 0;
+            font-family: 'Roboto', sans-serif;
+            font-size: 32px;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -190,41 +185,36 @@
         </nav>
 
         <!-- Main Content -->
-        <div id="content">
-            <div class="content-header">
-                <h1>Welcome to the Admin Dashboard</h1>
-            </div>
-            <div class="cards">
-                <div class="card">
-                    <i class="fa-solid fa-users"></i>
-                    <h3>Manage Farmers</h3>
-                    <a href="{% url 'manage_users' 'farmer' %}">Go to Farmers</a>
-                </div>
-                <div class="card">
-                    <i class="fa-solid fa-users"></i>
-                    <h3>Manage Buyers</h3>
-                    <a href="{% url 'manage_users' 'buyer' %}">Go to Buyers</a>
-                </div>
-                <div class="card">
-                    <i class="fa-solid fa-seedling"></i>
-                    <h3>View Crops</h3>
-                    <a href="{% url 'adminviews' %}">Go to Crops</a>
-                </div>
-                <div class="card">
-                    <i class="fa-solid fa-clipboard-check"></i>
-                    <h3>Verification Requests</h3>
-                    <a href="{% url 'verify_crops' %}">Go to Requests</a>
-                </div>
-                <div class="card">
-                    <i class="fa-solid fa-comments"></i>
-                    <h3>View Feedback</h3>
-                    <a href="{% url 'admin_feedback' %}">Go to Feedback</a>
-                </div>
-                <div class="card">
-                    <i class="fa-solid fa-boxes-stacked"></i>
-                    <h3>Stock Details</h3>
-                    <a href="{% url 'stock' %}">Go to Stock</a>
-                </div>
+        <div class="container">
+            <h1>All User Feedbacks</h1>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Crop</th>
+                            <th>Farmer</th>
+                            <th>User</th>
+                            <th>Feedback</th>
+                            <th>Rating</th>
+                            <th>Submitted At</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for feedback in feedback_list %}
+                            <tr>
+                                <td>{{ feedback.crop.name }}</td>
+                                <td>{{ feedback.crop.farmer.name }}</td>
+                                <td>{{ feedback.user.name }}</td>
+                                <td>{{ feedback.feedback_text }}</td>
+                                <td>{{ feedback.rating }}</td>
+                                <td>{{ feedback.submitted_at|date:"d M Y, h:i A" }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% if not feedback_list %}
+                    <p class="no-feedback">No feedback available.</p>
+                {% endif %}
             </div>
         </div>
     </div>

@@ -10,6 +10,8 @@ urlpatterns = [
     path('register', views.register, name='register'),
     path('adminfarm', views.adminfarm, name='adminfarm'),
     path('adminviews', views.adminviews, name='adminviews'),
+    path('deactivatecrop/<int:crop_id>/', views.deactivatecrop, name='deactivatecrop'),
+    path('activatecrop/<int:crop_id>/', views.activatecrop, name='activatecrop'),
     path('about', views.about, name='about'),
     path('contact', views.contact,name='contact'),
     path('farmer_dashboard', views.farmer_dashboard, name='farmer_dashboard'),
@@ -49,22 +51,21 @@ urlpatterns = [
     path('stockfarmer/', views.stockfarmer, name='stockfarmer'),
     path('checkout/step1/', views.check_out_step1, name='check_out_step1'),
     path('checkout/step2/', views.check_out_step2, name='check_out_step2'),
-     path("verify-payment/", views.verify_payment, name="verify_payment"),
-    
+    path("verify-payment/", views.verify_payment, name="verify_payment"),
     path('update-user-details/', views.update_user_details, name='update_user_details'),
     path('place-order/', views.place_order, name='place_order'),
     path('order-summary/<int:order_id>/', views.order_summary, name='order_summary'),
     path('order-history/', views.order_history, name='order_history'),
-
     path('weather/', views.weather_update, name='weather_update'),
     path('consultation/', views.expert_consultation, name='expert_consultation'),
     path('notifications/', views.farmer_notifications, name='farmer_notifications'),
     path('buy/<int:crop_id>/', views.buy_crop, name='buy_crop'),  # Add this line
-
     path('order_details/<int:order_id>/', views.order_details, name='order_details'),
     path('cancel_order/<int:order_id>/', views.cancel_order, name='cancel_order'),  # Cancel Order View
     path('crop/<int:crop_id>/feedback/submit/', views.submit_feedback, name='submit_feedback'),
     path('crop/<int:crop_id>/feedback/', views.display_feedback, name='display_feedback'),
+    path('adminfeedback/', views.admin_feedback_page, name='admin_feedback'),
+    path('dashboard/feedback/', views.farmer_feedback, name='farmer_feedback'),
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

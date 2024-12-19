@@ -30,13 +30,14 @@ body {
 }
 
 .components li {
-    padding: 10px 15px;
+    padding: 20px 30px;
 }
 
 .components li a {
     color: white;
     text-decoration: none;
     display: block;
+    font-size: 24px;
 }
 
 .components li a:hover {

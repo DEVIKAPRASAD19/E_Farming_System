@@ -48,9 +48,9 @@
                     <div class="forgot-password">
                         <a href="{% url 'forgotpass' %}">Forgot Password?</a>
                     </div><br>
-                    <div class="google-signin">
+                    {% comment %} <div class="google-signin">
                         <button type="button" class="google-button">Sign in with Google</button>
-                    </div>
+                    </div> {% endcomment %}
                     <p class="signup-link">Don't have an account? <a href="{% url 'enter_email' %}">Register</a></p>
                 </center>
             </form>

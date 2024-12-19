@@ -245,8 +245,23 @@ def buyer_dashboard(request):
 
 
 def adminviews(request):
-    crops = Crop.objects.all()  # Fetch all crops
+    # Fetch all crops and render the page
+    crops = Crop.objects.all()
     return render(request, 'adminviews.html', {'crops': crops})
+
+def deactivatecrop(request, crop_id):
+    # Deactivate the crop by setting status to 0 (inactive)
+    crop = get_object_or_404(Crop, id=crop_id)
+    crop.status = 0
+    crop.save()
+    return redirect('adminviews')  # Redirect back to the crops list page
+
+def activatecrop(request, crop_id):
+    # Activate the crop by setting status to 1 (active)
+    crop = get_object_or_404(Crop, id=crop_id)
+    crop.status = 1
+    crop.save()
+    return redirect('adminviews')  # Redirect back to the crops list page
 
 def salesview(request):
     return render(request, 'salesview.html')
@@ -512,6 +527,44 @@ def display_feedback(request, crop_id):
     return render(request, 'display_feedback.html', {'crop': crop, 'feedback_list': feedback_list})
 
 
+def admin_feedback_page(request):
+    # Check if the admin is logged in by verifying the session
+    admin_id = request.session.get('admin_id')
+
+    
+    # Fetch all feedback from the database, including related user and crop information
+    feedback_list = Feedback.objects.select_related('user', 'crop').order_by('-submitted_at')
+
+    # Render the feedback page for the admin dashboard
+    return render(request, 'admin_feedback.html', {'feedback_list': feedback_list})
+
+
+def farmer_feedback(request):
+    # Assuming the farmer is logged in and their ID is available in the session
+    farmer = request.user
+
+    # Get all crops added by this farmer
+    crops = Crop.objects.filter(farmer=farmer)
+
+    # Prepare feedback data for each crop
+    feedback_data = []
+    for crop in crops:
+        feedbacks = Feedback.objects.filter(crop=crop)  # Feedback for this crop
+        average_rating = feedbacks.aggregate(Avg('rating'))['rating__avg'] or 0
+        feedback_count = feedbacks.count()
+
+        feedback_data.append({
+            'crop': crop,
+            'feedbacks': feedbacks,
+            'average_rating': round(average_rating, 1),
+            'feedback_count': feedback_count,
+        })
+
+    context = {
+        'feedback_data': feedback_data,
+    }
+    return render(request, 'farmer/crop_feedback.html', context)
+
 
 
 # View to list farmers or buyers based on role
@@ -680,7 +733,7 @@ def activate_user(request, user_id):
 )
 
 
-    messages.success(request, f'User {user.name} has been activated.')
+    # messages.success(request, f'User {user.name} has been activated.')
     return redirect('manage_users', role=user.role)
 
 
@@ -1289,4 +1342,6 @@ def verify_payment(request):
             return JsonResponse({"status": "Payment Verification Failed!"})
     
     return JsonResponse({"status": "Invalid Request"})
+
+
 
