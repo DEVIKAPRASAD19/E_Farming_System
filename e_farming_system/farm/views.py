@@ -12,7 +12,7 @@ from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.contrib.auth.tokens import default_token_generator as custom_token_generator
 from django.utils.html import strip_tags
-from .models import Registeruser, Adminm, Cart, Wishlist, Order, OrderItem, Notification, Feedback
+from .models import Registeruser, Adminm, Cart, Wishlist, Order, OrderItem, Notification, Feedback, DeliveryBoyDetail
 from .forms import SetPasswordForm
 from .tokens import custom_token_generator
 from django.contrib.sites.shortcuts import get_current_site
@@ -77,9 +77,19 @@ def login(request):
                     return redirect('farmer_dashboard')  # Replace with the correct URL name
                 elif user.role == 'buyer':
                     return redirect('buyer_dashboard')  # Replace with the correct URL name
-            else:
-                messages.error(request, 'Invalid email or password')
-                return render(request, 'login.html')
+                elif user.role == 'delivery_boy':
+                    # Check if the delivery boy has completed their profile
+                    try:
+                        profile = DeliveryBoyDetail.objects.get(user=user)
+                        if profile.completed_registration:
+                            return redirect('delivery_boy_dashboard')  # Redirect to delivery boy's dashboard
+                        else:
+                            messages.error(request, 'Please complete your profile.')
+                            return render(request, 'login.html')
+                    except DeliveryBoyDetail.DoesNotExist:
+                        messages.error(request, 'Delivery boy profile not found.')
+                        return render(request, 'login.html')
+
         else:
             messages.error(request, 'Invalid email or password')
             return render(request, 'login.html')
@@ -540,30 +550,20 @@ def admin_feedback_page(request):
 
 
 def farmer_feedback(request):
-    # Assuming the farmer is logged in and their ID is available in the session
-    farmer = request.user
+    # Check if the farmer is logged in by verifying the session
+    farmer_id = request.session.get('user_id')
+    role = request.session.get('role')
 
-    # Get all crops added by this farmer
-    crops = Crop.objects.filter(farmer=farmer)
+    # Ensure the user is a farmer
+    if not farmer_id or role != 'farmer':
+        return redirect('login')  # Redirect to login if not authenticated or not a farmer
 
-    # Prepare feedback data for each crop
-    feedback_data = []
-    for crop in crops:
-        feedbacks = Feedback.objects.filter(crop=crop)  # Feedback for this crop
-        average_rating = feedbacks.aggregate(Avg('rating'))['rating__avg'] or 0
-        feedback_count = feedbacks.count()
+    # Fetch feedback for crops added by this farmer
+    feedback_list = Feedback.objects.select_related('crop').filter(crop__farmer_id=farmer_id).order_by('-submitted_at')
 
-        feedback_data.append({
-            'crop': crop,
-            'feedbacks': feedbacks,
-            'average_rating': round(average_rating, 1),
-            'feedback_count': feedback_count,
-        })
+    # Render the feedback page for the farmer dashboard
+    return render(request, 'farmer_feedback.html', {'feedback_list': feedback_list})
 
-    context = {
-        'feedback_data': feedback_data,
-    }
-    return render(request, 'farmer/crop_feedback.html', context)
 
 
 
@@ -1345,3 +1345,158 @@ def verify_payment(request):
 
 
 
+
+def government_schemes(request):
+    GOVERNMENT_SCHEME_LINKS = [
+        {"name": "PM Kisan Samman Nidhi", "url": "https://pmkisan.gov.in/"},
+        {"name": "Pradhan Mantri Fasal Bima Yojana", "url": "https://pmfby.gov.in/"},
+        {"name": "Soil Health Card Scheme", "url": "https://soilhealth.dac.gov.in/"},
+        {"name": "National Agricultural Market (eNAM)", "url": "https://www.enam.gov.in/"},
+        {"name": "Agriculture Infrastructure Fund", "url": "https://www.agriinfra.dac.gov.in/"},
+    ]
+    return render(request, 'schemes/government_schemes.html', {"scheme_links": GOVERNMENT_SCHEME_LINKS})
+
+
+from django.http import JsonResponse
+from google.cloud import dialogflow_v2 as dialogflow
+
+PROJECT_ID = 'farmingbot-ywiv'  # Replace with your Dialogflow project ID
+
+def chat_with_bot(request):
+    # Get the user message from the request
+    user_message = request.GET.get('message', '')
+
+    # Set up Dialogflow session
+    session_id = "12345"  # You can use a unique ID for each user
+    session_client = dialogflow.SessionsClient()
+    session = session_client.session_path(PROJECT_ID, session_id)
+
+    # Prepare the text input
+    text_input = dialogflow.TextInput(text=user_message, language_code="en")
+    query_input = dialogflow.QueryInput(text=text_input)
+
+    # Send the request to Dialogflow
+    response = session_client.detect_intent(request={"session": session, "query_input": query_input})
+    bot_reply = response.query_result.fulfillment_text
+
+    # Send the bot's reply back to the user
+    return JsonResponse({"response": bot_reply})
+
+
+def chatbot_page(request):
+    return render(request, 'chatbot.html')
+
+
+def manage_delivery_boy_requests(request):
+    if request.method == "POST":
+        user_id = request.POST.get('user_id')  # Get user_id from the form
+        action = request.POST.get('action')   # "activate" or "deactivate"
+        user = get_object_or_404(Registeruser, pk=user_id)
+
+        try:
+            if action == "activate":
+                user.is_verified = True
+                user.save()
+
+                # Create the activation link
+                activation_link = reverse('complete_delivery_boy_details', kwargs={'user_id': user.user_id})
+                full_link = request.build_absolute_uri(activation_link)
+
+                # Send activation email
+                send_mail(
+                    subject="Activate Your Delivery Boy Account",
+                    message=f"Hi {user.name},\n\nYour account has been activated. Complete your registration here:\n{full_link}\n\nBest regards,\nAdmin",
+                    from_email="admin@example.com",  # Replace with your admin email
+                    recipient_list=[user.email],
+                )
+                messages.success(request, f"{user.name}'s account activated and activation email sent.")
+            elif action == "deactivate":
+                user.is_verified = False
+                user.save()
+
+                # Send deactivation email
+                send_mail(
+                    subject="Account Deactivation",
+                    message=f"Hi {user.name}, your account has been deactivated. Please contact admin for details.",
+                    from_email="admin@example.com",
+                    recipient_list=[user.email],
+                )
+                messages.success(request, f"{user.name}'s account deactivated.")
+        except Exception as e:
+            messages.error(request, f"Error processing request: {str(e)}")
+
+        return redirect('manage_delivery_boy_requests')  # Redirect to refresh the page
+
+    # Fetch pending and verified delivery boys
+    pending_requests = Registeruser.objects.filter(role='delivery_boy', is_verified=False)
+    verified_users = Registeruser.objects.filter(role='delivery_boy', is_verified=True)
+
+    return render(request, 'manage_delivery_boy_requests.html', {
+        'pending_requests': pending_requests,
+        'verified_users': verified_users,
+    })
+
+
+
+def complete_delivery_boy_details(request, user_id):
+    user = get_object_or_404(Registeruser, pk=user_id)
+
+    if request.method == 'POST':
+        # Get the form data
+        vehicle_type = request.POST.get('vehicle_type')
+        vehicle_number = request.POST.get('vehicle_number')
+        license_number = request.POST.get('license_number')
+        area_of_service = request.POST.get('area_of_service')
+        additional_documents = request.FILES.get('additional_documents')
+
+        try:
+            # Create DeliveryBoyDetail
+            DeliveryBoyDetail.objects.create(
+                user=user,
+                vehicle_type=vehicle_type,
+                vehicle_number=vehicle_number,
+                license_number=license_number,
+                area_of_service=area_of_service,
+                additional_documents=additional_documents,
+                completed_registration=True,
+                # Explicitly pass the additional fields from Registeruser
+                name=user.name,
+                contact=user.contact,
+                place=user.place,
+                email=user.email
+            )
+
+            # Update Registeruser to mark it as verified
+            user.is_verified = True
+            user.save()
+
+            messages.success(request, "Delivery boy details successfully completed.")
+            return redirect('success_page')  # Replace with actual redirect URL
+        except Exception as e:
+            messages.error(request, f"Error saving details: {str(e)}")
+
+    return render(request, 'complete_delivery_details.html', {'user': user})
+
+
+def delivery_boy_dashboard(request):
+    if request.session.get('user_id'):
+        try:
+            # First get the Registeruser
+            user = Registeruser.objects.get(user_id=request.session['user_id'])
+            # Then get the DeliveryBoyDetail
+            delivery_boy = DeliveryBoyDetail.objects.get(user=user)
+            
+            context = {
+                'page_title': 'Delivery Boy Dashboard',
+                'delivery_boy': delivery_boy,
+                'today_deliveries': 0,  # Add your logic for these values
+                'total_earnings': 0,
+                'rating': 0,
+                'completed_orders': 0,
+                'recent_orders': []
+            }
+            return render(request, 'delivery_boy_dashboard.html', context)
+        except (Registeruser.DoesNotExist, DeliveryBoyDetail.DoesNotExist):
+            messages.error(request, "Delivery Boy profile not found")
+            return redirect('login')
+    return redirect('login')

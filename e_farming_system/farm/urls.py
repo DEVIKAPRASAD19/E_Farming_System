@@ -66,6 +66,15 @@ urlpatterns = [
     path('crop/<int:crop_id>/feedback/', views.display_feedback, name='display_feedback'),
     path('adminfeedback/', views.admin_feedback_page, name='admin_feedback'),
     path('dashboard/feedback/', views.farmer_feedback, name='farmer_feedback'),
+    path('government-schemes/', views.government_schemes, name='government_schemes'),
+    path('chat/', views.chat_with_bot, name='chat_with_bot'),
+    path('chat-interface/', views.chatbot_page, name='chatbot_page'),
+   
+    
+    path('manage-delivery-requests/', views.manage_delivery_boy_requests, name='manage_delivery_boy_requests'),
+    path('complete-delivery-details/<int:user_id>/', views.complete_delivery_boy_details, name='complete_delivery_boy_details'),
+    path('delivery-boy-dashboard/', views.delivery_boy_dashboard, name='delivery_boy_dashboard'),
+
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

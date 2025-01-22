@@ -5,84 +5,256 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - E-Farming System</title>
-    <link rel="stylesheet" href="{% static 'css/loginstyle.css' %}"> <!-- Link to the external CSS file -->
-</head>
-<body style="
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-image: url('https://img.freepik.com/free-photo/green-field-with-sun_1160-878.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    <!-- Home Button at Top Right -->
-    <div class="top-right">
-         <button><a href="{% url 'index' %}" class="home-button">Home</a></button>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                        url('https://images.pexels.com/photos/440731/pexels-photo-440731.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            position: relative;
+        }
+
+        .home-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(46, 125, 50, 0.9);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .home-button:hover {
+            background: #1b5e20;
+            transform: translateY(-2px);
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+        }
+
+        .login-container h2 {
+            color: #2e7d32;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px 45px 15px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .form-group input:focus {
+            border-color: #2e7d32;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+        }
+
+        .form-group i {
+            position: absolute;
+            right: 15px;
+            top: 45px;
+            color: #2e7d32;
+        }
+
+        .error-message {
+            color: #e53935;
+            font-size: 14px;
+            margin-top: 5px;
+            display: block;
+            min-height: 20px;
+        }
+
+        .login-button {
+            background: #2e7d32;
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .login-button:hover {
+            background: #1b5e20;
+            transform: translateY(-2px);
+        }
+
+        .forgot-password {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .forgot-password a {
+            color: #2e7d32;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .forgot-password a:hover {
+            color: #1b5e20;
+            text-decoration: underline;
+        }
+
+        .signup-link {
+            text-align: center;
+            color: #666;
+            margin-top: 20px;
+        }
+
+        .signup-link a {
+            color: #2e7d32;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .signup-link a:hover {
+            color: #1b5e20;
+            text-decoration: underline;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .invalid-shake {
+            animation: shake 0.4s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <a href="{% url 'index' %}" class="home-button">
+        <i class="fas fa-home"></i> Home
+    </a>
+
+    <div class="login-container">
+        <h2>Welcome Back</h2>
+        <form action="{% url 'login' %}" method="post" id="loginForm" novalidate>
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" required>
+                <i class="fas fa-envelope"></i>
+                <span class="error-message" id="email-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+                <i class="fas fa-lock"></i>
+                <span class="error-message" id="password-error"></span>
+            </div>
+
+            <button type="submit" class="login-button">Login</button>
+
+            <div class="forgot-password">
+                <a href="{% url 'forgotpass' %}">Forgot Password?</a>
+            </div>
+
+            <p class="signup-link">
+                Don't have an account? <a href="{% url 'enter_email' %}">Register Now</a>
+            </p>
+        </form>
     </div>
 
-    <main>
-        <!-- Login Form -->
-        <div class="login-container">
-            <h2>Login to E-Farming System</h2>
-            <form action="{% url 'login' %}" method="post" onsubmit="return validateLoginForm()"> <!-- Form with validation -->
-                <div class="form-group">
-                    {% csrf_token %}
-                    <label for="email">Email:</label>
-                    <input type="text" id="email" name="email" autocomplete="off" required aria-label="Email">
-                    <span class="error-message" id="email-error"></span>
-                </div>
-                <div class="form-group">
-                    <label for="password">Password:</label>
-                    <input type="password" id="password" name="password" autocomplete="new-password" required minlength="8" aria-label="Password">
-                    <span class="error-message" id="password-error"></span>
-                </div>
-                <button type="submit" class="login-button" id="login">Login</button>
-                <center><br>
-                    <div class="forgot-password">
-                        <a href="{% url 'forgotpass' %}">Forgot Password?</a>
-                    </div><br>
-                    {% comment %} <div class="google-signin">
-                        <button type="button" class="google-button">Sign in with Google</button>
-                    </div> {% endcomment %}
-                    <p class="signup-link">Don't have an account? <a href="{% url 'enter_email' %}">Register</a></p>
-                </center>
-            </form>
-        </div>
-    </main>
-    
     <script>
-        // Validate login form
-        function validateLoginForm() {
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
             let isValid = true;
-            const email = document.getElementById("email");
-            const password = document.getElementById("password");
+            const email = document.getElementById('email');
+            const password = document.getElementById('password');
+            const emailError = document.getElementById('email-error');
+            const passwordError = document.getElementById('password-error');
 
-            // Reset previous error messages
-            document.getElementById('email-error').textContent = '';
-            document.getElementById('password-error').textContent = '';
+            // Reset errors
+            emailError.textContent = '';
+            passwordError.textContent = '';
+            email.classList.remove('invalid-shake');
+            password.classList.remove('invalid-shake');
 
             // Email validation
             const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/;
-            if (!email.value.match(emailPattern)) {
-                document.getElementById('email-error').textContent = "Please enter a valid email address.";
+            if (!email.value.trim()) {
+                emailError.textContent = 'Email is required';
+                email.classList.add('invalid-shake');
+                isValid = false;
+            } else if (!emailPattern.test(email.value)) {
+                emailError.textContent = 'Please enter a valid email address';
+                email.classList.add('invalid-shake');
                 isValid = false;
             }
 
             // Password validation
-            if (password.value.length < 8) {
-                document.getElementById('password-error').textContent = "Password must be at least 8 characters.";
+            if (!password.value) {
+                passwordError.textContent = 'Password is required';
+                password.classList.add('invalid-shake');
+                isValid = false;
+            } else if (password.value.length < 8) {
+                passwordError.textContent = 'Password must be at least 8 characters';
+                password.classList.add('invalid-shake');
                 isValid = false;
             }
 
-            return isValid; // Prevent form submission if any validation fails
-        }
+            if (isValid) {
+                this.submit();
+            }
+        });
     </script>
 </body>
 </html>

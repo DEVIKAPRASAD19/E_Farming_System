@@ -6,54 +6,224 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - E-Farming System</title>
-    <link rel="stylesheet" href="{% static 'css/registerstyle.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* Add styles for error messages */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                        url('https://images.pexels.com/photos/440731/pexels-photo-440731.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            padding: 20px;
+        }
+
+        .register-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            width: 100%;
+            max-width: 500px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        h2 {
+            color: #2e7d32;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2rem;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
+            border-radius: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        input:focus, select:focus {
+            border-color: #2e7d32;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+        }
+
         .error-message {
-            color: red;
-            font-size: 12px;
+            color: #d32f2f;
+            font-size: 0.85rem;
             margin-top: 5px;
-            display: none; /* Hide initially */
+            display: none;
+            padding-left: 10px;
+            position: absolute;
+            bottom: -20px;
+            left: 0;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .register-button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(46, 125, 50, 0.2);
+        }
+
+        .register-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(46, 125, 50, 0.3);
+            background: linear-gradient(135deg, #1b5e20, #2e7d32);
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #555;
+            font-size: 0.95rem;
+        }
+
+        .login-link a {
+            color: #2e7d32;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .login-link a:hover {
+            color: #1b5e20;
+            text-decoration: underline;
         }
 
         .valid {
-            border-color: green;
+            border-color: #2e7d32 !important;
         }
 
         .invalid {
-            border-color: red;
+            border-color: #d32f2f !important;
+        }
+
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%232e7d32' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            padding-right: 40px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .invalid-shake {
+            animation: shake 0.4s ease-in-out;
+        }
+
+        @media (max-width: 768px) {
+            .register-container {
+                padding: 30px 20px;
+            }
+
+            h2 {
+                font-size: 1.8rem;
+            }
+
+            input, select {
+                padding: 10px 12px;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Your existing HTML structure remains the same -->
     <div class="register-container">
         <h2>Register for E-Farming System</h2>
         <form id="registrationForm" action="{% url 'register' %}" method="post">
             {% csrf_token %}
             <div class="form-group">
                 <label for="name">Name:</label>
-                <input type="text" id="name" name="name" required minlength="3">
-                <span class="error-message" id="name-error">Name must contain at least 3 letters and only letters.</span>
+                <input type="text" id="name" name="name" required minlength="3" placeholder="Enter your name">
+                <span class="error-message" id="name-error"></span>
             </div>
             <div class="form-group">
                 <label for="contact">Contact No:</label>
-                <input type="text" id="contact" name="contact" required>
-                <span class="error-message" id="contact-error">Please enter a valid 10-digit contact number starting with 6, 7, 8, or 9, and not repetitive like 2222222222.</span>
+                <input type="text" id="contact" name="contact" required placeholder="Enter your contact number">
+                <span class="error-message" id="contact-error"></span>
             </div>
             <div class="form-group">
                 <label for="place">Place:</label>
-                <input type="text" id="place" name="place" required minlength="3">
-                <span class="error-message" id="place-error">Place must contain at least 3 letters.</span>
+                <input type="text" id="place" name="place" required minlength="3" placeholder="Enter your place">
+                <span class="error-message" id="place-error"></span>
             </div>
             <div class="form-group">
                 <label for="email">Email:</label>
-                <input type="email" name="email" id="email" placeholder="Enter your email" value="{{ email }}" required>
-                <span class="error-message" id="email-error">Please enter a valid email address.</span>
+                <input type="email" name="email" id="email" placeholder="Enter your email" value="{{ email }}" required>
+                <span class="error-message" id="email-error"></span>
             </div>
             <div class="form-group">
                 <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required minlength="8">
-                <span class="error-message" id="password-error">Password must be at least 8 characters long.</span>
+                <input type="password" id="password" name="password" required minlength="8" placeholder="Enter your password">
+                <span class="error-message" id="password-error"></span>
             </div>
             <div class="form-group">
                 <label for="role">Role:</label>
@@ -61,8 +231,9 @@
                     <option value="" disabled selected>Select your role</option>
                     <option value="farmer">Farmer</option>
                     <option value="buyer">Buyer</option>
+                    <option value="delivery_boy">Delivery Boy</option>
                 </select>
-                <span class="error-message" id="role-error">Please select a role.</span>
+                <span class="error-message" id="role-error"></span>
             </div>
             <button type="submit" class="register-button">Register</button>
             <p class="login-link">Already have an account? <a href="{% url 'login' %}">Login Here</a></p>

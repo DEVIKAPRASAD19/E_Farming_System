@@ -5,61 +5,327 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Crops</title>
-    <link rel="stylesheet" href="{% static 'css/farmercrops.css' %}">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)),
+                        url('https://images.pexels.com/photos/440731/pexels-photo-440731.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            padding: 40px;
+        }
+
+        .page-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            margin-bottom: 50px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-button {
+            position: absolute;
+            left: 30px;
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(46, 125, 50, 0.2);
+        }
+
+        .back-button:hover {
+            transform: translateX(-5px);
+            box-shadow: 0 6px 20px rgba(46, 125, 50, 0.3);
+        }
+
+        h1 {
+            color: #2e7d32;
+            font-size: 2.5rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 0;
+        }
+
+        h1 i {
+            animation: swing 2s infinite;
+            color: #4CAF50;
+        }
+
+        .crops-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 40px;
+            padding: 20px;
+        }
+
+        .crop-item {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            animation: fadeIn 0.5s ease-out;
+            border: 1px solid rgba(46, 125, 50, 0.1);
+        }
+
+        .crop-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .crop-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-bottom: 4px solid #2e7d32;
+        }
+
+        .crop-content {
+            padding: 30px;
+        }
+
+        h2 {
+            color: #2e7d32;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .description {
+            color: #555;
+            margin-bottom: 20px;
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+
+        .price {
+            font-size: 1.4rem;
+            color: #2e7d32;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .category {
+            background: rgba(46, 125, 50, 0.1);
+            color: #2e7d32;
+            padding: 8px 16px;
+            border-radius: 10px;
+            display: inline-block;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .status {
+            margin-bottom: 25px;
+        }
+
+        .verified, .not-verified {
+            padding: 8px 16px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+
+        .verified {
+            background: rgba(76, 175, 80, 0.1);
+            color: #4CAF50;
+        }
+
+        .not-verified {
+            background: rgba(244, 67, 54, 0.1);
+            color: #f44336;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .update-button, .deactivate-button, .activate-button {
+            padding: 12px 25px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 1.1rem;
+        }
+
+        .update-button {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            color: white;
+        }
+
+        .deactivate-button {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+            color: white;
+        }
+
+        .activate-button {
+            background: linear-gradient(135deg, #4CAF50, #2e7d32);
+            color: white;
+        }
+
+        .button-group button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .no-crops {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes swing {
+            0%, 100% { transform: rotate(0deg); }
+            20% { transform: rotate(15deg); }
+            40% { transform: rotate(-10deg); }
+            60% { transform: rotate(5deg); }
+            80% { transform: rotate(-5deg); }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 20px;
+                padding: 20px;
+            }
+
+            .back-button {
+                position: static;
+                width: 100%;
+                justify-content: center;
+            }
+
+            .crops-list {
+                grid-template-columns: 1fr;
+                gap: 30px;
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .crop-content {
+                padding: 20px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="header">
-        <h1>Your Crops</h1>
-        <a href="{% url 'farmer_dashboard' %}" class="back-button">Back</a>
-    </div>
+    <div class="page-container">
+        <div class="header">
+            <a href="{% url 'farmer_dashboard' %}" class="back-button">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+            <h1><i class="fas fa-seedling"></i> Your Crops</h1>
+        </div>
 
-    <div class="crops-list">
-        {% if crops %}
-            {% for crop in crops %}
-            <div class="crop-item">
-                {% if crop.images.first %}
-                    <img src="{{ crop.images.first.image.url }}" alt="{{ crop.name }}" class="crop-image">
-                {% else %}
-                    <img src="{% static 'images/default_crop.jpg' %}" alt="Default Image" class="crop-image">
-                {% endif %}
-                <h2>{{ crop.name }}</h2>
-                <p>{{ crop.description|truncatewords:20 }}</p>
-                <p class="price">Price: Rs.{{ crop.price }}</p>
-                <p class="category">Category: {{ crop.category }}</p>
-
-                <!-- Display verification status -->
-                <p>Status: 
-                    {% if crop.is_verified %}
-                        <span class="verified">Verified</span>
+        <div class="crops-list">
+            {% if crops %}
+                {% for crop in crops %}
+                <div class="crop-item">
+                    {% if crop.images.first %}
+                        <img src="{{ crop.images.first.image.url }}" alt="{{ crop.name }}" class="crop-image">
                     {% else %}
-                        <span class="not-verified">Not Verified</span>
+                        <img src="{% static 'images/default_crop.jpg' %}" alt="Default Image" class="crop-image">
                     {% endif %}
-                </p>
+                    <div class="crop-content">
+                        <h2>{{ crop.name }}</h2>
+                        <p class="description">{{ crop.description|truncatewords:20 }}</p>
+                        <p class="price"><i class="fas fa-rupee-sign"></i> {{ crop.price }}</p>
+                        <p class="category"><i class="fas fa-tag"></i> {{ crop.category }}</p>
 
-                <!-- Update Link -->
-                {% if crop.status %}
-                    <a href="{% url 'update_crop' crop.id %}" class="update-button">Update</a>
-                {% else %}
-                    <button class="update-button" disabled>Update</button>
-                {% endif %}
+                        <p class="status">
+                            Status: 
+                            {% if crop.is_verified %}
+                                <span class="verified"><i class="fas fa-check-circle"></i> Verified</span>
+                            {% else %}
+                                <span class="not-verified"><i class="fas fa-times-circle"></i> Not Verified</span>
+                            {% endif %}
+                        </p>
 
-                <!-- Conditional Deactivate/Reactivate Button -->
-                {% if crop.status %}
-                    <form action="{% url 'deactivate_crop' crop.id %}" method="post" style="display:inline;">
-                        {% csrf_token %}
-                        <button type="submit" class="deactivate-button" onclick="return confirm('Are you sure you want to deactivate this crop?');">Delete</button>
-                    </form>
-                {% else %}
-                    <form action="{% url 'activate_crop' crop.id %}" method="post" style="display:inline;">
-                        {% csrf_token %}
-                        <button type="submit" class="activate-button" onclick="return confirm('Are you sure you want to reactivate this crop?');">Activate</button>
-                    </form>
-                {% endif %}
-            </div>
-            {% endfor %}
-        {% else %}
-            <p>No crops found.</p>
-        {% endif %}
+                        <div class="button-group">
+                            {% if crop.status %}
+                                <a href="{% url 'update_crop' crop.id %}" class="update-button">
+                                    <i class="fas fa-edit"></i> Update
+                                </a>
+                                <form action="{% url 'deactivate_crop' crop.id %}" method="post" style="flex: 1;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="deactivate-button" onclick="return confirm('Are you sure you want to deactivate this crop?');">
+                                        <i class="fas fa-trash-alt"></i> Delete
+                                    </button>
+                                </form>
+                            {% else %}
+                                <form action="{% url 'activate_crop' crop.id %}" method="post" style="flex: 1;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="activate-button" onclick="return confirm('Are you sure you want to reactivate this crop?');">
+                                        <i class="fas fa-redo"></i> Activate
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-crops">
+                    <p><i class="fas fa-info-circle"></i> No crops found.</p>
+                </div>
+            {% endif %}
+        </div>
     </div>
 </body>
 </html>

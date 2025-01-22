@@ -5,43 +5,234 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact Us | E-Farming System</title>
-    <link rel="stylesheet" href="{% static 'css/contactstyle.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+                        url('https://images.pexels.com/photos/1595104/pexels-photo-1595104.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Navigation Styles */
+        header {
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        nav {
+            padding: 1.2rem 5%;
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .logo i {
+            color: #2e7d32;
+            font-size: 28px;
+        }
+
+        .logo h1 {
+            color: #2e7d32;
+            font-size: 26px;
+            font-weight: 600;
+        }
+
+        nav ul {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            padding: 10px 20px;
+            border-radius: 8px;
+        }
+
+        nav ul li a:hover {
+            color: #2e7d32;
+            background: rgba(46, 125, 50, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .auth-buttons a {
+            padding: 10px 24px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .login-btn {
+            color: #2e7d32;
+            border: 2px solid #2e7d32;
+            margin-right: 10px;
+        }
+
+        .signup-btn {
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
+            color: white !important;
+            box-shadow: 0 4px 15px rgba(46, 125, 50, 0.2);
+        }
+
+        .login-btn:hover {
+            background: rgba(46, 125, 50, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .signup-btn:hover {
+            background: linear-gradient(135deg, #1b5e20, #2e7d32);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(46, 125, 50, 0.3);
+        }
+
+        /* Contact Section */
+        #contact {
+            width: 90%;
+            max-width: 1000px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        #contact h2 {
+            color: #2e7d32;
+            margin-bottom: 1rem;
+        }
+
+        #contact .contact-intro {
+            margin-bottom: 2rem;
+        }
+
+        .contact-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .contact-card {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        .contact-card i {
+            font-size: 2rem;
+            color: #2e7d32;
+            margin-bottom: 0.5rem;
+        }
+
+        .contact-card h3 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .contact-card p {
+            color: #555;
+            font-size: 0.95rem;
+        }
+
+        .contact-card a {
+            color: #2e7d32;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .contact-card a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
+    <!-- Navigation -->
     <header>
         <nav>
-            <h1>E-Farming System</h1>
-            <ul>
-                <li><a href="/">Home</a></li>
-                <li><a href="about">About Us</a></li>
-                <li><a href="contact">Contact</a></li>
-                <li><a href="login">Login</a></li>
-                <li><a href="register">Signup</a></li>
-            
-            </ul>
+            <div class="container">
+                <a href="/" class="logo">
+                    <i class="fas fa-leaf"></i>
+                    <h1>E-Farming System</h1>
+                </a>
+                <ul>
+                    <li><a href="/"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="about"><i class="fas fa-info-circle"></i> About Us</a></li>
+                    <li><a href="contact"><i class="fas fa-envelope"></i> Contact</a></li>
+                    <li class="auth-buttons">
+                        <a href="login" class="login-btn"><i class="fas fa-sign-in-alt"></i> Login</a>
+                    </li>
+                    <li class="auth-buttons">
+                        <a href="register" class="signup-btn"><i class="fas fa-user-plus"></i> Signup</a>
+                    </li>
+                </ul>
+            </div>
         </nav>
     </header>
 
     <section id="contact">
-        <div class="container">
-            <h2>Contact Us</h2>
-            <p>If you have any questions, feedback, or need support, feel free to reach out to us. We are here to assist you with any inquiries you might have regarding our E-Farming System.</p>
-            <p>You can contact us using the form below or through the following methods:</p>
-            <div class="contact-details">
-                <h3>Address</h3>
-                <p>Organic farm Field<br> Vazhoor<br>Pincode : 686 504<br>India</p>
+        <h2>Get in Touch</h2>
+        <div class="contact-intro">
+            <p>Have questions about our E-Farming System? We're here to help! Reach out to us through any of the following channels, and our team will be happy to assist you.</p>
+        </div>
 
-                <h3>Phone</h3>
-                <p>7510508273</p>
+        <div class="contact-details">
+            <div class="contact-card">
+                <i class="fas fa-map-marker-alt"></i>
+                <h3>Visit Us</h3>
+                <p>Organic Farm Field<br>Vazhoor<br>Pincode: 686 504<br>India</p>
+            </div>
 
-                <h3>Email</h3>
-                <p><a href="mailto:farmfusion@efarmingsystem.com">farmfusion@efarmingsystem.com</a></p>
+            <div class="contact-card">
+                <i class="fas fa-phone-alt"></i>
+                <h3>Call Us</h3>
+                <p>Available 24/7 for your queries</p>
+                <p><a href="tel:7510508273">+91 7510508273</a></p>
+            </div>
+
+            <div class="contact-card">
+                <i class="fas fa-envelope"></i>
+                <h3>Email Us</h3>
+                <p>Send us your questions anytime</p>
+                <p><a href="mailto:efarming2024@gmail.com">efarming2024@gmail.com</a></p>
             </div>
         </div>
     </section>
-
-    <footer>
-        <p>&copy; 2024 E-Farming System. All rights reserved.</p>
-    </footer>
 </body>
 </html>

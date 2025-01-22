@@ -5,107 +5,298 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Update Profile</title>
-    <link rel="stylesheet" href="{% static 'css/updateprofile.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+                        url('https://images.pexels.com/photos/440731/pexels-photo-440731.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(46, 125, 50, 0.9);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+        }
+
+        .back-button:hover {
+            background: #1b5e20;
+            transform: translateY(-2px);
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 600px;
+            margin: 60px auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            color: #2e7d32;
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 16px;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px 45px 15px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        input:focus {
+            border-color: #2e7d32;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+        }
+
+        .form-group i {
+            position: absolute;
+            right: 15px;
+            top: 45px;
+            color: #2e7d32;
+        }
+
+        .error-message {
+            color: #e53935;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .success-icon {
+            color: #2e7d32;
+            display: none;
+        }
+
+        .error-icon {
+            color: #e53935;
+            display: none;
+        }
+
+        .btn {
+            background: #2e7d32;
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: #1b5e20;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .invalid-shake {
+            animation: shake 0.4s ease-in-out;
+        }
+    </style>
 </head>
-<button class="back-button" onclick="window.history.back();">Back</button>
 <body>
+    <button class="back-button" onclick="window.history.back();">
+        <i class="fas fa-arrow-left"></i> Back
+    </button>
+
     <div class="container">
-        <h1>Update Profile</h1>
+        <div class="header">
+            <h1>Update Profile</h1>
+            <p style="color: #666;">Update your personal information below</p>
+        </div>
+
         <form id="updateProfileForm" action="{% url 'updateprofile' %}" method="POST" novalidate>
             {% csrf_token %}
+            
             <div class="form-group">
-                <label for="name">Name:</label>
+                <label for="name">Full Name</label>
                 <input type="text" id="name" name="name" value="{{ user.name }}" required>
-                <span id="nameError" class="error-message"></span>
+                <i class="fas fa-user input-icon"></i>
+                <i class="fas fa-check success-icon"></i>
+                <i class="fas fa-times error-icon"></i>
+                <span class="error-message"></span>
             </div>
 
             <div class="form-group">
-                <label for="phone">Contact:</label>
+                <label for="phone">Contact Number</label>
                 <input type="tel" id="phone" name="contact" value="{{ user.contact }}" required>
-                <span id="contactError" class="error-message"></span>
+                <i class="fas fa-phone input-icon"></i>
+                <i class="fas fa-check success-icon"></i>
+                <i class="fas fa-times error-icon"></i>
+                <span class="error-message"></span>
             </div>
 
             <div class="form-group">
-                <label for="address">Place:</label>
+                <label for="place">Location</label>
                 <input type="text" id="place" name="place" value="{{ user.place }}" required>
-                <span id="placeError" class="error-message"></span>
+                <i class="fas fa-map-marker-alt input-icon"></i>
+                <i class="fas fa-check success-icon"></i>
+                <i class="fas fa-times error-icon"></i>
+                <span class="error-message"></span>
             </div>
 
-            <button type="submit" class="btn" id="submitBtn">Update Profile</button>
+            <button type="submit" class="btn" id="submitBtn" disabled>
+                <i class="fas fa-save"></i> Update Profile
+            </button>
         </form>
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('updateProfileForm');
-            const nameInput = document.getElementById('name');
-            const phoneInput = document.getElementById('phone');
-            const placeInput = document.getElementById('place');
             const submitBtn = document.getElementById('submitBtn');
-
-            const nameError = document.getElementById('nameError');
-            const contactError = document.getElementById('contactError');
-            const placeError = document.getElementById('placeError');
-
-            // Name validation
-            nameInput.addEventListener('input', function() {
-                const nameValue = nameInput.value.trim();
-                if (!/^[a-zA-Z\s]+$/.test(nameValue)) {
-                    nameError.textContent = 'Name can only contain letters and spaces.';
-                    nameInput.classList.add('invalid');
-                } else {
-                    nameError.textContent = '';
-                    nameInput.classList.remove('invalid');
+            const inputs = {
+                name: {
+                    element: document.getElementById('name'),
+                    regex: /^[A-Za-z\s]{3,50}$/,
+                    error: 'Name must be 3-50 characters long and contain only letters'
+                },
+                phone: {
+                    element: document.getElementById('phone'),
+                    regex: /^[0-9]{10}$/,
+                    error: 'Please enter a valid 10-digit phone number'
+                },
+                place: {
+                    element: document.getElementById('place'),
+                    regex: /^[A-Za-z\s]{3,50}$/,
+                    error: 'Place must be 3-50 characters long and contain only letters'
                 }
-                checkFormValidity();
-            });
+            };
 
-            // Contact validation (must be exactly 10 digits, start with 6-9, and not be repetitive like 2222222222)
-            phoneInput.addEventListener('input', function() {
-                const phoneValue = phoneInput.value.trim();
-                const repetitivePattern = /^(\d)\1{9}$/; // Pattern for repetitive digits like 2222222222
+            function validateInput(input, config) {
+                const value = input.value.trim();
+                const isValid = config.regex.test(value);
+                const errorMessage = input.parentElement.querySelector('.error-message');
+                const successIcon = input.parentElement.querySelector('.success-icon');
+                const errorIcon = input.parentElement.querySelector('.error-icon');
 
-                if (!/^[6-9]\d{9}$/.test(phoneValue)) {
-                    contactError.textContent = 'Contact must start with 6, 7, 8, or 9 and be exactly 10 digits.';
-                    phoneInput.classList.add('invalid');
-                } else if (repetitivePattern.test(phoneValue)) {
-                    contactError.textContent = 'Contact number cannot have all the same digits.';
-                    phoneInput.classList.add('invalid');
-                } else {
-                    contactError.textContent = '';
-                    phoneInput.classList.remove('invalid');
+                if (!value) {
+                    errorMessage.textContent = 'This field is required';
+                    errorMessage.style.display = 'block';
+                    input.classList.add('invalid');
+                    successIcon.style.display = 'none';
+                    errorIcon.style.display = 'block';
+                    return false;
                 }
-                checkFormValidity();
-            });
 
-            // Place validation (cannot be empty)
-            placeInput.addEventListener('input', function() {
-                const placeValue = placeInput.value.trim();
-                if (placeValue === '') {
-                    placeError.textContent = 'Place cannot be empty.';
-                    placeInput.classList.add('invalid');
-                } else {
-                    placeError.textContent = '';
-                    placeInput.classList.remove('invalid');
+                if (!isValid) {
+                    errorMessage.textContent = config.error;
+                    errorMessage.style.display = 'block';
+                    input.classList.add('invalid');
+                    input.classList.add('invalid-shake');
+                    successIcon.style.display = 'none';
+                    errorIcon.style.display = 'block';
+                    setTimeout(() => input.classList.remove('invalid-shake'), 500);
+                    return false;
                 }
-                checkFormValidity();
-            });
 
-            // Check overall form validity
-            function checkFormValidity() {
-                if (nameInput.classList.contains('invalid') || 
-                    phoneInput.classList.contains('invalid') || 
-                    placeInput.classList.contains('invalid')) {
-                    submitBtn.disabled = true;
-                } else {
-                    submitBtn.disabled = false;
-                }
+                errorMessage.style.display = 'none';
+                input.classList.remove('invalid');
+                successIcon.style.display = 'block';
+                errorIcon.style.display = 'none';
+                return true;
             }
 
-            // Disable submit if form has invalid fields initially
-            checkFormValidity();
+            function checkFormValidity() {
+                const isValid = Object.values(inputs).every(config => 
+                    validateInput(config.element, config)
+                );
+                submitBtn.disabled = !isValid;
+            }
+
+            Object.values(inputs).forEach(config => {
+                config.element.addEventListener('input', () => {
+                    validateInput(config.element, config);
+                    checkFormValidity();
+                });
+
+                config.element.addEventListener('blur', () => {
+                    validateInput(config.element, config);
+                    checkFormValidity();
+                });
+            });
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const isValid = Object.values(inputs).every(config => 
+                    validateInput(config.element, config)
+                );
+
+                if (isValid) {
+                    this.submit();
+                }
+            });
         });
     </script>
-    <script src="{% static 'js/updateprofile.js' %}"></script>
 </body>
 </html>

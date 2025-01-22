@@ -5,123 +5,263 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Farmer Notifications</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #e9ecef;
-            color: #333;
+        * {
             margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        h1 {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 20px;
-            font-size: 2em;
-        }
-
-        .container {
-            max-width: 600px;
-            width: 100%;
-            margin: 0 auto;
-            padding: 20px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        ul {
-            list-style-type: none;
             padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
         }
 
-        li {
-            background: #ecf0f1;
-            margin: 10px 0;
-            padding: 15px;
-            border-radius: 5px;
-            transition: background 0.3s, transform 0.3s;
+        body {
+            min-height: 100vh;
+            background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)),
+                        url('https://images.pexels.com/photos/440731/pexels-photo-440731.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            padding: 40px;
+        }
+
+        .main-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
             position: relative;
         }
 
-        li:hover {
-            background: #bdc3c7;
-            transform: translateY(-2px);
-        }
-
-        li.new-notification {
-            border-left: 4px solid #3498db; /* Blue bar for new notifications */
-            background: #d4edda; /* Light green background for new notifications */
-        }
-
-        p {
-            margin: 0;
-            font-size: 1.1em;
-        }
-
-        small {
-            display: block;
-            color: #7f8c8d;
-            font-size: 0.9em;
-            margin-top: 5px;
-        }
-
         .back-button {
-            display: inline-block;
-            margin-bottom: 20px;
-            padding: 10px 15px;
-            background: #3498db;
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
             color: white;
+            padding: 12px 25px;
+            border-radius: 12px;
             text-decoration: none;
-            border-radius: 5px;
-            transition: background 0.3s;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(46, 125, 50, 0.2);
+            z-index: 10;
         }
 
         .back-button:hover {
-            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(46, 125, 50, 0.3);
         }
 
-        .back-container {
-            width: 100%;
+        .header {
             display: flex;
-            justify-content: flex-start;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 40px;
+            padding: 30px 40px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #2e7d32, #66bb6a, #2e7d32);
+            animation: gradient 3s ease infinite;
+            background-size: 200% 200%;
+        }
+
+        h1 {
+            color: #2e7d32;
+            font-size: 2.2rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        h1 i {
+            animation: bell 2s infinite;
+            color: #4CAF50;
+        }
+
+        .notifications-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .notification-list {
+            list-style: none;
+            padding: 20px;
+        }
+
+        .notification-item {
+            background: white;
+            margin-bottom: 15px;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            position: relative;
+            border-left: 4px solid #e0e0e0;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .notification-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .notification-item.new-notification {
+            border-left: 4px solid #4CAF50;
+            background: linear-gradient(to right, rgba(76, 175, 80, 0.05), transparent);
+        }
+
+        .notification-message {
+            color: #333;
+            font-size: 1.1rem;
             margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .notification-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .notification-crop {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .notification-date {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .no-notifications {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 1.1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .no-notifications i {
+            font-size: 3rem;
+            color: #ccc;
+            margin-bottom: 10px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes bell {
+            0% { transform: rotate(0); }
+            20% { transform: rotate(15deg); }
+            40% { transform: rotate(-15deg); }
+            60% { transform: rotate(7deg); }
+            80% { transform: rotate(-7deg); }
+            100% { transform: rotate(0); }
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 20px;
+                padding: 20px;
+                text-align: center;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .notification-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="back-container">
-        <a href="{% url 'farmer_dashboard' %}" class="back-button"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
-    </div>
-    
-    <div class="container">
-        <h1>Notifications</h1>
+    <div class="main-wrapper">
+        <a href="{% url 'farmer_dashboard' %}" class="back-button">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
         
-        {% if notifications %}
-            <ul>
-                {% for notification in notifications %}
-                    <li class="{% if notification.is_new %}new-notification{% endif %}">
-                        <p>{{ notification.message }}</p>
-                        <small>
-                            Crop: 
-                            {% if notification.crop %}
-                                {{ notification.crop.name }}
-                            {% else %}
-                                N/A
-                            {% endif %}
-                            | Date: {{ notification.created_at }}
-                        </small>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>No notifications available.</p>
-        {% endif %}
+        <div class="page-container">
+            <div class="header">
+                <h1><i class="fas fa-bell"></i> Notifications</h1>
+            </div>
+
+            <div class="notifications-container">
+                {% if notifications %}
+                    <ul class="notification-list">
+                        {% for notification in notifications %}
+                            <li class="notification-item {% if notification.is_new %}new-notification{% endif %}">
+                                <div class="notification-message">{{ notification.message }}</div>
+                                <div class="notification-meta">
+                                    <div class="notification-crop">
+                                        <i class="fas fa-seedling"></i>
+                                        {% if notification.crop %}
+                                            {{ notification.crop.name }}
+                                        {% else %}
+                                            N/A
+                                        {% endif %}
+                                    </div>
+                                    <div class="notification-date">
+                                        <i class="far fa-clock"></i>
+                                        {{ notification.created_at }}
+                                    </div>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="no-notifications">
+                        <i class="far fa-bell-slash"></i>
+                        <p>No notifications available</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
     </div>
 </body>
 </html>

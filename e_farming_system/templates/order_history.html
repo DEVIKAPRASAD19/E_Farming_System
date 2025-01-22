@@ -4,215 +4,259 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Order History</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Poppins:wght@600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/order_history.css' %}">
-    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Order History</title>
+    <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* General Styles */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
         }
 
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f4f6f9;
-            padding: 20px 0;
-            background-image: url('https://img.freepik.com/free-photo/green-field-with-sun_1160-878.jpg');
+            min-height: 100vh;
+            background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)),
+                        url('https://images.pexels.com/photos/2165688/pexels-photo-2165688.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
             background-size: cover;
             background-position: center;
-            background-repeat: no-repeat;
+            background-attachment: fixed;
         }
 
-        /* Sidebar Styling */
+        /* Sidebar Styles */
         .sidebar {
-            min-width: 250px;
-            background: #11601e; /* Main sidebar color */
-            color: white;
-            height: 100vh; /* Full height for sidebar */
-            padding: 20px 0;
+            width: 280px;
+            background: linear-gradient(180deg, #1b5e20 0%, #2e7d32 100%);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
             position: fixed;
+            height: 100vh;
+            z-index: 1000;
+            box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
         }
 
         .sidebar-header {
             text-align: center;
             padding: 20px 0;
-            border-bottom: 1px solid #e6e6e6;
-            font-size: 22px; /* Larger font size for the header */
-            font-weight: bold;
-            color: white;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
         }
 
-        .components {
+        .sidebar-header h2 {
+            color: white;
+            font-size: 24px;
+            font-weight: 600;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-links {
             list-style: none;
             padding: 0;
         }
 
-        .components li {
-            padding: 25px 20px;
+        .nav-links li {
+            margin-bottom: 15px;
         }
 
-        .components li a {
-            color: white;
-            text-decoration: none;
+        .nav-links li a {
             display: flex;
             align-items: center;
-            font-size: 24px; /* Adjust the font size as needed */
-        }
-
-        .components li a i {
-            margin-right: 10px;
-        }
-
-        .main-content {
-            margin-left: 250px; /* Adjusts content to make room for sidebar */
-            padding: 20px;
-        }
-
-        /* Top Navigation Bar */
-        .top-nav {
-            background-color: #4CAF50; /* Same color as buttons */
+            padding: 15px;
             color: white;
-            padding: 20px 40px;
-            text-align: center;
-            font-size: 24px;
-            margin-bottom: 20px;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-size: 22px;
         }
 
-        /* Order Card Styles */
-        .container {
-            width: 80%;
-            margin: 20px auto;
-            background-color: #fff;
-            padding: 20px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
+        .nav-links li a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
         }
 
-        h2 {
-            font-family: 'Poppins', sans-serif;
-            font-size: 28px;
-            text-align: center;
-            color: #333;
+        .nav-links li a i {
+            margin-right: 15px;
+            font-size: 20px;
+            width: 25px;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            margin-left: 280px;
+            padding: 40px;
+        }
+
+        .header {
+            background: white;
+            padding: 25px 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
             margin-bottom: 30px;
         }
 
+        .header h1 {
+            color: #2e7d32;
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .orders-container {
+            display: grid;
+            gap: 25px;
+        }
+
         .order-card {
-            background-color: #fafafa;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            padding: 20px;
-            transition: box-shadow 0.3s ease;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: all 0.3s ease;
         }
 
         .order-card:hover {
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
         }
 
         .order-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .order-details {
-            margin-top: 15px;
+            background: linear-gradient(135deg,rgb(89, 221, 96), #1b5e20);
+            color: white;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
         }
 
         .order-header div {
-            font-size: 16px;
-            color: #333;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
         }
 
-        .order-header div span {
-            font-weight: bold;
-            color: #4CAF50;
+        .order-header span {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .order-header strong {
+            font-size: 16px;
+        }
+
+        .order-details {
+            padding: 20px;
+        }
+
+        .order-address {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #666;
+            margin-bottom: 15px;
         }
 
         .order-items {
-            margin-top: 10px;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
         }
 
-        .order-items strong {
-            font-size: 16px;
-            color: #4CAF50;
-            display: block;
+        .order-items h3 {
+            color: #2e7d32;
             margin-bottom: 10px;
+            font-size: 18px;
         }
 
-        .order-items ul {
+        .items-list {
             list-style: none;
-            padding-left: 0;
         }
 
-        .order-items ul li {
-            font-size: 15px;
-            color: #555;
-            margin-bottom: 8px;
+        .items-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
         }
 
-        .order-items ul li span {
-            color: #333;
-            font-weight: 500;
+        .items-list li:last-child {
+            border-bottom: none;
         }
 
-        .view-details-button {
-            display: inline-block;
-            margin-top: 15px;
-            padding: 10px 20px;
-            background-color: #4CAF50;
+        .view-details-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
             color: white;
+            padding: 12px 25px;
+            border-radius: 10px;
             text-decoration: none;
-            border-radius: 5px;
-            font-family: 'Poppins', sans-serif;
-            font-weight: 600;
-            transition: background-color 0.3s ease;
+            margin-top: 15px;
+            transition: all 0.3s ease;
         }
 
-        .view-details-button:hover {
-            background-color: #45a049;
+        .view-details-btn:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(46, 125, 50, 0.2);
         }
 
         .no-orders {
             text-align: center;
+            padding: 50px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .no-orders i {
+            font-size: 48px;
+            color: #2e7d32;
+            margin-bottom: 15px;
+        }
+
+        .no-orders p {
+            color: #666;
             font-size: 18px;
-            color: #999;
-            margin-top: 20px;
         }
 
-        .back-button {
-            display: block;
-            width: fit-content;
-            margin: 30px auto;
-            padding: 12px 25px;
-            background-color: #4CAF50;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            font-family: 'Poppins', sans-serif;
-            font-weight: 600;
-            transition: background-color 0.3s ease;
-        }
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 90px;
+            }
 
-        .back-button:hover {
-            background-color: #45a049;
-        }
+            .sidebar-header h2,
+            .nav-links li a span {
+                display: none;
+            }
 
-        /* Media Queries */
-        @media (max-width: 768px) {
-            .container {
-                width: 95%;
+            .nav-links li a i {
+                margin: 0;
+                font-size: 24px;
+            }
+
+            .main-content {
+                margin-left: 90px;
             }
 
             .order-header {
-                flex-direction: column;
-                align-items: flex-start;
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 20px;
+            }
+
+            .order-header {
+                padding: 15px;
+            }
+
+            .order-details {
+                padding: 15px;
             }
         }
     </style>
@@ -221,32 +265,37 @@
     <!-- Sidebar -->
     <nav class="sidebar">
         <div class="sidebar-header">
-            Welcome to Crops World
+            <h2>Welcome to Crops World</h2>
         </div>
-        <ul class="components">
+        <ul class="nav-links">
             <li>
                 <a href="{% url 'buyer_dashboard' %}">
-                    <i class="fas fa-home"></i> Buyer Dashboard
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
                 </a>
             </li>
             <li>
                 <a href="{% url 'crops_page' %}">
-                    <i class="fas fa-seedling"></i> Crops Page
+                    <i class="fas fa-seedling"></i>
+                    <span>Crops Page</span>
                 </a>
             </li>
             <li>
                 <a href="{% url 'wishlist' %}">
-                    <i class="fas fa-heart"></i> My Wishlists
+                    <i class="fas fa-heart"></i>
+                    <span>My Wishlist</span>
                 </a>
             </li>
             <li>
                 <a href="{% url 'viewcart' %}">
-                    <i class="fas fa-shopping-cart"></i> My Cart
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>My Cart</span>
                 </a>
             </li>
             <li>
                 <a href="{% url 'order_history' %}">
-                    <i class="fas fa-box"></i> Your Orders
+                    <i class="fas fa-history"></i>
+                    <span>Your Orders</span>
                 </a>
             </li>
         </ul>
@@ -254,38 +303,57 @@
 
     <!-- Main Content -->
     <div class="main-content">
-        <div class="top-nav">
-            Your Orders
+        <div class="header">
+            <h1><i class="fas fa-history"></i> Order History</h1>
         </div>
-        <div class="container">
-            <h2>Your Order History</h2>
+
+        <div class="orders-container">
             {% if orders %}
                 {% for order in orders %}
                 <div class="order-card">
                     <div class="order-header">
-                        <div>Order ID: <span>{{ order.id }}</span></div>
-                        <div>Date: <span>{{ order.order_date }}</span></div>
-                        <div>Total Price: <span>Rs.{{ order.total_price }}</span></div>
+                        <div>
+                            <span>Order ID</span>
+                            <strong>#{{ order.id }}</strong>
+                        </div>
+                        <div>
+                            <span>Date</span>
+                            <strong>{{ order.order_date }}</strong>
+                        </div>
+                        <div>
+                            <span>Total Amount</span>
+                            <strong>Rs.{{ order.total_price }}</strong>
+                        </div>
                     </div>
                     <div class="order-details">
-                        <div>Delivery Address: {{ order.delivery_address }}</div>
-                        <div>Payment Method: {{ order.payment_method }}</div>
+                        <div class="order-address">
+                            <i class="fas fa-map-marker-alt"></i>
+                            {{ order.delivery_address }}
+                        </div>
+                        <div class="order-items">
+                            <h3>Items Ordered</h3>
+                            <ul class="items-list">
+                                {% for item in order.order_items.all %}
+                                <li>
+                                    <span>{{ item.crop.name }} (Qty: {{ item.quantity }})</span>
+                                    <strong>Rs.{{ item.price }}</strong>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <a href="{% url 'order_details' order.id %}" class="view-details-btn">
+                            <i class="fas fa-eye"></i>
+                            View Details
+                        </a>
                     </div>
-                    <div class="order-items">
-                        <strong>Items Ordered:</strong>
-                        <ul>
-                            {% for item in order.order_items.all %}
-                            <li>{{ item.crop.name }} (Qty: {{ item.quantity }}) - <span>Rs.{{ item.price }}</span></li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                    <a href="{% url 'order_details' order.id %}" class="view-details-button">View Details</a> 
                 </div>
                 {% endfor %}
             {% else %}
-                <p class="no-orders">You have no previous orders.</p>
+                <div class="no-orders">
+                    <i class="fas fa-box-open"></i>
+                    <p>You haven't placed any orders yet.</p>
+                </div>
             {% endif %}
-            <a href="{% url 'buyer_dashboard' %}" class="back-button">Back to Home</a>
         </div>
     </div>
 </body>

@@ -5,299 +5,420 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Cart</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/crops_page.css' %}">
-    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* Base styles */
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f4f4f4;
+        * {
             margin: 0;
             padding: 0;
-            background-image: url('https://wallpapers.com/images/hd/light-green-background-3m1s3691d543m9xn.jpg');
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                        url('https://images.pexels.com/photos/1458694/pexels-photo-1458694.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
             background-size: cover;
             background-position: center;
-            background-repeat: no-repeat;
+            background-attachment: fixed;
         }
 
-        /* Sidebar Styling */
+        /* Sidebar Styles */
+        /* Update existing sidebar styles to match crops_page */
+    .sidebar {
+        width: 280px;
+        background: linear-gradient(180deg, #1b5e20 0%, #2e7d32 100%);
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        height: 100vh;
+        z-index: 1000;
+        box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .sidebar-header {
+        text-align: center;
+        padding: 20px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: 20px;
+    }
+
+    .sidebar-header h2 {
+        color: white;
+        font-size: 24px;
+        font-weight: 600;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .components {
+        list-style: none;
+        padding: 0;
+    }
+
+    .components li {
+        margin-bottom: 15px;
+    }
+
+    .components li a {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        color: white;
+        text-decoration: none;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        font-size: 22px;
+    }
+
+    .components li a:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateX(5px);
+    }
+
+    .components li a i {
+        margin-right: 15px;
+        font-size: 20px;
+        width: 25px;
+    }
+
+    /* Update responsive styles */
+    @media (max-width: 1024px) {
         .sidebar {
-            min-width: 250px;
-            background: #11601e; /* Main sidebar color */
-            color: white;
-            height: 100vh; /* Full height for sidebar */
-            padding: 20px 0;
-            position: fixed;
+            width: 90px;
         }
 
-        .sidebar-header {
-            text-align: center;
-            padding: 20px 0;
-            border-bottom: 1px solid #e6e6e6;
-            font-size: 22px; /* Larger font size for the header */
-            font-weight: bold;
-            color: white;
-        }
-
-        .components {
-            list-style: none;
-            padding: 0;
-        }
-
-        .components li {
-            padding: 25px 20px;
-        }
-
-        .components li a {
-            color: white;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            font-size: 24px; /* Adjust the font size as needed */
+        .sidebar-header h2,
+        .components li a span {
+            display: none;
         }
 
         .components li a i {
-            margin-right: 10px;
+            margin: 0;
+            font-size: 24px;
         }
 
         .main-content {
-            margin-left: 250px; /* Adjusts content to make room for sidebar */
-            padding: 20px;
+            margin-left: 90px;
         }
+    }
 
-        .navbar {
-            background-color: darkgreen;
-            padding: 15px;
-            display: flex;
-            justify-content: flex-start;
-        }
-
-        .back-button {
-            color: white;
-            text-decoration: none;
-            font-size: 18px;
-            margin-right: 20px;
-            border: 1px solid transparent;
-            padding: 10px 15px;
-            border-radius: 5px;
-            transition: background-color 0.3s, border 0.3s;
-        }
-
-        .back-button:hover {
-            background-color: #495057;
-            border: 1px solid #ffffff;
+        /* Main Content Styles */
+        .main-content {
+            margin-left: 280px;
+            padding: 40px;
+            min-height: 100vh;
         }
 
         .cart-container {
-            max-width: 900px;
-            margin: 40px auto;
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-            border: 1px solid #dee2e6;
-        }
-
-        h2 {
-            text-align: center;
-            color: #343a40;
-            font-size: 2.5rem;
-            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            animation: fadeIn 0.5s ease-out;
         }
 
         .cart-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 2px solid #007bff;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(46, 125, 50, 0.2);
+        }
+
+        .cart-header h2 {
+            color: #2e7d32;
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
         .cart-header i {
-            font-size: 30px;
-            color: #007bff;
+            font-size: 28px;
+            color: #2e7d32;
         }
 
         table {
             width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-
-        th, td {
-            padding: 15px;
-            text-align: left;
-            border-bottom: 1px solid #dee2e6;
+            border-collapse: separate;
+            border-spacing: 0 15px;
+            margin-top: 20px;
         }
 
         th {
-            background-color: #007bff;
+            background: #2e7d32;
             color: white;
-            font-weight: 600;
+            padding: 15px;
+            text-align: left;
+            font-weight: 500;
         }
 
-        tr:hover {
-            background-color: #f1f1f1;
+        th:first-child {
+            border-top-left-radius: 12px;
+            border-bottom-left-radius: 12px;
+        }
+
+        th:last-child {
+            border-top-right-radius: 12px;
+            border-bottom-right-radius: 12px;
+        }
+
+        td {
+            background: white;
+            padding: 20px 15px;
+        }
+
+        tr:not(thead tr) {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+
+        tr:not(thead tr):hover {
+            transform: translateY(-3px);
+        }
+
+        td:first-child {
+            border-top-left-radius: 12px;
+            border-bottom-left-radius: 12px;
+        }
+
+        td:last-child {
+            border-top-right-radius: 12px;
+            border-bottom-right-radius: 12px;
         }
 
         .remove-button {
-            background-color: #dc3545;
+            background: #dc3545;
             color: white;
             border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
+            padding: 10px 20px;
+            border-radius: 50px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
         }
 
         .remove-button:hover {
-            background-color: #c82333;
+            background: #c82333;
+            transform: translateX(3px);
         }
 
         .total-price {
-            font-size: 1.5rem;
-            font-weight: bold;
             text-align: right;
-            margin-top: 20px;
-            color: #333;
+            margin: 30px 0;
+            font-size: 24px;
+            color: #2e7d32;
+            font-weight: 600;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .checkout-button, .continue-shopping-button {
+            padding: 15px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
         }
 
         .checkout-button {
-            display: inline-block;
-            background-color: #28a745;
+            background: #2e7d32;
             color: white;
-            padding: 12px 20px;
-            text-decoration: none;
-            border-radius: 5px;
-            font-size: 18px;
-            margin-top: 20px;
-            text-align: center;
-            transition: background-color 0.3s;
         }
 
-        .checkout-button:hover {
-            background-color: #218838;
-        }
-        
         .continue-shopping-button {
-            background-color: #007bff;
-            margin-left: 10px;
+            background: #007bff;
+            color: white;
         }
-        
-        .continue-shopping-button:hover {
-            background-color: #0056b3;
+
+        .checkout-button:hover, .continue-shopping-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
-        
+
+        .empty-cart {
+            text-align: center;
+            padding: 50px 20px;
+        }
+
+        .empty-cart i {
+            font-size: 48px;
+            color: #2e7d32;
+            margin-bottom: 20px;
+        }
+
+        .empty-cart p {
+            color: #666;
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 90px;
+            }
+
+            .sidebar-header h2,
+            .components li a span {
+                display: none;
+            }
+
+            .components li a i {
+                margin: 0;
+                font-size: 24px;
+            }
+
+            .main-content {
+                margin-left: 90px;
+            }
+        }
+
         @media (max-width: 768px) {
+            .main-content {
+                padding: 20px;
+            }
+
             .cart-container {
                 padding: 20px;
             }
 
-            h2 {
-                font-size: 2rem;
+            table {
+                display: block;
+                overflow-x: auto;
             }
 
-            .checkout-button {
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .checkout-button, .continue-shopping-button {
                 width: 100%;
-                text-align: center;
+                justify-content: center;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Sidebar -->
     <nav class="sidebar">
         <div class="sidebar-header">
-            Welcome to Crops World
+            <h2>Welcome to Crops World</h2>
         </div>
         <ul class="components">
             <li>
                 <a href="{% url 'buyer_dashboard' %}">
-                    <i class="fas fa-home"></i> Buyer Dashboard
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
                 </a>
             </li>
             <li>
                 <a href="{% url 'crops_page' %}">
-                    <i class="fas fa-seedling"></i> Crops Page
+                    <i class="fas fa-seedling"></i>
+                    <span>Crops Page</span>
                 </a>
             </li>
             <li>
                 <a href="{% url 'wishlist' %}">
-                    <i class="fas fa-heart"></i> My Wishlists
+                    <i class="fas fa-heart"></i>
+                    <span>My Wishlist</span>
                 </a>
             </li>
             <li>
                 <a href="{% url 'viewcart' %}">
-                    <i class="fas fa-shopping-cart"></i> My Cart
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>My Cart</span>
                 </a>
             </li>
             <li>
                 <a href="{% url 'order_history' %}">
-                    <i class="fas fa-box"></i> Your Orders
+                    <i class="fas fa-history"></i>
+                    <span>Your Orders</span>
                 </a>
             </li>
         </ul>
     </nav>
-
-    <!-- Main Content -->
     <div class="main-content">
-        <div class="navbar">
-            {% comment %} <a href="{% url 'buyer_dashboard' %}" class="back-button">
-                <i class="fas fa-arrow-left"></i> Back
-            </a> {% endcomment %}
-        </div>
         <div class="cart-container">
-            <!-- Success message block -->
             {% if messages %}
-                <div>
-                    {% for message in messages %}
-                        <div style="padding: 10px; background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724; margin-bottom: 15px; border-radius: 5px;">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                </div>
+                {% for message in messages %}
+                    <div class="alert alert-success">
+                        {{ message }}
+                    </div>
+                {% endfor %}
             {% endif %}
+
             <div class="cart-header">
-                <h2>Your Cart</h2>
-                <i class="fas fa-shopping-cart"></i>
+                <h2><i class="fas fa-shopping-cart"></i> Your Cart</h2>
             </div>
 
             {% if cart_items %}
-            <table>
-                <thead>
-                    <tr>
-                        <th>Crop</th>
-                        <th>Quantity (Kg)</th>
-                        <th>Price per Unit</th>
-                        <th>Total Price</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in cart_items %}
+                <table>
+                    <thead>
                         <tr>
-                            <td data-label="Crop">{{ item.crop.name }}</td>
-                            <td data-label="Quantity">{{ item.quantity }}</td>
-                            <td data-label="Price per Unit">Rs.{{ item.crop.price }}</td>
-                            <td data-label="Total Price">Rs.{{ item.get_total_price }}</td>
-                            <td data-label="Actions">
-                                <form action="{% url 'delete_from_cart' item.id %}" method="post">
-                                    {% csrf_token %}
-                                    <button type="submit" class="remove-button">Remove</button>
-                                </form>
-                            </td>
+                            <th>Crop</th>
+                            <th>Quantity (Kg)</th>
+                            <th>Price per Unit</th>
+                            <th>Total Price</th>
+                            <th>Actions</th>
                         </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            <p class="total-price"><strong>Total Price:</strong> Rs.{{ total_price }}</p>
-            <a href="{% url 'check_out_step1' %}" class="checkout-button">Proceed to Checkout</a>
-            <a href="{% url 'crops_page' %}" class="checkout-button continue-shopping-button">Continue Shopping</a>
+                    </thead>
+                    <tbody>
+                        {% for item in cart_items %}
+                            <tr>
+                                <td>{{ item.crop.name }}</td>
+                                <td>{{ item.quantity }}</td>
+                                <td>Rs.{{ item.crop.price }}</td>
+                                <td>Rs.{{ item.get_total_price }}</td>
+                                <td>
+                                    <form action="{% url 'delete_from_cart' item.id %}" method="post">
+                                        {% csrf_token %}
+                                        <button type="submit" class="remove-button">
+                                            <i class="fas fa-trash"></i> Remove
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div class="total-price">
+                    <strong>Total Price:</strong> Rs.{{ total_price }}
+                </div>
+                <div class="action-buttons">
+                    <a href="{% url 'check_out_step1' %}" class="checkout-button">
+                        <i class="fas fa-shopping-bag"></i> Proceed to Checkout
+                    </a>
+                    <a href="{% url 'crops_page' %}" class="continue-shopping-button">
+                        <i class="fas fa-arrow-left"></i> Continue Shopping
+                    </a>
+                </div>
             {% else %}
-                <p style="text-align: center;">Your cart is empty!</p>
+                <div class="empty-cart">
+                    <i class="fas fa-shopping-cart"></i>
+                    <p>Your cart is empty!</p>
+                    <a href="{% url 'crops_page' %}" class="continue-shopping-button">
+                        <i class="fas fa-store"></i> Start Shopping
+                    </a>
+                </div>
             {% endif %}
         </div>
     </div>

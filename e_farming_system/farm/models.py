@@ -7,6 +7,7 @@ from django.contrib.auth.hashers import make_password, check_password
 ROLE_CHOICES = [
     ('farmer', 'Farmer'),
     ('buyer', 'Buyer'),
+    ('delivery_boy', 'Delivery Boy'),
 ]
 
 class Registeruser(models.Model):
@@ -17,10 +18,11 @@ class Registeruser(models.Model):
     place = models.CharField(max_length=100)
     email = models.EmailField(max_length=254, unique=True)
     password = models.CharField(max_length=128)
-    role = models.CharField(max_length=10, choices=ROLE_CHOICES)
+    role = models.CharField(max_length=15, choices=ROLE_CHOICES)
     status = models.BooleanField(default=True)  # Boolean field, defaulting to True (e.g., for active users)
     delivery_address = models.TextField(blank=True, null=True)  # Field for delivery address
     pincode = models.CharField(max_length=10, blank=True, null=True)  #
+    is_verified = models.BooleanField(default=False)
     created_at = models.DateTimeField(default=timezone.now)  # Automatically sets the current time for existing records
     updated_at = models.DateTimeField(auto_now=True)  # Automatically updates the timestamp whenever the record is updated
     last_login = models.DateTimeField(null=True, blank=True)
@@ -165,3 +167,29 @@ class Feedback(models.Model):
 
     def __str__(self):
         return f"{self.user} - {self.rating} Stars"
+
+
+
+class DeliveryBoyDetail(models.Model):
+    VEHICLE_TYPE_CHOICES = [
+        ('bike', 'Bike'),
+        ('car', 'Car'),
+        ('van', 'Van'),
+        ('truck', 'Truck'),
+        ('other', 'Other'),
+    ]
+
+    user = models.OneToOneField(Registeruser, on_delete=models.CASCADE, related_name='delivery_details')
+    name = models.CharField(max_length=100)
+    contact = models.CharField(max_length=15)
+    place = models.CharField(max_length=100)
+    email = models.EmailField(max_length=254)
+    vehicle_type = models.CharField(max_length=20, choices=VEHICLE_TYPE_CHOICES, blank=True, null=True)
+    vehicle_number = models.CharField(max_length=20, blank=True, null=True)
+    license_number = models.CharField(max_length=50, blank=True, null=True)
+    area_of_service = models.TextField(blank=True, null=True)
+    additional_documents = models.FileField(upload_to='delivery_docs/', blank=True, null=True)
+    completed_registration = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Delivery Details for {self.user.name}"

@@ -5,25 +5,253 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Profile - {{ user.name }}</title>
-    <link rel="stylesheet" href="{% static 'css/view_profile.css' %}"> <!-- Link to your CSS file -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                        url('https://images.pexels.com/photos/440731/pexels-photo-440731.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            background: rgba(46, 125, 50, 0.95);
+            padding: 20px;
+            border-radius: 15px 15px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .back-button {
+            background: rgba(27, 94, 32, 0.9);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .back-button:hover {
+            background: #154a1c;
+            transform: translateY(-2px);
+        }
+
+        .profile-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 0 0 15px 15px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(0,0,0,0.1);
+        }
+
+        .profile-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #2e7d32, #388e3c);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            color: white;
+            border: 5px solid #fff;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .profile-name {
+            flex-grow: 1;
+        }
+
+        .profile-name h2 {
+            font-size: 32px;
+            color: #2e7d32;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .profile-role {
+            display: inline-block;
+            background: linear-gradient(145deg, #e8f5e9, #c8e6c9);
+            color: #2e7d32;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .profile-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .detail-item {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 25px;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            backdrop-filter: blur(5px);
+        }
+
+        .detail-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .detail-item h3 {
+            color: #2e7d32;
+            font-size: 16px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #e8f5e9;
+            padding-bottom: 8px;
+        }
+
+        .detail-item p {
+            color: #333;
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .detail-item i {
+            color: #2e7d32;
+            margin-right: 15px;
+            font-size: 20px;
+            width: 24px;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 20px auto;
+            }
+
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .profile-image {
+                width: 120px;
+                height: 120px;
+                font-size: 40px;
+                margin: 0 auto;
+            }
+
+            .detail-item {
+                padding: 20px;
+            }
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .profile-card {
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .detail-item {
+            animation: fadeIn 0.8s ease-out;
+        }
+    </style>
 </head>
 <body>
-    
-    <div class="header">
-        <button class="back-button" onclick="window.history.back();">Back</button>
-        <h1>Profile of {{ user.name }}</h1>
-{% comment %}         <a href="{% url 'edit_profile' user.user_id %}" class="edit-btn">Edit Profile</a> {% endcomment %}
-        {% comment %} <a href="{% url 'index' %}" class="back-button">Back</a> {% endcomment %}
-    </div>
+    <div class="container">
+        <div class="header">
+            <button class="back-button" onclick="window.history.back();">
+                <i class="fas fa-arrow-left"></i> Back
+            </button>
+            <h1>Profile Details</h1>
+        </div>
 
-    <div class="profile-details">
-        <h2>User Details</h2>
-        <p><strong>Name:</strong> {{ user.name }}</p>
-        <p><strong>Contact:</strong> {{ user.contact }}</p>
-        <p><strong>Place:</strong> {{ user.place }}</p>
-        <p><strong>Email:</strong> {{ user.email }}</p>
-        <p><strong>Role:</strong> {{ user.role }}</p>
-        <p><strong>Created At:</strong> {{ user.created_at }}</p>
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-image">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="profile-name">
+                    <h2>{{ user.name }}</h2>
+                    <span class="profile-role">{{ user.role }}</span>
+                </div>
+            </div>
+
+            <div class="profile-details">
+                <div class="detail-item">
+                    <h3>Contact Information</h3>
+                    <p><i class="fas fa-phone"></i>{{ user.contact }}</p>
+                    <p><i class="fas fa-envelope"></i>{{ user.email }}</p>
+                </div>
+
+                <div class="detail-item">
+                    <h3>Location</h3>
+                    <p><i class="fas fa-map-marker-alt"></i>{{ user.place }}</p>
+                </div>
+
+                <div class="detail-item">
+                    <h3>Account Details</h3>
+                    <p><i class="fas fa-calendar-alt"></i>Joined: {{ user.created_at|date:"F d, Y" }}</p>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 </html>

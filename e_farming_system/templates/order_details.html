@@ -1,173 +1,386 @@
-{% block content %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order Details</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
+        * {
             margin: 0;
-            padding: 20px;
-            background-image: url('https://img.freepik.com/free-photo/abstract-blur-green-nature_1150-27263.jpg');
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                        url('https://images.pexels.com/photos/440731/pexels-photo-440731.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
             background-size: cover;
             background-position: center;
-            background-repeat: no-repeat;
-        }
-
-        h2 {
-            color: #4CAF50;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .order-details {
-            background-color: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-            max-width: 600px;
-            margin: 20px auto;
-            transition: transform 0.3s;
-        }
-
-        .order-details:hover {
-            transform: translateY(-2px); /* Slightly lift on hover */
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        .order-info {
-            margin-bottom: 20px;
-            font-size: 18px;
-        }
-
-        .order-info strong {
-            color: #4CAF50;
-        }
-
-        .button-container {
-            text-align: center;
-        }
-
-        button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            font-size: 16px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.3s;
-        }
-
-        button:hover {
-            background-color: #45a049;
-            transform: scale(1.05); /* Slight scale effect on hover */
-        }
-
-        .cancel-message {
-            color: #d9534f; /* Red color for message */
-            font-weight: bold;
-            text-align: center;
-            margin-top: 15px;
-        }
-
-        a {
-            color: #4CAF50;
-            text-decoration: none;
-            font-weight: bold;
-            display: inline-block;
-            margin-top: 20px;
-        }
-
-        a:hover {
-            text-decoration: underline;
+            background-attachment: fixed;
+            padding: 40px;
+            color: #333;
         }
 
         .back-button {
-            background-color: #fff;
-            color: #4CAF50;
-            border: 1px solid #4CAF50;
-            padding: 10px 15px;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #2e7d32;
+            padding: 12px 25px;
+            border-radius: 50px;
             text-decoration: none;
-            border-radius: 5px;
-            display: inline-block;
-            margin-bottom: 20px;
-            transition: background-color 0.3s, transform 0.3s;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 100;
         }
 
         .back-button:hover {
-            background-color: #4CAF50;
+            transform: translateX(-5px);
+            background: #2e7d32;
             color: white;
-            transform: scale(1.05); /* Slight scale effect on hover */
         }
 
-        /* Order items style */
-        .order-items {
+        .container {
+            max-width: 1000px;
+            margin: 60px auto 0;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            animation: fadeIn 0.5s ease-out;
+            backdrop-filter: blur(10px);
+        }
+
+        .order-header {
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
+            color: white;
+            padding: 5px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .order-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://www.transparenttextures.com/patterns/cubes.png');
+            opacity: 0.1;
+        }
+
+        .order-header h2 {
+            font-size: 32px;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .order-id {
+            font-size: 20px;
+            opacity: 0.9;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 20px;
+            border-radius: 50px;
+            display: inline-block;
+        }
+
+        .order-content {
+            padding: 40px;
+        }
+
+        .info-section {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .info-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-label {
+            color: #666;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-label i {
+            color: #2e7d32;
+            font-size: 18px;
+        }
+
+        .info-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .items-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .items-header {
+            color: #2e7d32;
+            font-size: 24px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .items-list {
+            display: grid;
+            gap: 20px;
+        }
+
+        .item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .item:hover {
+            transform: translateX(5px);
+            background: #f0f2f5;
+        }
+
+        .item-name {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 16px;
+        }
+
+        .item-name i {
+            color: #2e7d32;
+            font-size: 20px;
+        }
+
+        .item-price {
+            font-weight: 600;
+            color: #2e7d32;
+            font-size: 18px;
+        }
+
+        .total-section {
+            background: #f8f9fa;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: right;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .total-amount {
+            font-size: 28px;
+            color: #2e7d32;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 500;
             margin-top: 15px;
-            padding: 10px 0;
-            border-top: 1px solid #e0e0e0; /* Add a border to separate items */
-            margin-top: 15px;
         }
 
-        .order-items span {
-            display: inline; /* Ensure items are displayed inline */
-            margin-right: 5px; /* Space between items */
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
         }
 
-        /* Additional order details */
-        .order-details-info {
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .cancel-button {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
             margin-top: 20px;
-            border-top: 1px solid #e0e0e0;
-            padding-top: 10px;
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.2);
         }
 
-        /* Positioning the back to order history button */
-        .back-to-history {
-            text-align: left;
-            margin-top: 20px;
+        .cancel-button:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.3);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px;
+            }
+
+            .container {
+                margin-top: 80px;
+            }
+
+            .order-header {
+                padding: 30px 20px;
+            }
+
+            .order-content {
+                padding: 20px;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .item {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+
+            .total-amount {
+                font-size: 24px;
+            }
         }
     </style>
 </head>
 <body>
+    <a href="{% url 'order_history' %}" class="back-button">
+        <i class="fas fa-arrow-left"></i> Back to Orders
+    </a>
 
-    <a href="{% url 'order_history' %}" class="back-button">← Back</a>
-
-    <div class="order-details">
-        <h2>Order Details</h2>
-
-        <div class="order-info">
-            <p><strong>Order ID:</strong> {{ order.id }}</p>
-            <div class="order-items">
-                <strong>Items Ordered:</strong>
-                {% for item in order.order_items.all %}
-                    <span>{{ item.crop.name }} (Qty: {{ item.quantity }})</span>
-                    {% if not forloop.last %}, {% endif %}  <!-- Add a comma except for the last item -->
-                {% endfor %}
-            </div>
-            <p><strong>Status:</strong> {{ order.status }}</p>
-            <p><strong>Order Date:</strong> {{ order.order_date }}</p>
-            <p><strong>Delivery Address:</strong> {{ order.delivery_address }}</p>
-            <p><strong>Payment Method:</strong> {{ order.payment_method }}</p>
-            <p><strong>Total Amount:</strong> Rs.{{ order.total_price }}</p>
+    <div class="container">
+        <div class="order-header">
+            <h2>Order Details</h2>
+            <div class="order-id">#{{ order.id }}</div>
         </div>
 
-        <!-- Show the cancel button if the order is still pending -->
-        {% if order.status == 'Pending' %}
-            <div class="button-container">
-                <button onclick="confirmCancelOrder()">Cancel Order</button>
+        <div class="order-content">
+            <div class="info-section">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">
+                            <i class="far fa-calendar"></i> Order Date
+                        </span>
+                        <span class="info-value">{{ order.order_date }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">
+                            <i class="fas fa-map-marker-alt"></i> Delivery Address
+                        </span>
+                        <span class="info-value">{{ order.delivery_address }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">
+                            <i class="fas fa-credit-card"></i> Payment Method
+                        </span>
+                        <span class="info-value">{{ order.payment_method }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">
+                            <i class="fas fa-truck"></i> Status
+                        </span>
+                        <span class="info-value">
+                            <span class="status-badge status-{{ order.status|lower }}">
+                                {{ order.status }}
+                            </span>
+                        </span>
+                    </div>
+                </div>
             </div>
-        {% else %}
-            <p class="cancel-message">You cannot cancel this order as it is {{ order.status }}.</p>
-        {% endif %}
-    </div>
 
-    <div class="back-to-history">
-        <a href="{% url 'order_history' %}">Back to Order History</a>
+            <div class="items-section">
+                <h3 class="items-header">
+                    <i class="fas fa-shopping-basket"></i> Order Items
+                </h3>
+                <div class="items-list">
+                    {% for item in order.order_items.all %}
+                    <div class="item">
+                        <div class="item-name">
+                            <i class="fas fa-seedling"></i>
+                            {{ item.crop.name }} (Qty: {{ item.quantity }})
+                        </div>
+                        <div class="item-price">Rs.{{ item.price }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="total-section">
+                <div class="total-amount">
+                    Total: Rs.{{ order.total_price }}
+                </div>
+                {% if order.status == 'Pending' %}
+                <button onclick="confirmCancelOrder()" class="cancel-button">
+                    <i class="fas fa-times"></i> Cancel Order
+                </button>
+                {% endif %}
+            </div>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -184,28 +397,21 @@
                 cancelButtonText: 'No, keep it'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Create a form element to submit the cancel order action
                     const form = document.createElement('form');
                     form.method = 'POST';
-                    form.action = "{% url 'cancel_order' order.id %}";  // Set the action URL
+                    form.action = "{% url 'cancel_order' order.id %}";
 
-                    // Create a CSRF token input
                     const csrfInput = document.createElement('input');
                     csrfInput.type = 'hidden';
                     csrfInput.name = 'csrfmiddlewaretoken';
-                    csrfInput.value = '{{ csrf_token }}';  // Include the CSRF token
+                    csrfInput.value = '{{ csrf_token }}';
 
-                    // Append the CSRF token to the form
                     form.appendChild(csrfInput);
-
-                    // Append the form to the body and submit it
                     document.body.appendChild(form);
                     form.submit();
                 }
             });
         }
     </script>
-
 </body>
 </html>
-{% endblock %}

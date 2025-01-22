@@ -1,64 +1,87 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crop Stock Details</title>
+    <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* General styling for the page */
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f9;
-            color: #333;
+        * {
             margin: 0;
             padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)),
+                        url('https://images.pexels.com/photos/2165688/pexels-photo-2165688.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
+            background-size: cover;
+            background-position: center;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            animation: fadeIn 0.5s ease-out;
         }
 
         h1 {
-            margin-top: 20px;
-            font-size: 2.5rem;
-            color: #333;
+            color: #2e7d32;
             text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            position: relative;
         }
 
-        /* Back button styling */
+        h1::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 4px;
+            background: #4CAF50;
+            margin: 10px auto;
+            border-radius: 5px;
+        }
+
         .back-button {
             position: absolute;
             top: 20px;
             left: 20px;
-            padding: 10px 20px;
-            background-color: #4CAF50;
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
             color: white;
-            text-decoration: none;
+            padding: 10px 20px;
             border-radius: 5px;
-            font-size: 1rem;
-            transition: background-color 0.3s;
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(46, 125, 50, 0.2);
         }
 
         .back-button:hover {
-            background-color: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(46, 125, 50, 0.3);
         }
 
-        /* Styling the table */
         table {
-            width: 90%;
-            max-width: 1200px;
+            width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
-            background-color: #fff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-            overflow: hidden;
+            margin-top: 20px;
         }
 
         th, td {
-            padding: 15px 20px;
+            padding: 15px;
             text-align: left;
             border-bottom: 1px solid #ddd;
         }
@@ -68,25 +91,17 @@
             color: white;
             text-transform: uppercase;
             letter-spacing: 1px;
-            font-size: 1rem;
         }
 
         td {
-            font-size: 0.95rem;
+            background-color: rgba(255, 255, 255, 0.9);
             color: #555;
         }
 
-        /* Row hover effect */
         tr:hover {
             background-color: #f1f1f1;
         }
 
-        /* Zebra striping for rows */
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-
-        /* Style for available/unavailable status */
         .status-available {
             color: green;
             font-weight: bold;
@@ -97,64 +112,61 @@
             font-weight: bold;
         }
 
-        /* Responsive design */
         @media (max-width: 768px) {
-            table, th, td {
-                font-size: 0.9rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            table {
-                width: 100%;
-            }
-
             h1 {
                 font-size: 2rem;
             }
 
             th, td {
-                padding: 10px 15px;
-                font-size: 0.85rem;
+                padding: 10px;
+                font-size: 0.9rem;
             }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
 
-    <!-- Back button -->
-    <a href="{% url 'farmer_dashboard' %}" class="back-button">Back</a>
+    <a href="{% url 'farmer_dashboard' %}" class="back-button">
+        <i class="fas fa-arrow-left"></i> Back
+    </a>
 
-    <h1>Crop Stock Details</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Price</th>
-                <th>Category</th>
-                <th>Stock(Kg)</th>
-                <th>Status</th>
-                <th>Verified</th>
-                <th>Farmer</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for crop in crops %}
-            <tr>
-                <td>{{ crop.name }}</td>
-                <td>{{ crop.description }}</td>
-                <td>Rs.{{ crop.price }}</td>
-                <td>{{ crop.category }}</td>
-                <td>{{ crop.stock }}</td>
-                <td class="{% if crop.status %}status-available{% else %}status-unavailable{% endif %}">
-                    {{ crop.status|yesno:"Available,Unavailable" }}
-                </td>
-                <td>{{ crop.is_verified|yesno:"Verified,Not Verified" }}</td>
-                <td>{{ crop.farmer.name }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="container">
+        <h1>Crop Stock Details</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Price</th>
+                    <th>Category</th>
+                    <th>Stock (Kg)</th>
+                    <th>Status</th>
+                    <th>Verified</th>
+                    <th>Farmer</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for crop in crops %}
+                <tr>
+                    <td>{{ crop.name }}</td>
+                    <td>{{ crop.description }}</td>
+                    <td>Rs.{{ crop.price }}</td>
+                    <td>{{ crop.category }}</td>
+                    <td>{{ crop.stock }}</td>
+                    <td class="{% if crop.status %}status-available{% else %}status-unavailable{% endif %}">
+                        {{ crop.status|yesno:"Available,Unavailable" }}
+                    </td>
+                    <td>{{ crop.is_verified|yesno:"Verified,Not Verified" }}</td>
+                    <td>{{ crop.farmer.name }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>

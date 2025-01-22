@@ -5,133 +5,359 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Update Profile</title>
-    <link rel="stylesheet" href="{% static 'css/updateprofile.css' %}">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        .error-message {
-            color: red;
-            font-size: 0.9em;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
         }
-        .invalid {
-            border-color: red;
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)),
+                        url('https://images.pexels.com/photos/2165688/pexels-photo-2165688.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
+
         .back-button {
             position: absolute;
             top: 20px;
             left: 20px;
-            padding: 10px 20px;
-            background-color: #4CAF50;
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
             color: white;
-            border: none;
-            border-radius: 5px;
+            padding: 12px 25px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(46, 125, 50, 0.2);
+        }
+
+        .back-button:hover {
+            transform: translateX(-5px);
+            box-shadow: 0 6px 20px rgba(46, 125, 50, 0.3);
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 600px;
+            position: relative;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        h1 {
+            color: #2e7d32;
+            text-align: center;
+            font-size: 2.2rem;
+            margin-bottom: 30px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, #2e7d32, #66bb6a);
+            border-radius: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
             font-size: 1rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        input:focus {
+            border-color: #2e7d32;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+        }
+
+        .error-message {
+            color: #d32f2f;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .error-message.visible {
+            opacity: 1;
+        }
+
+        .invalid {
+            border-color: #d32f2f;
+        }
+
+        .invalid:focus {
+            box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            margin-top: 20px;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
 
-        .back-button:hover {
-            background-color: #45a049;
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(46, 125, 50, 0.3);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px;
+            }
+
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .back-button {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
 <body>
-    <button class="back-button" onclick="window.history.back();">Back</button>
+    <a href="javascript:history.back()" class="back-button">
+        <i class="fas fa-arrow-left"></i> Back
+    </a>
+
     <div class="container">
         <h1>Update Profile</h1>
         <form id="updatebuyerForm" action="{% url 'updatebuyer' %}" method="POST" novalidate>
             {% csrf_token %}
+            
             <div class="form-group">
-                <label for="name">Name:</label>
+                <label for="name">
+                    <i class="fas fa-user"></i> Name
+                </label>
                 <input type="text" id="name" name="name" value="{{ user.name }}" required>
-                <span id="nameError" class="error-message"></span>
+                <div id="nameError" class="error-message">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span></span>
+                </div>
             </div>
 
             <div class="form-group">
-                <label for="phone">Contact:</label>
+                <label for="phone">
+                    <i class="fas fa-phone"></i> Contact
+                </label>
                 <input type="tel" id="phone" name="contact" value="{{ user.contact }}" required>
-                <span id="contactError" class="error-message"></span>
+                <div id="contactError" class="error-message">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span></span>
+                </div>
             </div>
 
             <div class="form-group">
-                <label for="address">Place:</label>
+                <label for="place">
+                    <i class="fas fa-map-marker-alt"></i> Place
+                </label>
                 <input type="text" id="place" name="place" value="{{ user.place }}" required>
-                <span id="placeError" class="error-message"></span>
+                <div id="placeError" class="error-message">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span></span>
+                </div>
             </div>
 
-            <button type="submit" class="btn" id="submitBtn">Update Profile</button>
+            <button type="submit" class="btn" id="submitBtn">
+                <i class="fas fa-save"></i> Update Profile
+            </button>
         </form>
     </div>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const form = document.getElementById('updatebuyerForm');
-            const nameInput = document.getElementById('name');
-            const phoneInput = document.getElementById('phone');
-            const placeInput = document.getElementById('place');
-            const submitBtn = document.getElementById('submitBtn');
+    <!-- Keep the existing HTML and CSS, just update the JavaScript section -->
 
-            const nameError = document.getElementById('nameError');
-            const contactError = document.getElementById('contactError');
-            const placeError = document.getElementById('placeError');
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const form = document.getElementById('updatebuyerForm');
+        const nameInput = document.getElementById('name');
+        const phoneInput = document.getElementById('phone');
+        const placeInput = document.getElementById('place');
+        const submitBtn = document.getElementById('submitBtn');
 
-            // Name validation
-            nameInput.addEventListener('input', function() {
-                const nameValue = nameInput.value.trim();
-                if (!/^[a-zA-Z\s]+$/.test(nameValue)) {
-                    nameError.textContent = 'Name can only contain letters and spaces.';
-                    nameInput.classList.add('invalid');
-                } else {
-                    nameError.textContent = '';
-                    nameInput.classList.remove('invalid');
-                }
-                checkFormValidity();
-            });
+        const nameError = document.getElementById('nameError');
+        const contactError = document.getElementById('contactError');
+        const placeError = document.getElementById('placeError');
 
-            // Contact validation (must be exactly 10 digits, start with 6-9, and not be repetitive like 2222222222)
-            phoneInput.addEventListener('input', function() {
-                const phoneValue = phoneInput.value.trim();
-                const repetitivePattern = /^(\d)\1{9}$/; // Pattern for repetitive digits like 2222222222
-
-                if (!/^[6-9]\d{9}$/.test(phoneValue)) {
-                    contactError.textContent = 'Contact must start with 6, 7, 8, or 9 and be exactly 10 digits.';
-                    phoneInput.classList.add('invalid');
-                } else if (repetitivePattern.test(phoneValue)) {
-                    contactError.textContent = 'Contact number cannot have all the same digits.';
-                    phoneInput.classList.add('invalid');
-                } else {
-                    contactError.textContent = '';
-                    phoneInput.classList.remove('invalid');
-                }
-                checkFormValidity();
-            });
-
-            // Place validation (cannot be empty)
-            placeInput.addEventListener('input', function() {
-                const placeValue = placeInput.value.trim();
-                if (placeValue === '') {
-                    placeError.textContent = 'Place cannot be empty.';
-                    placeInput.classList.add('invalid');
-                } else {
-                    placeError.textContent = '';
-                    placeInput.classList.remove('invalid');
-                }
-                checkFormValidity();
-            });
-
-            // Check overall form validity
-            function checkFormValidity() {
-                if (nameInput.classList.contains('invalid') || 
-                    phoneInput.classList.contains('invalid') || 
-                    placeInput.classList.contains('invalid')) {
-                    submitBtn.disabled = true;
-                } else {
-                    submitBtn.disabled = false;
-                }
+        // Name validation
+        nameInput.addEventListener('input', function() {
+            const nameValue = nameInput.value.trim();
+            if (!/^[a-zA-Z\s]+$/.test(nameValue)) {
+                showError('name', 'Name can only contain letters and spaces.');
+            } else {
+                hideError('name');
             }
-
-            // Disable submit if form has invalid fields initially
             checkFormValidity();
         });
-    </script>
+
+        // Contact validation (must be exactly 10 digits, start with 6-9)
+        phoneInput.addEventListener('input', function() {
+            const phoneValue = phoneInput.value.trim();
+            const repetitivePattern = /^(\d)\1{9}$/; // Pattern for repetitive digits
+
+            if (!/^[6-9]\d{9}$/.test(phoneValue)) {
+                showError('contact', 'Contact must start with 6, 7, 8, or 9 and be exactly 10 digits.');
+            } else if (repetitivePattern.test(phoneValue)) {
+                showError('contact', 'Contact number cannot have all the same digits.');
+            } else {
+                hideError('contact');
+            }
+            checkFormValidity();
+        });
+
+        // Place validation (letters, spaces, and common punctuation only)
+        placeInput.addEventListener('input', function() {
+            const placeValue = placeInput.value.trim();
+            // Allow letters, spaces, dots, commas, and hyphens
+            const placePattern = /^[a-zA-Z\s.,'-]+$/;
+
+            if (placeValue === '') {
+                showError('place', 'Place cannot be empty.');
+            } else if (!placePattern.test(placeValue)) {
+                showError('place', 'Place name can only contain letters, spaces, and basic punctuation.');
+            } else {
+                hideError('place');
+            }
+            checkFormValidity();
+        });
+
+        // Show error message and highlight invalid input
+        function showError(elementId, message) {
+            const errorDiv = document.getElementById(elementId + 'Error');
+            const errorSpan = errorDiv.querySelector('span');
+            errorSpan.textContent = message;
+            errorDiv.classList.add('visible');
+            document.getElementById(elementId).classList.add('invalid');
+        }
+
+        // Hide error message and remove invalid highlight
+        function hideError(elementId) {
+            const errorDiv = document.getElementById(elementId + 'Error');
+            errorDiv.classList.remove('visible');
+            document.getElementById(elementId).classList.remove('invalid');
+        }
+
+        // Check overall form validity
+        function checkFormValidity() {
+            const hasInvalidFields = 
+                nameInput.classList.contains('invalid') || 
+                phoneInput.classList.contains('invalid') || 
+                placeInput.classList.contains('invalid');
+
+            const hasEmptyFields = 
+                !nameInput.value.trim() || 
+                !phoneInput.value.trim() || 
+                !placeInput.value.trim();
+
+            submitBtn.disabled = hasInvalidFields || hasEmptyFields;
+        }
+
+        // Initial form validation check
+        checkFormValidity();
+
+        // Form submission handler
+        form.addEventListener('submit', function(event) {
+            const nameValue = nameInput.value.trim();
+            const phoneValue = phoneInput.value.trim();
+            const placeValue = placeInput.value.trim();
+            const placePattern = /^[a-zA-Z\s.,'-]+$/;
+
+            if (!nameValue || !phoneValue || !placeValue) {
+                event.preventDefault();
+                alert('Please fill in all fields.');
+                return;
+            }
+
+            if (!/^[a-zA-Z\s]+$/.test(nameValue)) {
+                event.preventDefault();
+                showError('name', 'Name can only contain letters and spaces.');
+                return;
+            }
+
+            if (!/^[6-9]\d{9}$/.test(phoneValue)) {
+                event.preventDefault();
+                showError('contact', 'Invalid contact number format.');
+                return;
+            }
+
+            if (!placePattern.test(placeValue)) {
+                event.preventDefault();
+                showError('place', 'Place name can only contain letters, spaces, and basic punctuation.');
+                return;
+            }
+        });
+    });
+</script>
 </body>
 </html>

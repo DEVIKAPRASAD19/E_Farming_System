@@ -1,0 +1,233 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Government Schemes</title>
+    <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.92)),
+                        url('https://images.pexels.com/photos/440731/pexels-photo-440731.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            padding: 40px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .header h1 {
+            font-size: 42px;
+            margin-bottom: 15px;
+            color: #1b5e20;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .header p {
+            font-size: 18px;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .schemes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .scheme-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .scheme-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .scheme-card a {
+            display: block;
+            padding: 25px;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .scheme-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #4caf50, #2e7d32);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .scheme-card:hover .scheme-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .scheme-name {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            line-height: 1.4;
+            color: #1b5e20;
+        }
+
+        .scheme-description {
+            color: #666;
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .learn-more {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #2e7d32;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .scheme-card:hover .learn-more {
+            gap: 12px;
+            color: #1b5e20;
+        }
+
+        .no-schemes {
+            text-align: center;
+            padding: 50px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            animation: fadeIn 0.8s ease-out;
+            color: #666;
+        }
+
+        .no-schemes i {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: #2e7d32;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 32px;
+            }
+
+            .header p {
+                font-size: 16px;
+            }
+
+            .schemes-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <i class="fas fa-landmark"></i>
+                Government Schemes
+            </h1>
+            <p>Explore the latest government initiatives and support programs for farmers</p>
+        </div>
+
+        {% if scheme_links %}
+        <div class="schemes-grid">
+            {% for scheme in scheme_links %}
+            <div class="scheme-card">
+                <a href="{{ scheme.url }}" target="_blank">
+                    <div class="scheme-icon">
+                        <i class="fas fa-hand-holding-seedling"></i>
+                    </div>
+                    <h2 class="scheme-name">{{ scheme.name }}</h2>
+                    <p class="scheme-description">
+                        {{ scheme.description|default:"Learn more about this government scheme and its benefits for farmers." }}
+                    </p>
+                    <span class="learn-more">
+                        Learn More <i class="fas fa-arrow-right"></i>
+                    </span>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-schemes">
+            <i class="fas fa-info-circle"></i>
+            <p>No government schemes are currently available. Please check back later.</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

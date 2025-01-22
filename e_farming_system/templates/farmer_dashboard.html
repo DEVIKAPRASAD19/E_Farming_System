@@ -5,84 +5,380 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Farmer Dashboard - E-Farming System</title>
-    <link rel="stylesheet" href="{% static 'css/farmerdashstyle.css' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        .notification-badge {
+        /* General Styling */
+        body {
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            background: url('https://static.vecteezy.com/system/resources/thumbnails/017/607/403/small/blur-abstract-image-with-shining-lights-green-bokeh-background-vector.jpg') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Navbar Styling */
+        .navbar {
+            background-color: #2e7d32;
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar .navbar-brand {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .profile-dropdown {
             position: relative;
             display: inline-block;
-            margin-left: 5px;
-            padding: 5px 10px;
-            background-color: red;
+        }
+
+        .profile-dropdown img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #fff;
+            min-width: 160px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 4px;
+        }
+
+        .profile-dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown-content a {
+            color: #333;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f5f5f5;
+        }
+
+        /* Wrapper Styling */
+        .wrapper {
+            display: flex;
+            flex: 1;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            background-color: #388e3c;
             color: white;
+            width: 250px;
+            padding: 20px;
+            position: fixed;
+            height: 100%;
+            box-shadow: 2px 0 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar .sidebar-header {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar ul li {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar ul li:hover {
+            background-color: #2e7d32;
+            cursor: pointer;
+        }
+
+        .sidebar ul li a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            font-size: 18px;
+        }
+
+        .sidebar ul li a i {
+            margin-right: 15px;
+            font-size: 20px;
+        }
+
+        /* Main Content Styling */
+        #content {
+            margin-left: 270px;
+            padding: 40px;
+            width: calc(100% - 270px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .content-header {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .content-header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: white;
+            background-color: #1b5e20;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Cards Styling */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            width: 100%;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .card i {
+            font-size: 40px;
+            color: #388e3c;
+            margin-bottom: 15px;
+        }
+
+        .card h3 {
+            font-size: 20px;
+            margin: 10px 0;
+        }
+
+        .card a {
+            text-decoration: none;
+            font-size: 16px;
+            color: #388e3c;
+            font-weight: 500;
+        }
+
+        .card a:hover {
+            text-decoration: underline;
+        }
+
+        .notification-badge {
+            background: #e74c3c;
+            padding: 2px 6px;
             border-radius: 50%;
             font-size: 12px;
-            line-height: 1;
-            vertical-align: middle;
+            margin-left: 5px;
+        }
+
+        .chatbot-widget {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+        }
+
+        .chatbot-button {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .chatbot-button i {
+            color: white;
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .chatbot-button:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 6px 20px rgba(46, 125, 50, 0.4);
+        }
+
+        .chatbot-button:hover i {
+            animation: wave 0.5s ease infinite;
+        }
+
+        .tooltip {
+            position: absolute;
+            right: 75px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 14px;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transform: translateX(10px);
+            transition: all 0.3s ease;
+        }
+
+        .tooltip::after {
+            content: '';
+            position: absolute;
+            right: -5px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-left: 5px solid rgba(0, 0, 0, 0.8);
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+
+        .chatbot-button:hover .tooltip {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        @keyframes wave {
+            0%, 100% { transform: rotate(-10deg); }
+            50% { transform: rotate(10deg); }
+        }
+
+        @media (max-width: 768px) {
+            .chatbot-widget {
+                bottom: 20px;
+                right: 20px;
+            }
+
+            .chatbot-button {
+                width: 50px;
+                height: 50px;
+            }
+
+            .chatbot-button i {
+                font-size: 20px;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Top Navbar -->
+    <div class="navbar">
+        <span class="navbar-brand">Farmer Dashboard</span>
+        <div class="profile-dropdown">
+            <a href="#" class="dropbtn">
+                <img src="{% static 'images/profile_icon.png' %}" alt="Profile Icon">
+            </a>
+            <div class="dropdown-content">
+                <a href="{% url 'view_profile' user.user_id %}">View Profile</a>
+                <a href="{% url 'updateprofile' %}">Update Profile</a>
+                <a href="#" id="logout-btn">Logout</a>
+            </div>
+        </div>
+    </div>
+
     <div class="wrapper">
         <!-- Sidebar -->
         <nav class="sidebar">
-            <div class="sidebar-header">
-                <h2>Farmer Dashboard</h2>
-            </div>
-            <ul class="components">
+            <div class="sidebar-header">Menu</div>
+            <ul>
+                <a href="{% url 'chatbot_page' %}"></a>
                 <li><a href="{% url 'addcrops' %}"><i class="fas fa-plus"></i> Add Crops</a></li>
                 <li><a href="{% url 'farmercrops' %}"><i class="fas fa-eye"></i> View Crops</a></li>
                 <li><a href="{% url 'stockfarmer' %}"><i class="fas fa-warehouse"></i> Stock Details</a></li>
                 <li><a href="{% url 'weather_update' %}"><i class="fas fa-cloud-sun"></i> Weather Updates</a></li>
                 <li><a href="{% url 'expert_consultation' %}"><i class="fas fa-user-md"></i> Expert Consultation</a></li>
-                <li><a href="{% url 'farmer_feedback' %}"><i class="fas fa-comments"></i> Crop Feedback</a></li>
- 
-                <li>
-                    <a href="{% url 'farmer_notifications' %}">
-                        <i class="fas fa-bell"></i> Notifications
-                        {% if notifications %}
-                            <span class="notification-badge">{{ notifications|length }}</span>
-                        {% endif %}
-                    </a>
-                </li>
+                <li><a href="{% url 'farmer_notifications' %}"><i class="fas fa-bell"></i> Notifications{% if notifications %}<span class="notification-badge">{{ notifications|length }}</span>{% endif %}</a></li>
+                <li><a href="{% url 'farmer_feedback' %}"><i class="fas fa-comments"></i> Farmer Feedback</a></li>
+                <li><a href="{% url 'government_schemes' %}"><i class="fas fa-landmark"></i> Government Schemes</a></li>                
             </ul>
         </nav>
-
-        <!-- Page Content -->
+        <!-- Main Content -->
         <div id="content">
-            <header>
-                <nav class="navbar">
-                    <h1>Welcome, {{ farmer_name }}!</h1>
-                    <div class="profile-dropdown">
-                        <a href="#" class="dropbtn">
-                            <img src="{% static 'images/profile_icon.png' %}" alt="Profile Icon">
-                        </a>
-                        <div class="dropdown-content">
-                            <a href="{% url 'view_profile' user.user_id %}">View Profile</a>
-                            <a href="{% url 'updateprofile' %}">Update Profile</a>
-                            <a href="#" id="logout-btn">Logout</a>
-                        </div>
-                    </div>
-                </nav>
-            </header>
-
-            <section>
-                <h2>Manage Your Crops</h2>
-                <p>Add new crops, view sales, and manage your profile.</p>
-                <!-- Add more content specific to farmer here -->
-            </section><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-
-            <footer>
-                <p>&copy; 2024 E-Farming System. All rights reserved.</p>
-            </footer>
+            <div class="content-header">
+                <h1>Welcome, {{ farmer_name }}!</h1>
+            </div>
+            <div class="cards">
+                <div class="card">
+                    <i class="fas fa-plus"></i>
+                    <h3>Add Crops</h3>
+                    <a href="{% url 'addcrops' %}">Add New Crops</a>
+                </div>
+                <div class="card">
+                    <i class="fas fa-eye"></i>
+                    <h3>View Crops</h3>
+                    <a href="{% url 'farmercrops' %}">Manage Crops</a>
+                </div>
+                <div class="card">
+                    <i class="fas fa-warehouse"></i>
+                    <h3>Stock Details</h3>
+                    <a href="{% url 'stockfarmer' %}">View Stock</a>
+                </div>
+                <div class="card">
+                    <i class="fas fa-cloud-sun"></i>
+                    <h3>Weather Updates</h3>
+                    <a href="{% url 'weather_update' %}">Check Weather</a>
+                </div>
+                <div class="card">
+                    <i class="fas fa-user-md"></i>
+                    <h3>Expert Consultation</h3>
+                    <a href="{% url 'expert_consultation' %}">Get Help</a>
+                </div>
+                <div class="card">
+                    <i class="fas fa-bell"></i>
+                    <h3>Notifications</h3>
+                    <a href="{% url 'farmer_notifications' %}">View Updates</a>
+                </div>
+            </div>
         </div>
     </div>
 
+    <div class="chatbot-widget">
+        <div class="chatbot-button" onclick="window.location.href='{% url 'chatbot_page' %}'">
+            <i class="fas fa-comment-dots"></i>
+            <span class="tooltip">Chat with AI Assistant</span>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        // SweetAlert2 for logout confirmation
         document.getElementById('logout-btn').addEventListener('click', function(event) {
-            event.preventDefault(); // Prevent the default link behavior
+            event.preventDefault();
             Swal.fire({
                 title: 'Are you sure?',
                 text: "You won't be able to revert this!",
@@ -93,7 +389,7 @@
                 confirmButtonText: 'Yes, logout!'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = "{% url 'logout' %}"; // Redirect to logout URL
+                    window.location.href = "{% url 'logout' %}";
                 }
             });
         });
