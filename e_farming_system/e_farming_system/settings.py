@@ -75,6 +75,7 @@ WSGI_APPLICATION = 'e_farming_system.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+
 # DATABASES = {
 #      'default': {
 #          'ENGINE': 'django.db.backends.mysql',
@@ -85,6 +86,8 @@ WSGI_APPLICATION = 'e_farming_system.wsgi.application'
 #          'PORT': '3306',
 #      }
 #  }
+
+
 
 DATABASES = {
     'default': {

@@ -116,9 +116,9 @@ class Order(models.Model):
     )
     STATUS_CHOICES = (
         ('Pending', 'Pending'),
-        ('Confirmed', 'Confirmed'),
-        ('Shipped', 'Shipped'),
-        ('Delivered', 'Delivered'),
+        ('Accepted', 'Accepted'),
+        ('Out for Delivery', 'Out for Delivery'),
+        ('Delivered', 'Delivered')
     )
 
     user = models.ForeignKey('Registeruser', on_delete=models.CASCADE)
@@ -130,8 +130,10 @@ class Order(models.Model):
     delivery_address = models.TextField()
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
     payment_method = models.CharField(max_length=10, choices=PAYMENT_CHOICES)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Pending')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
     order_date = models.DateTimeField(auto_now_add=True)
+    assigned_delivery_boy = models.ForeignKey('DeliveryBoyDetail',on_delete=models.SET_NULL,null=True,blank=True,related_name='assigned_orders')
+    is_accepted = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Order {self.id} - {self.user.name}"
@@ -190,6 +192,7 @@ class DeliveryBoyDetail(models.Model):
     area_of_service = models.TextField(blank=True, null=True)
     additional_documents = models.FileField(upload_to='delivery_docs/', blank=True, null=True)
     completed_registration = models.BooleanField(default=False)
+    verified = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Delivery Details for {self.user.name}"

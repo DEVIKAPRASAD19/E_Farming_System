@@ -25,10 +25,13 @@ from django.contrib.auth import logout
 from .models import Crop, CropImage
 from django.views.decorators.cache import cache_control
 from django.shortcuts import get_object_or_404
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from decimal import Decimal  # Add this import statement
 import random
 from django.utils import timezone
+from django.views.decorators.http import require_POST
+import json
+from django.db.models import Sum
 
 
 
@@ -42,6 +45,7 @@ def about(request):
 def contact(request):
     return render(request,'contact.html')
 
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def adminfarm(request):
     return render(request,'adminfarm.html')
 
@@ -1389,8 +1393,8 @@ def chatbot_page(request):
 
 def manage_delivery_boy_requests(request):
     if request.method == "POST":
-        user_id = request.POST.get('user_id')  # Get user_id from the form
-        action = request.POST.get('action')   # "activate" or "deactivate"
+        user_id = request.POST.get('user_id')
+        action = request.POST.get('action')
         user = get_object_or_404(Registeruser, pk=user_id)
 
         try:
@@ -1398,34 +1402,76 @@ def manage_delivery_boy_requests(request):
                 user.is_verified = True
                 user.save()
 
+                # Update the verified status in the DeliveryBoyDetail table
+                delivery_boy_detail, created = DeliveryBoyDetail.objects.get_or_create(
+                    user=user,
+                    defaults={
+                        'name': user.name,
+                        'contact': user.contact,
+                        'place': user.place,
+                        'email': user.email
+                    }
+                )
+                delivery_boy_detail.verified = True
+                delivery_boy_detail.save()
+
                 # Create the activation link
                 activation_link = reverse('complete_delivery_boy_details', kwargs={'user_id': user.user_id})
                 full_link = request.build_absolute_uri(activation_link)
 
-                # Send activation email
-                send_mail(
-                    subject="Activate Your Delivery Boy Account",
-                    message=f"Hi {user.name},\n\nYour account has been activated. Complete your registration here:\n{full_link}\n\nBest regards,\nAdmin",
-                    from_email="admin@example.com",  # Replace with your admin email
-                    recipient_list=[user.email],
-                )
-                messages.success(request, f"{user.name}'s account activated and activation email sent.")
+                # Send activation email with proper email configuration
+                email_subject = "Activate Your Delivery Boy Account"
+                email_message = f"""
+                Hi {user.name},
+
+                Your account has been activated. Please complete your registration by clicking the link below:
+
+                {full_link}
+
+                If you did not request this activation, please ignore this email.
+
+                Best regards,
+                Admin Team
+                """
+
+                try:
+                    send_mail(
+                        subject=email_subject,
+                        message=email_message,
+                        from_email=settings.EMAIL_HOST_USER,
+                        recipient_list=[user.email],
+                        fail_silently=False,
+                    )
+                    messages.success(request, f"Account activated and activation email sent to {user.email}")
+                except Exception as e:
+                    messages.warning(request, f"Account activated but email failed to send: {str(e)}")
+
             elif action == "deactivate":
                 user.is_verified = False
                 user.save()
 
+                delivery_boy_detail = DeliveryBoyDetail.objects.filter(user=user).first()
+                if delivery_boy_detail:
+                    delivery_boy_detail.verified = False
+                    delivery_boy_detail.save()
+
                 # Send deactivation email
-                send_mail(
-                    subject="Account Deactivation",
-                    message=f"Hi {user.name}, your account has been deactivated. Please contact admin for details.",
-                    from_email="admin@example.com",
-                    recipient_list=[user.email],
-                )
-                messages.success(request, f"{user.name}'s account deactivated.")
+                try:
+                    send_mail(
+                        subject="Account Deactivation",
+                        message=f"Hi {user.name}, your account has been deactivated. Please contact admin for details.",
+                        from_email=settings.EMAIL_HOST_USER,
+                        recipient_list=[user.email],
+                        fail_silently=False,
+                    )
+                    messages.success(request, f"{user.name}'s account deactivated and notification email sent.")
+                except Exception as e:
+                    messages.warning(request, f"Account deactivated but email failed to send: {str(e)}")
+
         except Exception as e:
             messages.error(request, f"Error processing request: {str(e)}")
 
-        return redirect('manage_delivery_boy_requests')  # Redirect to refresh the page
+        return redirect('manage_delivery_boy_requests')
 
     # Fetch pending and verified delivery boys
     pending_requests = Registeruser.objects.filter(role='delivery_boy', is_verified=False)
@@ -1437,66 +1483,212 @@ def manage_delivery_boy_requests(request):
     })
 
 
-
 def complete_delivery_boy_details(request, user_id):
     user = get_object_or_404(Registeruser, pk=user_id)
 
     if request.method == 'POST':
-        # Get the form data
-        vehicle_type = request.POST.get('vehicle_type')
-        vehicle_number = request.POST.get('vehicle_number')
-        license_number = request.POST.get('license_number')
-        area_of_service = request.POST.get('area_of_service')
-        additional_documents = request.FILES.get('additional_documents')
-
         try:
-            # Create DeliveryBoyDetail
-            DeliveryBoyDetail.objects.create(
+            # Get the form data
+            vehicle_type = request.POST.get('vehicle_type')
+            vehicle_number = request.POST.get('vehicle_number')
+            license_number = request.POST.get('license_number')
+            area_of_service = request.POST.get('area_of_service')
+            additional_documents = request.FILES.get('additional_documents')
+
+            # Get or create the DeliveryBoyDetail instance
+            delivery_boy_detail, created = DeliveryBoyDetail.objects.get_or_create(
                 user=user,
-                vehicle_type=vehicle_type,
-                vehicle_number=vehicle_number,
-                license_number=license_number,
-                area_of_service=area_of_service,
-                additional_documents=additional_documents,
-                completed_registration=True,
-                # Explicitly pass the additional fields from Registeruser
-                name=user.name,
-                contact=user.contact,
-                place=user.place,
-                email=user.email
+                defaults={
+                    'name': user.name,
+                    'contact': user.contact,
+                    'place': user.place,
+                    'email': user.email,
+                }
             )
+
+            # Update the delivery boy details
+            delivery_boy_detail.vehicle_type = vehicle_type
+            delivery_boy_detail.vehicle_number = vehicle_number
+            delivery_boy_detail.license_number = license_number
+            delivery_boy_detail.area_of_service = area_of_service
+            if additional_documents:
+                delivery_boy_detail.additional_documents = additional_documents
+            delivery_boy_detail.completed_registration = True
+            delivery_boy_detail.verified = True
+            delivery_boy_detail.save()
 
             # Update Registeruser to mark it as verified
             user.is_verified = True
             user.save()
 
             messages.success(request, "Delivery boy details successfully completed.")
-            return redirect('success_page')  # Replace with actual redirect URL
+            return redirect('delivery_boy_dashboard')  # Redirect to dashboard after completion
+
         except Exception as e:
             messages.error(request, f"Error saving details: {str(e)}")
+            print(f"Error: {str(e)}")  # For debugging
 
     return render(request, 'complete_delivery_details.html', {'user': user})
 
 
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def delivery_boy_dashboard(request):
-    if request.session.get('user_id'):
+    try:
+        delivery_boy = DeliveryBoyDetail.objects.get(user__user_id=request.session.get('user_id'))
+        
+        # Get all assigned orders that are not delivered
+        assigned_orders = Order.objects.filter(
+            assigned_delivery_boy=delivery_boy,
+            status__in=['Pending', 'Assigned', 'Accepted', 'Out for Delivery']
+        ).order_by('-order_date')
+
+        # Calculate statistics
+        total_orders = Order.objects.filter(
+            assigned_delivery_boy=delivery_boy
+        ).count()
+
+        pending_orders = Order.objects.filter(
+            assigned_delivery_boy=delivery_boy,
+            status__in=['Pending', 'Assigned', 'Accepted', 'Out for Delivery']
+        ).count()
+
+        completed_orders = Order.objects.filter(
+            assigned_delivery_boy=delivery_boy,
+            status='Delivered'
+        ).count()
+
+        context = {
+            'delivery_boy': delivery_boy,
+            'assigned_orders': assigned_orders,
+            'total_orders': total_orders,
+            'pending_orders': pending_orders,
+            'completed_orders': completed_orders,
+        }
+        
+        return render(request, 'delivery_boy_dashboard.html', context)
+    except DeliveryBoyDetail.DoesNotExist:
+        messages.error(request, 'Delivery boy profile not found')
+        return redirect('login')
+
+
+
+def assign_delivery_boy(request):
+    unassigned_orders = Order.objects.filter(assigned_delivery_boy__isnull=True)
+    verified_delivery_boys = DeliveryBoyDetail.objects.filter(verified=True)
+    delivery_boys = [boy.user for boy in verified_delivery_boys]
+    recent_assignments = Order.objects.filter(
+        assigned_delivery_boy__isnull=False
+    ).order_by('-order_date')[:5]
+    
+    all_delivery_boys = DeliveryBoyDetail.objects.all()
+    all_orders = Order.objects.all().order_by('-order_date')
+
+    if request.method == "POST":
+        order_id = request.POST.get('order_id')
+        delivery_boy_id = request.POST.get('delivery_boy_id')
+
         try:
-            # First get the Registeruser
-            user = Registeruser.objects.get(user_id=request.session['user_id'])
-            # Then get the DeliveryBoyDetail
-            delivery_boy = DeliveryBoyDetail.objects.get(user=user)
-            
-            context = {
-                'page_title': 'Delivery Boy Dashboard',
-                'delivery_boy': delivery_boy,
-                'today_deliveries': 0,  # Add your logic for these values
-                'total_earnings': 0,
-                'rating': 0,
-                'completed_orders': 0,
-                'recent_orders': []
-            }
-            return render(request, 'delivery_boy_dashboard.html', context)
-        except (Registeruser.DoesNotExist, DeliveryBoyDetail.DoesNotExist):
-            messages.error(request, "Delivery Boy profile not found")
-            return redirect('login')
-    return redirect('login')
+            order = Order.objects.get(id=order_id)
+            delivery_boy = DeliveryBoyDetail.objects.get(user__user_id=delivery_boy_id)
+
+            # Assign the delivery boy to the order
+            order.assigned_delivery_boy = delivery_boy
+            order.save()
+
+            messages.success(request, f'Order #{order_id} successfully assigned to {delivery_boy.name}')
+            return redirect('assign_delivery_boy')
+
+        except Order.DoesNotExist:
+            messages.error(request, 'Order not found')
+        except DeliveryBoyDetail.DoesNotExist:
+            messages.error(request, 'Delivery boy not found')
+        except Exception as e:
+            messages.error(request, f'Error assigning delivery boy: {str(e)}')
+
+    context = {
+        'unassigned_orders': unassigned_orders,
+        'delivery_boys': delivery_boys,
+        'recent_assignments': recent_assignments,
+        'today_assignments': Order.objects.filter(
+            assigned_delivery_boy__isnull=False,
+            order_date__date=timezone.now().date()
+        ).count(),
+        'all_orders': all_orders,
+        'all_delivery_boys': all_delivery_boys
+    }
+
+    return render(request, 'assign_delivery_boy.html', context)
+
+
+def delivery_boy_orders(request, delivery_boy_id):
+    user_id = request.session.get('user_id')
+    if not user_id:
+        messages.error(request, 'Session expired. Please log in again.')
+        return redirect('login')
+
+    try:
+        # Fetch the delivery boy using the provided delivery_boy_id
+        delivery_boy = get_object_or_404(DeliveryBoyDetail, id=delivery_boy_id, user__user_id=user_id)
+        orders = Order.objects.filter(
+            assigned_delivery_boy=delivery_boy
+        ).order_by('-order_date')
+
+        context = {
+            'delivery_boy': delivery_boy,
+            'assigned_orders': orders,
+        }
+        return render(request, 'delivery_boy_orders.html', context)
+
+    except Exception as e:
+        messages.error(request, f'Error loading orders: {str(e)}')
+        return redirect('login')
+
+
+
+@require_POST
+def update_order_status(request):
+    try:
+        order_id = request.POST.get('order_id')
+        new_status = request.POST.get('status')
+        order = get_object_or_404(Order, id=order_id)
+
+        # Check delivery boy authorization
+        delivery_boy = get_object_or_404(DeliveryBoyDetail, user__user_id=request.session.get('user_id'))
+        
+        if order.assigned_delivery_boy != delivery_boy:
+            return JsonResponse({'success': False, 'message': 'You are not authorized to update this order'})
+
+        # Update the order status
+        order.status = new_status
+        order.save()
+
+        return JsonResponse({'success': True, 'new_status': new_status})
+
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': f'Error updating order status: {str(e)}'})
+
+
+def check_new_orders(request):
+    user_id = request.session.get('user_id')
+    if not user_id:
+        messages.error(request, 'Session expired. Please log in again.')
+        return redirect('login')
+
+    try:
+        delivery_boy = get_object_or_404(DeliveryBoyDetail, user__user_id=user_id)
+        new_orders = Order.objects.filter(
+            assigned_delivery_boy=delivery_boy,
+            status='Assigned'
+        )
+
+        context = {
+            'delivery_boy': delivery_boy,
+            'new_orders': new_orders,
+            'has_new_orders': new_orders.exists(),
+        }
+        return render(request, 'delivery_boy_dashboard.html', context)
+    except Exception as e:
+        messages.error(request, f'Error checking new orders: {str(e)}')
+        return redirect('login')
+
+

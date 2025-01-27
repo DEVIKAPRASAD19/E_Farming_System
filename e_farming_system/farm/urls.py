@@ -74,6 +74,13 @@ urlpatterns = [
     path('manage-delivery-requests/', views.manage_delivery_boy_requests, name='manage_delivery_boy_requests'),
     path('complete-delivery-details/<int:user_id>/', views.complete_delivery_boy_details, name='complete_delivery_boy_details'),
     path('delivery-boy-dashboard/', views.delivery_boy_dashboard, name='delivery_boy_dashboard'),
+    path('assign-delivery-boy/', views.assign_delivery_boy, name='assign_delivery_boy'),
+    path('delivery-boy/<int:delivery_boy_id>/orders/', views.delivery_boy_orders, name='delivery_boy_orders'),
+    path('update-order-status/', views.update_order_status, name='update_order_status'),
+    path('check-new-orders/', views.check_new_orders, name='check_new_orders'),
+    
+   
+   
 
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

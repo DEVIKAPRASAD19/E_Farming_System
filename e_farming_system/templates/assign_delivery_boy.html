@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assign Delivery Boys</title>
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: #2e7d32;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .value {
+            color: #2e7d32;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .assignment-form {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            color: #333;
+            background-color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #2e7d32;
+            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #4caf50, #2e7d32);
+            color: white;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(46, 125, 50, 0.2);
+        }
+
+        .recent-assignments {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            color: #2e7d32;
+            font-size: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            color: #333;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background-color: #fff3e0;
+            color: #f57c00;
+        }
+
+        .status-assigned {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 20px auto;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .assignment-form, .recent-assignments {
+                padding: 20px;
+            }
+        }
+
+        .view-all-orders {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .view-orders-btn {
+            background: #2e7d32;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .view-orders-btn:hover {
+            background: #1b5e20;
+            transform: translateY(-2px);
+        }
+
+        .delivery-boys-btn {
+            background:  #1b5e20;
+        }
+
+        .delivery-boys-btn:hover {
+            background:  #1b5e20;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            width: 90%;
+            max-width: 1200px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            color: #2e7d32;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .close {
+            color: #666;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+                
+        .close:hover {
+            color: #333;
+        }
+
+        @media (max-width: 768px) {
+            .modal-content {
+                margin: 10% auto;
+                width: 95%;
+            }
+            
+            .modal-body {
+                overflow-x: auto;
+            }
+        }
+
+        .confirm-btn {
+            background: #2e7d32;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .cancel-btn {
+            background: #666;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .confirm-btn:hover {
+            background: #1b5e20;
+        }
+
+        .cancel-btn:hover {
+            background: #555;
+        }
+
+        #confirmationModal .modal-content {
+            padding: 20px;
+        }
+
+        #confirmationModal .modal-body {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        td {
+            max-width: 250px;
+            white-space: normal;
+            word-wrap: break-word;
+        }
+        
+        select option {
+            white-space: normal;
+            word-wrap: break-word;
+            padding: 5px;
+        }
+
+        select {
+            width: 100%;
+            min-width: 300px;
+        }
+
+        .address-text {
+            font-size: 14px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-truck"></i> Assign Delivery Boys</h1>
+            <p>Manage and track delivery assignments</p>
+        </div>
+
+        <div class="stats-cards">
+            <div class="stat-card">
+                <h3>Unassigned Orders</h3>
+                <div class="value">{{ unassigned_orders|length }}</div>
+            </div>
+            <div class="stat-card">
+                <h3>Available Delivery Boys</h3>
+                <div class="value">{{ delivery_boys|length }}</div>
+            </div>
+            <div class="stat-card">
+                <h3>Today's Assignments</h3>
+                <div class="value">{{ today_assignments|default:0 }}</div>
+            </div>
+        </div>
+
+        <div class="view-all-orders">
+            <button class="view-orders-btn" onclick="openOrdersModal()">
+                <i class="fas fa-list"></i> View All Orders
+            </button>
+            <button class="view-orders-btn delivery-boys-btn" onclick="openDeliveryBoysModal()">
+                <i class="fas fa-users"></i> View All Delivery Boys
+            </button>
+        </div>
+
+        <div class="assignment-form">
+            <h2 class="section-title"><i class="fas fa-clipboard-list"></i> New Assignment</h2>
+            <form method="POST" id="assignmentForm" onsubmit="return showConfirmation(event)">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="order_id">Select Order:</label>
+                    <select name="order_id" id="order_id" required>
+                        <option value="">Choose an order...</option>
+                        {% for order in unassigned_orders %}
+                        <option value="{{ order.id }}">
+                            Order #{{ order.id }} - {{ order.name }} - ₹{{ order.total_price }} - 
+                            {% if order.delivery_address and order.pincode %}
+                                {{ order.delivery_address }}, {{ order.pincode }}
+                            {% elif order.delivery_address %}
+                                {{ order.delivery_address }}
+                            {% else %}
+                                Address not available
+                            {% endif %}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="delivery_boy_id">Select Delivery Boy:</label>
+                    <select name="delivery_boy_id" id="delivery_boy_id" required>
+                        <option value="">Choose a delivery boy...</option>
+                        {% for boy in delivery_boys %}
+                        <option value="{{ boy.user_id }}">
+                            {{ boy.name }} - {{ boy.contact }} - {{ boy.place }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-check-circle"></i> Assign Delivery Boy
+                </button>
+            </form>
+        </div>
+
+        <div class="recent-assignments">
+            <h2 class="section-title"><i class="fas fa-history"></i> Recent Assignments</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Delivery Boy</th>
+                        <th>Location</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in recent_assignments %}
+                    <tr>
+                        <td>#{{ order.id }}</td>
+                        <td>{{ order.name }}</td>
+                        <td>{{ order.assigned_delivery_boy.name }}</td>
+                        <td>
+                            {% if order.delivery_address and order.pincode %}
+                                {{ order.delivery_address }}, {{ order.pincode }}
+                            {% elif order.delivery_address %}
+                                {{ order.delivery_address }}
+                            {% else %}
+                                Address not available
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="status-badge {% if order.status == 'Delivered' %}status-assigned{% else %}status-pending{% endif %}">
+                                {{ order.status }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" style="text-align: center;">No recent assignments</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="ordersModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-clipboard-list"></i> All Orders</h2>
+                <span class="close" onclick="closeOrdersModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Delivery Boy</th>
+                            <th>Location</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in all_orders %}
+                        <tr>
+                            <td>#{{ order.id }}</td>
+                            <td>{{ order.name }}</td>
+                            <td>{{ order.assigned_delivery_boy.name|default:"Not Assigned" }}</td>
+                            <td>
+                                {% if order.delivery_address and order.pincode %}
+                                    {{ order.delivery_address }}, {{ order.pincode }}
+                                {% elif order.delivery_address %}
+                                    {{ order.delivery_address }}
+                                {% else %}
+                                    Address not available
+                                {% endif %}
+                            </td>
+                            <td>₹{{ order.total_price }}</td>
+                            <td>
+                                <span class="status-badge {% if order.status == 'Delivered' %}status-assigned{% else %}status-pending{% endif %}">
+                                    {{ order.status }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" style="text-align: center;">No orders found</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="deliveryBoysModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-users"></i> All Delivery Boys</h2>
+                <span class="close" onclick="closeDeliveryBoysModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Contact</th>
+                            <th>Place</th>
+                            <th>Vehicle Type</th>
+                            <th>License Number</th>
+                            <th>Area of Service</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for boy in all_delivery_boys %}
+                        <tr>
+                            <td>{{ boy.name }}</td>
+                            <td>{{ boy.contact }}</td>
+                            <td>{{ boy.place }}</td>
+                            <td>{{ boy.vehicle_type|default:"Not specified" }}</td>
+                            <td>{{ boy.license_number|default:"Not specified" }}</td>
+                            <td>{{ boy.area_of_service|default:"Not specified" }}</td>
+                            <td>
+                                <span class="status-badge {% if boy.verified %}status-assigned{% else %}status-pending{% endif %}">
+                                    {{ boy.verified|yesno:"Active,Pending" }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" style="text-align: center;">No delivery boys found</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-check-circle"></i> Confirm Assignment</h2>
+                <span class="close" onclick="closeConfirmModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to assign this delivery boy to the selected order?</p>
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                    <button onclick="closeConfirmModal()" class="cancel-btn">Cancel</button>
+                    <button onclick="submitForm()" class="confirm-btn">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openOrdersModal() {
+            document.getElementById('ordersModal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeOrdersModal() {
+            document.getElementById('ordersModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function openDeliveryBoysModal() {
+            document.getElementById('deliveryBoysModal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDeliveryBoysModal() {
+            document.getElementById('deliveryBoysModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function showConfirmation(event) {
+            event.preventDefault();
+            document.getElementById('confirmationModal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+            return false;
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirmationModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function submitForm() {
+            document.getElementById('assignmentForm').submit();
+        }
+
+        window.onclick = function(event) {
+            const ordersModal = document.getElementById('ordersModal');
+            const deliveryBoysModal = document.getElementById('deliveryBoysModal');
+            const confirmationModal = document.getElementById('confirmationModal');
+            
+            if (event.target == ordersModal) {
+                closeOrdersModal();
+            }
+            if (event.target == deliveryBoysModal) {
+                closeDeliveryBoysModal();
+            }
+            if (event.target == confirmationModal) {
+                closeConfirmModal();
+            }
+        }
+
+        {% if messages %}
+        {% for message in messages %}
+        {% if message.tags == 'success' %}
+        document.addEventListener('DOMContentLoaded', function() {
+            const orderSelect = document.getElementById('order_id');
+            const selectedOption = orderSelect.querySelector('option:checked');
+            if (selectedOption) {
+                selectedOption.remove();
+            }
+        });
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+    </script>
+</body>
+</html>

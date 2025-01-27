@@ -1,0 +1,319 @@
+<!-- templates/delivery_boy_orders.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Orders</title>
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h2 {
+            color: #2e7d32;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .orders-table {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #2e7d32;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .status-accepted {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .status-delivered {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .action-btn {
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .update-status {
+            background: #2e7d32;
+            color: white;
+        }
+
+        .update-status:hover {
+            background: #1b5e20;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 10% auto;
+            padding: 20px;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 10px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .close {
+            cursor: pointer;
+            font-size: 24px;
+        }
+
+        .status-options {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .status-option {
+            padding: 15px;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .status-option:hover {
+            border-color: #2e7d32;
+        }
+
+        .status-option.selected {
+            background: #2e7d32;
+            color: white;
+            border-color: #2e7d32;
+        }
+
+        .update-btn {
+            width: 100%;
+            padding: 12px;
+            background: #2e7d32;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .update-btn:hover {
+            background: #1b5e20;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2><i class="fas fa-truck"></i> Orders for {{ delivery_boy.name }}</h2>
+        </div>
+
+        <div class="orders-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Buyer</th>
+                        <th>Delivery Address</th>
+                        <th>Total Price</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in assigned_orders %}
+                    <tr>
+                        <td>#{{ order.id }}</td>
+                        <td>{{ order.name }}</td>
+                        <td>{{ order.delivery_address }}</td>
+                        <td>₹{{ order.total_price }}</td>
+                        <td>
+                            <span class="status-badge status-{{ order.status|lower }}">
+                                {{ order.status }}
+                            </span>
+                        </td>
+                        <td>
+                            <button onclick="openStatusModal('{{ order.id }}')" class="action-btn update-status">
+                                <i class="fas fa-edit"></i> Update Status
+                            </button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" style="text-align: center;">No orders assigned yet</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Status Update Modal -->
+    <div id="statusModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Update Order Status</h2>
+                <span class="close" onclick="closeStatusModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="statusUpdateForm">
+                    {% csrf_token %}
+                    <input type="hidden" id="orderId" name="order_id">
+                    <div class="status-options">
+                        <div class="status-option" data-status="Accepted">
+                            <i class="fas fa-check"></i> Accepted
+                        </div>
+                        <div class="status-option" data-status="Out for Delivery">
+                            <i class="fas fa-truck"></i> Out for Delivery
+                        </div>
+                        <div class="status-option" data-status="Delivered">
+                            <i class="fas fa-box-check"></i> Delivered
+                        </div>
+                    </div>
+                    <button type="submit" class="update-btn">Update Status</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const statusOptions = document.querySelectorAll('.status-option');
+        let selectedStatus = null;
+
+        statusOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                statusOptions.forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedStatus = this.dataset.status;
+            });
+        });
+
+        document.getElementById('statusUpdateForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!selectedStatus) {
+                alert('Please select a status');
+                return;
+            }
+
+            const orderId = document.getElementById('orderId').value;
+            const formData = new FormData();
+            formData.append('order_id', orderId);
+            formData.append('status', selectedStatus);
+            formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+
+            fetch('/update-order-status/', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert(data.error || 'Error updating status');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error updating status');
+            });
+        });
+
+        function openStatusModal(orderId) {
+            document.getElementById('orderId').value = orderId;
+            document.getElementById('statusModal').style.display = 'block';
+            statusOptions.forEach(opt => opt.classList.remove('selected'));
+            selectedStatus = null;
+        }
+
+        function closeStatusModal() {
+            document.getElementById('statusModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('statusModal');
+            if (event.target == modal) {
+                closeStatusModal();
+            }
+        }
+    </script>
+</body>
+</html>
