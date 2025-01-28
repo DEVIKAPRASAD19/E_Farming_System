@@ -194,7 +194,7 @@
                         <th>Delivery Address</th>
                         <th>Total Price</th>
                         <th>Status</th>
-                        <th>Actions</th>
+                        {% comment %} <th>Actions</th> {% endcomment %}
                     </tr>
                 </thead>
                 <tbody>
@@ -209,11 +209,11 @@
                                 {{ order.status }}
                             </span>
                         </td>
-                        <td>
+                        {% comment %} <td>
                             <button onclick="openStatusModal('{{ order.id }}')" class="action-btn update-status">
                                 <i class="fas fa-edit"></i> Update Status
                             </button>
-                        </td>
+                        </td> {% endcomment %}
                     </tr>
                     {% empty %}
                     <tr>

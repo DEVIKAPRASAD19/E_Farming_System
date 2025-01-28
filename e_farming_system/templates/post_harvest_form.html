@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post-Harvest Management</title>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            background-color: #f4f4f9;
+            color: #333;
+            padding: 20px;
+        }
+
+        /* Container Styling */
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Form Heading */
+        .container h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .container p {
+            text-align: center;
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+
+        /* Form Groups */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #34495e;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #bdc3c7;
+            border-radius: 5px;
+            background: #ecf0f1;
+        }
+
+        input:focus, textarea:focus {
+            border-color: #3498db;
+            outline: none;
+            background: #ffffff;
+        }
+
+        /* Button Styling */
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            background: #3498db;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease-in-out;
+        }
+
+        .btn:hover {
+            background: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Post-Harvest Management</h1>
+        <p>Optimize your crop storage and sales by entering the details below:</p>
+        <form action="/post_harvest/" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="crop">Crop Type</label>
+                <input type="text" id="crop" name="crop" placeholder="Enter crop type (e.g., Tomato)" required>
+            </div>
+        
+            <div class="form-group">
+                <label for="temperature">Storage Temperature (°C)</label>
+                <input type="number" id="temperature" name="temperature" step="0.1" placeholder="e.g., 25.5" required>
+            </div>
+        
+            <div class="form-group">
+                <label for="humidity">Humidity Level (%)</label>
+                <input type="number" id="humidity" name="humidity" step="0.1" placeholder="e.g., 60" required>
+            </div>
+        
+            <div class="form-group">
+                <label for="sale_date">Planned Sale Date</label>
+                <input type="date" id="sale_date" name="sale_date" required>
+            </div>
+        
+            <div class="form-group">
+                <label for="storage">Storage Conditions</label>
+                <textarea id="storage" name="storage" rows="3" placeholder="Describe storage conditions (e.g., ventilated room)" required></textarea>
+            </div>
+        
+            <button type="submit" class="btn">Get Recommendations</button>
+        </form>
+        
+        {% if submitted %}
+        <div style="margin-top: 20px; padding: 15px; background-color: #eafaf1; border: 1px solid #27ae60; border-radius: 8px;">
+            <h3>Recommendations:</h3>
+            <ul>
+                <li><strong>Spoilage Prediction:</strong> {{ recommendations.spoilage_prediction }}</li>
+                <li><strong>Action:</strong> {{ recommendations.action }}</li>
+                <li><strong>Packaging Suggestions:</strong> {{ recommendations.packaging }}</li>
+                <li><strong>Market Price Prediction:</strong> {{ recommendations.market_price }}</li>
+            </ul>
+        </div>
+        {% endif %}
+        
+    </div>
+</body>
+</html>

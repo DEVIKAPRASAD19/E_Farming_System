@@ -1232,28 +1232,39 @@ def order_details(request, order_id):
 
 
 def cancel_order(request, order_id):
-    # Get the order object
-    order = get_object_or_404(Order, id=order_id)
-
-    # Retrieve the user from session
-    user_id = request.session.get('user_id')  # Assuming you're saving user_id in session during login
-
-    # Debugging: Check order user
-    print(f'Order User: {order.user}')  # Should print the Registeruser object
-    print(f'User ID in session: {user_id}')  # Should print the user ID from session
-
-    # Check if the logged-in user is the buyer of this order
-    if user_id and user_id == order.user.user_id:  # Ensure this is correctly referencing the id
-        if order.status == 'Pending':
-            order.status = 'Cancelled'
-            order.save()
-           
-        else:
-            messages.info(request, 'This order cannot be cancelled as it is already completed or cancelled.')
-    else:
-        messages.error(request, 'You are not authorized to cancel this order.')
-
-    return redirect('order_details', order_id=order.id)
+    try:
+        order = get_object_or_404(Order, id=order_id)
+        
+        # Check if order belongs to current user
+        if order.user.user_id != request.session.get('user_id'):
+            messages.error(request, 'Unauthorized access')
+            return redirect('order_history')
+            
+        # Only allow cancellation of pending orders
+        if order.status != 'Pending':
+            messages.error(request, 'Only pending orders can be cancelled')
+            return redirect('order_details', order_id=order_id)
+        
+        # Restock items
+        order_items = OrderItem.objects.filter(order=order)
+        for item in order_items:
+            crop = item.crop
+            # Add the quantity back to stock
+            crop.stock += item.quantity
+            crop.save()
+            print(f"Restocked {item.quantity} units of {crop.name}")  # Debug log
+        
+        # Update order status
+        order.status = 'Cancelled'
+        order.save()
+        
+        messages.success(request, 'Order cancelled successfully and items restocked')
+        return redirect('order_history')
+        
+    except Exception as e:
+        print(f"Error in cancel_order: {str(e)}")  # Debug log
+        messages.error(request, 'Error cancelling order')
+        return redirect('order_details', order_id=order_id)
 
 
 
@@ -1690,5 +1701,57 @@ def check_new_orders(request):
     except Exception as e:
         messages.error(request, f'Error checking new orders: {str(e)}')
         return redirect('login')
+
+
+def post_harvest(request):
+    if request.method == 'POST':
+        # Collect data from the form
+        crop = request.POST.get('crop')
+        temperature = request.POST.get('temperature')
+        humidity = request.POST.get('humidity')
+        sale_date = request.POST.get('sale_date')
+        storage = request.POST.get('storage')
+
+        # Mock response (Replace this with your ML logic or database queries)
+        recommendations = {
+            "spoilage_prediction": "Tomatoes will spoil in 4 days under current conditions.",
+            "action": "Reduce temperature to 20°C and humidity to 50%.",
+            "packaging": "Use padded crates to reduce bruising.",
+            "market_price": "Sell within 5 days for Rs 2.50/kg."
+        }
+
+        # Render results on the same page or redirect to another page
+        return render(request, 'post_harvest_form.html', {'recommendations': recommendations, 'submitted': True})
+
+    # If GET request, show the form
+    return render(request, 'post_harvest_form.html', {'submitted': False})
+
+
+def unassign_delivery_boy(request):
+    if request.method == 'POST':
+        try:
+            order_id = request.POST.get('order_id')
+            order = get_object_or_404(Order, id=order_id)
+            
+            # Only allow unassigning if order is not delivered
+            if order.status == 'Delivered':
+                messages.error(request, 'Cannot unassign delivery boy from delivered orders')
+                return redirect('assign_delivery_boy')
+            
+            # Store delivery boy info for message
+            delivery_boy_name = order.assigned_delivery_boy.name
+            
+            # Unassign delivery boy
+            order.assigned_delivery_boy = None
+            order.status = 'Pending'  # Reset status to pending
+            order.save()
+            
+            messages.success(request, f'Successfully unassigned {delivery_boy_name} from order #{order.id}')
+            
+        except Exception as e:
+            messages.error(request, f'Error unassigning delivery boy: {str(e)}')
+            
+    return redirect('assign_delivery_boy')
+
 
 

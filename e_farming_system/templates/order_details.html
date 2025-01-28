@@ -421,6 +421,79 @@
                 width: 100px;
             }
         }
+
+        .invoice-btn {
+            background: #2e7d32;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+        }
+
+        .invoice-btn:hover {
+            background: #1b5e20;
+            transform: translateY(-2px);
+        }
+
+        /* Print styles */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #invoice-template, #invoice-template * {
+                visibility: visible;
+            }
+            #invoice-template {
+                display: block !important;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                padding: 20px;
+            }
+            .invoice-content {
+                padding: 20px;
+            }
+            .invoice-header {
+                text-align: center;
+                margin-bottom: 30px;
+            }
+            .invoice-details {
+                margin-bottom: 30px;
+            }
+            .invoice-row {
+                display: flex;
+                margin-bottom: 10px;
+            }
+            .invoice-row .label {
+                font-weight: bold;
+                width: 150px;
+            }
+            .invoice-items {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 30px;
+            }
+            .invoice-items th, .invoice-items td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: left;
+            }
+            .invoice-items th {
+                background-color: #f8f9fa;
+            }
+            .invoice-footer {
+                text-align: center;
+                margin-top: 50px;
+                color: #666;
+            }
+        }
     </style>
 </head>
 <body>
@@ -524,11 +597,118 @@
                 <div class="total-amount">
                     Total: Rs.{{ order.total_price }}
                 </div>
+                <button onclick="printInvoice()" class="invoice-btn">
+                    <i class="fas fa-file-invoice"></i> Download Invoice
+                </button>
                 {% if order.status == 'Pending' %}
                 <button onclick="confirmCancelOrder()" class="cancel-button">
                     <i class="fas fa-times"></i> Cancel Order
                 </button>
                 {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Update the invoice template -->
+    <div id="invoice-template" style="display: none;">
+        <div class="invoice-content">
+            <div class="invoice-header">
+                <h2>E-Farming System</h2>
+                <h3>Order Invoice</h3>
+                <div class="invoice-status">
+                    Order Status: 
+                    <span class="status-badge status-{{ order.status|lower }}">
+                        {{ order.status }}
+                    </span>
+                </div>
+            </div>
+            
+            <div class="invoice-sections">
+                <div class="invoice-section">
+                    <h4>Order Details</h4>
+                    <div class="invoice-row">
+                        <div class="label">Order ID:</div>
+                        <div class="value">#{{ order.id }}</div>
+                    </div>
+                    <div class="invoice-row">
+                        <div class="label">Order Date:</div>
+                        <div class="value">{{ order.order_date|date:"d M Y" }}</div>
+                    </div>
+                    <div class="invoice-row">
+                        <div class="label">Order Time:</div>
+                        <div class="value">{{ order.order_date|time:"h:i A" }}</div>
+                    </div>
+                    <div class="invoice-row">
+                        <div class="label">Payment Method:</div>
+                        <div class="value">{{ order.payment_method }}</div>
+                    </div>
+                </div>
+
+                <div class="invoice-section">
+                    <h4>Customer Details</h4>
+                    <div class="invoice-row">
+                        <div class="label">Name:</div>
+                        <div class="value">{{ order.name }}</div>
+                    </div>
+                    <div class="invoice-row">
+                        <div class="label">Phone:</div>
+                        <div class="value">{{ order.contact }}</div>
+                    </div>
+                    <div class="invoice-row">
+                        <div class="label">Address:</div>
+                        <div class="value">{{ order.delivery_address }}</div>
+                    </div>
+                    <div class="invoice-row">
+                        <div class="label">Place:</div>
+                        <div class="value">{{ order.place }}</div>
+                    </div>
+                    <div class="invoice-row">
+                        <div class="label">Pincode:</div>
+                        <div class="value">{{ order.pincode }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="invoice-items-section">
+                <h4>Order Items</h4>
+                <table class="invoice-items">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Quantity</th>
+                            <th>Price per Unit</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in order.order_items.all %}
+                        <tr>
+                            <td>{{ item.crop.name }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>Rs.{{ item.price }}</td>
+                            <td>Rs.{{ item.total_price }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" class="total-label">Total Amount</td>
+                            <td class="total-value">Rs.{{ order.total_price }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <div class="invoice-footer">
+                <div class="thank-you">Thank you for shopping with us!</div>
+                <div class="contact-info">
+                    <p>For any queries, please contact:</p>
+                    <p>Email: support@efarming.com</p>
+                    <p>Phone: +91 7510508273</p>
+                </div>
+                {% comment %} <div class="invoice-note">
+                    This is a computer-generated invoice and does not require a signature.
+                </div> {% endcomment %}
             </div>
         </div>
     </div>
@@ -561,6 +741,10 @@
                     form.submit();
                 }
             });
+        }
+
+        function printInvoice() {
+            window.print();
         }
 
         document.addEventListener('DOMContentLoaded', function() {

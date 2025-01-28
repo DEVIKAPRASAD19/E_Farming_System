@@ -36,7 +36,15 @@
                 <p><strong>Description:</strong> <span id="cropDescription">{{ crop.description }}</span></p>
                 <p><strong>Category:</strong> <span id="cropCategory">{{ crop.category }}</span></p>
                 <p><strong>Price:</strong> <span id="cropPrice">Rs.{{ crop.price }}</span></p>
-                <p><strong>Stock Available:</strong> <span id="stockAvailable">{{ crop.stock }} kg</span></p>
+                <p><strong>Stock Available:</strong> 
+                    <span id="stockAvailable">
+                        {% if crop.stock == 0 %}
+                            <span class="sold-out-badge">SOLD OUT</span>
+                        {% else %}
+                            {{ crop.stock }} kg
+                        {% endif %}
+                    </span>
+                </p>
                 <p><strong>Farmer:</strong> <span id="farmerName">{{ crop.farmer.name }}</span></p>
                 <p><strong>Added At:</strong> <span id="addedAt">{{ crop.added_at }}</span></p>
                 <br>
@@ -99,6 +107,41 @@
         {% endif %}
     </div>
 </div>
+
+<style>
+    .sold-out-badge {
+        background-color: #dc3545;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: bold;
+        display: inline-block;
+        animation: pulse 2s infinite;
+    }
+
+    /* Hide add to cart form when sold out */
+    {% if crop.stock == 0 %}
+    .action-buttons form:first-child {
+        display: none;
+    }
+    {% endif %}
+
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+            opacity: 1;
+        }
+        50% {
+            transform: scale(1.05);
+            opacity: 0.8;
+        }
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+</style>
 
 </body>
 </html>

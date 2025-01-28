@@ -78,7 +78,10 @@ urlpatterns = [
     path('delivery-boy/<int:delivery_boy_id>/orders/', views.delivery_boy_orders, name='delivery_boy_orders'),
     path('update-order-status/', views.update_order_status, name='update_order_status'),
     path('check-new-orders/', views.check_new_orders, name='check_new_orders'),
+
+    path('post_harvest/', views.post_harvest, name='post_harvest'),
     
+    path('unassign-delivery-boy/', views.unassign_delivery_boy, name='unassign_delivery_boy'),
    
    
 
