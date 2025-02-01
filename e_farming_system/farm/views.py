@@ -32,6 +32,9 @@ from django.utils import timezone
 from django.views.decorators.http import require_POST
 import json
 from django.db.models import Sum
+from datetime import datetime
+import pickle
+import os
 
 
 
@@ -1753,5 +1756,73 @@ def unassign_delivery_boy(request):
             
     return redirect('assign_delivery_boy')
 
+
+
+# views.py
+from django.http import JsonResponse
+import pickle
+import pandas as pd
+import numpy as np
+import os
+
+# Function to predict crop price
+def predict_crop_price(crop_name, date):
+    # Convert the date to ordinal (same as in training)
+    date_ordinal = pd.to_datetime(date).toordinal()
+    
+    # Sanitize the crop name
+    crop_name = crop_name.strip().lower().replace(' ', '_')
+    
+    # Construct the model file path
+    model_filename = os.path.join("ml_model", f"price_model_{crop_name}.pkl")
+    
+    # Debugging step: print the model filename
+    print(f"Trying to load model from: {model_filename}")
+    
+    # Check if the model file exists
+    if not os.path.exists(model_filename):
+        return {"error": "Model not found for the specified crop"}
+    
+    # Load the trained model for the crop
+    with open(model_filename, 'rb') as f:
+        model = pickle.load(f)
+    
+    # Make the prediction
+    predicted_price = model.predict(pd.DataFrame([[date_ordinal]], columns=['Date']))
+    return predicted_price[0]
+
+# Example prediction
+date_input = '06/01/2025'  # Input date
+crop_input = 'Rice'        # Input crop
+predicted_price = predict_crop_price(crop_input, date_input)
+
+print(f"Predicted price of {crop_input} on {date_input}: {predicted_price}")
+
+
+# View to predict price
+def get_predicted_price(request):
+    crop_name = request.GET.get('crop')
+    date_input = request.GET.get('date')  # Format: 'DD/MM/YYYY'
+
+    if not crop_name or not date_input:
+        return JsonResponse({'error': 'Missing crop or date parameter'}, status=400)
+
+    try:
+        predicted_price = predict_crop_price(crop_name, date_input)
+        if predicted_price is None:
+            return JsonResponse({'error': 'Model not found for the specified crop'}, status=404)
+        
+        return JsonResponse({
+            'crop': crop_name,
+            'date': date_input,
+            'predicted_price': predicted_price
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+
+def show_predict_form(request):
+    return render(request, 'predict_price_form.html')
 
 

@@ -80,8 +80,10 @@ urlpatterns = [
     path('check-new-orders/', views.check_new_orders, name='check_new_orders'),
 
     path('post_harvest/', views.post_harvest, name='post_harvest'),
-    
     path('unassign-delivery-boy/', views.unassign_delivery_boy, name='unassign_delivery_boy'),
+
+    path('predict-price/', views.get_predicted_price, name='predict-price'),
+    path('predict-price-form/', views.show_predict_form, name='predict-price-form'),
    
    
 
