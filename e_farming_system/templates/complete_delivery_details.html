@@ -195,6 +195,97 @@
                 margin-bottom: 5px;
             }
         }
+
+        .validation-message {
+            color: #dc3545;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-group input:invalid {
+            border-color: #dc3545;
+        }
+
+        .form-group input:invalid:focus {
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+        }
+
+        .form-group input:valid {
+            border-color: #28a745;
+        }
+
+        .form-group input:valid:focus {
+            box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
+        }
+
+        .form-group input[type="file"] {
+            padding: 10px;
+            border: 2px dashed #e0e0e0;
+            border-radius: 10px;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input[type="file"]:hover {
+            border-color: #2e7d32;
+            background: rgba(46, 125, 50, 0.05);
+        }
+
+        .file-requirements {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        .selected-file {
+            margin-top: 10px;
+            padding: 8px;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .selected-file.valid {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+            border: 1px solid rgba(40, 167, 69, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .selected-file.invalid {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+            border: 1px solid rgba(220, 53, 69, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .file-icon {
+            font-size: 16px;
+        }
+
+        .file-size {
+            font-size: 12px;
+            color: #666;
+            margin-left: auto;
+        }
     </style>
 </head>
 <body>
@@ -254,8 +345,12 @@
             </div> {% endcomment %}
 
             <div class="form-group">
-                <label for="additional_documents">Additional Documents:(any Proofs)</label>
-                <input type="file" name="additional_documents" id="additional_documents">
+                <label for="additional_documents">Additional Documents (any Proofs)</label>
+                <input type="file" name="additional_documents" id="additional_documents" accept=".pdf,.jpg,.jpeg,.png" onchange="validateFile(this)">
+                <div class="file-requirements">
+                    Accepted formats: PDF, JPG, JPEG, PNG (Max size: 5MB)
+                </div>
+                <div class="selected-file"></div>
             </div>
 
             <button type="submit" class="submit-btn">
@@ -302,6 +397,129 @@
                 console.error('Error:', error);
             });
         });
+
+        // Vehicle number validation
+        document.getElementById('vehicle_number').addEventListener('input', function(e) {
+            const vehicleRegex = /^KL-\d{2}-[A-Z]{2}-\d{4}$/;
+            const value = e.target.value.toUpperCase();
+            e.target.value = value; // Convert to uppercase
+            
+            // Auto-format as user types
+            let formatted = value.replace(/[^A-Z0-9]/g, '');
+            if (formatted.length > 2) formatted = 'KL-' + formatted.slice(2);
+            if (formatted.length > 5) formatted = formatted.slice(0, 5) + '-' + formatted.slice(5);
+            if (formatted.length > 8) formatted = formatted.slice(0, 8) + '-' + formatted.slice(8);
+            if (formatted.length > 13) formatted = formatted.slice(0, 13);
+            
+            if (formatted !== value) {
+                e.target.value = formatted;
+            }
+
+            // Validate format
+            if (!vehicleRegex.test(e.target.value)) {
+                e.target.setCustomValidity('Please enter in format: KL-07-AB-1234');
+                showValidationMessage(e.target, 'Vehicle number format: KL-07-AB-1234');
+            } else {
+                e.target.setCustomValidity('');
+                hideValidationMessage(e.target);
+            }
+        });
+
+        // License number validation
+        document.getElementById('license_number').addEventListener('input', function(e) {
+            const licenseRegex = /^DL-\d{13}$/;
+            const value = e.target.value.toUpperCase();
+            e.target.value = value; // Convert to uppercase
+            
+            // Auto-format as user types
+            let formatted = value.replace(/[^A-Z0-9]/g, '');
+            if (formatted.length > 2) formatted = 'DL-' + formatted.slice(2);
+            if (formatted.length > 16) formatted = formatted.slice(0, 16);
+            
+            if (formatted !== value) {
+                e.target.value = formatted;
+            }
+
+            // Validate format
+            if (!licenseRegex.test(e.target.value)) {
+                e.target.setCustomValidity('Please enter in format: DL-1420110012345');
+                showValidationMessage(e.target, 'License number format: DL-1420110012345');
+            } else {
+                e.target.setCustomValidity('');
+                hideValidationMessage(e.target);
+            }
+        });
+
+        // Helper functions for validation messages
+        function showValidationMessage(element, message) {
+            let messageDiv = element.nextElementSibling;
+            if (!messageDiv || !messageDiv.classList.contains('validation-message')) {
+                messageDiv = document.createElement('div');
+                messageDiv.className = 'validation-message';
+                element.parentNode.insertBefore(messageDiv, element.nextSibling);
+            }
+            messageDiv.textContent = message;
+            messageDiv.style.display = 'block';
+        }
+
+        function hideValidationMessage(element) {
+            const messageDiv = element.nextElementSibling;
+            if (messageDiv && messageDiv.classList.contains('validation-message')) {
+                messageDiv.style.display = 'none';
+            }
+        }
+
+        function validateFile(input) {
+            const file = input.files[0];
+            const selectedFileDiv = input.parentElement.querySelector('.selected-file');
+            
+            // Reset
+            selectedFileDiv.className = 'selected-file';
+            input.setCustomValidity('');
+            
+            if (!file) {
+                selectedFileDiv.style.display = 'none';
+                return;
+            }
+
+            // Validate file type
+            const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+            const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+            
+            let icon, message;
+            const fileSize = formatFileSize(file.size);
+            
+            if (!allowedTypes.includes(file.type)) {
+                icon = '<i class="fas fa-times-circle file-icon"></i>';
+                message = 'Invalid file type. Please upload PDF, JPG, JPEG, or PNG';
+                selectedFileDiv.className = 'selected-file invalid';
+                input.setCustomValidity(message);
+            } else if (file.size > maxSize) {
+                icon = '<i class="fas fa-times-circle file-icon"></i>';
+                message = 'File size exceeds 5MB limit';
+                selectedFileDiv.className = 'selected-file invalid';
+                input.setCustomValidity(message);
+            } else {
+                icon = '<i class="fas fa-check-circle file-icon"></i>';
+                message = `File "${file.name}" selected`;
+                selectedFileDiv.className = 'selected-file valid';
+            }
+            
+            selectedFileDiv.innerHTML = `
+                ${icon}
+                <span>${message}</span>
+                <span class="file-size">${fileSize}</span>
+            `;
+            selectedFileDiv.style.display = 'flex';
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
     </script>
 </body>
 </html>
