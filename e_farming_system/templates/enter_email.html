@@ -196,6 +196,108 @@
                 font-size: 1.8rem;
             }
         }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 0.9rem;
+            margin-top: 8px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            background-color: rgba(220, 53, 69, 0.1);
+            border: 1px solid rgba(220, 53, 69, 0.2);
+            display: none;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-group input.invalid {
+            border-color: #dc3545;
+            background-color: rgba(220, 53, 69, 0.05);
+        }
+
+        .form-group input.valid {
+            border-color: #28a745;
+            background-color: rgba(40, 167, 69, 0.05);
+        }
+
+        .validation-icon {
+            position: absolute;
+            right: 15px;
+            top: 40px;
+            font-size: 1.2rem;
+        }
+
+        .validation-icon.valid {
+            color: #28a745;
+        }
+
+        .validation-icon.invalid {
+            color: #dc3545;
+        }
+
+        .strength-meter {
+            height: 4px;
+            background-color: #e0e0e0;
+            margin-top: 8px;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .strength-meter-fill {
+            height: 100%;
+            width: 0;
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+
+        .typing-indicator {
+            position: absolute;
+            right: 15px;
+            top: 40px;
+            color: #666;
+            font-size: 0.8rem;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        /* Tooltip styles */
+        .tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            display: none;
+            z-index: 1000;
+        }
+
+        .tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: rgba(0, 0, 0, 0.8) transparent transparent transparent;
+        }
     </style>
 </head>
 <body>
@@ -222,6 +324,7 @@
                 <i class="fas fa-envelope"></i>
                 <input type="email" id="email" name="email" placeholder="Enter your email address" required>
             </div>
+            <div id="error-message" class="error-message"></div>
             <button type="submit"><i class="fas fa-paper-plane"></i> Send OTP</button>
         </form>
         <div class="login-link">
@@ -230,50 +333,93 @@
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const emailInput = document.getElementById("email");
-            const sendOtpButton = document.getElementById("sendOtpButton");
-            const errorMessage = document.getElementById("error-message");
+        document.addEventListener('DOMContentLoaded', function() {
+            const emailInput = document.getElementById('email');
+            const errorMessage = document.getElementById('error-message');
+            const form = document.querySelector('form');
+            let typingTimer;
 
-            // const emailPattern = /^[a-zA-Z0-9._%+-]+@gmail\.(com|org|net|edu|gov|mil|biz|info|mobi|name|aero|asia|jobs|museum)$/;
+            // Email validation patterns
+            const patterns = {
+                domain: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                format: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                common: /@(gmail|yahoo|outlook|hotmail)\.(com|net|org)$/i
+            };
 
-            // Validate email input
-            emailInput.addEventListener("blur", function () {
-                if (!emailPattern.test(emailInput.value.trim())) {
-                    showError("Please enter a valid Gmail address.");
-                } else {
-                    hideError();
-                }
+            // Create validation icon
+            const validationIcon = document.createElement('i');
+            validationIcon.className = 'validation-icon fas';
+            emailInput.parentElement.appendChild(validationIcon);
+
+            // Create typing indicator
+            const typingIndicator = document.createElement('span');
+            typingIndicator.className = 'typing-indicator';
+            typingIndicator.textContent = '✎ typing...';
+            emailInput.parentElement.appendChild(typingIndicator);
+            typingIndicator.style.display = 'none';
+
+            emailInput.addEventListener('input', function() {
+                // Show typing indicator
+                typingIndicator.style.display = 'block';
+                validationIcon.style.display = 'none';
+
+                // Clear previous timer
+                clearTimeout(typingTimer);
+
+                // Set new timer
+                typingTimer = setTimeout(() => {
+                    validateEmail();
+                    typingIndicator.style.display = 'none';
+                    validationIcon.style.display = 'block';
+                }, 500);
             });
 
-            // Send OTP function
-            sendOtpButton.addEventListener("click", function () {
-                if (validateEmail()) {
-                    // Here you would normally make an AJAX call to your backend to send the OTP
-                    alert("OTP has been sent to " + emailInput.value.trim());
-                } else {
-                    showError("Please enter a valid Gmail address before sending the OTP.");
-                }
-            });
+            emailInput.addEventListener('blur', validateEmail);
 
-            // Validate email function
             function validateEmail() {
-                return emailPattern.test(emailInput.value.trim());
+                const email = emailInput.value.trim();
+                let isValid = true;
+                let message = '';
+
+                // Basic format check
+                if (!patterns.format.test(email)) {
+                    isValid = false;
+                    message = 'Please enter a valid email address';
+                }
+                // Domain check
+                else if (!patterns.domain.test(email)) {
+                    isValid = false;
+                    message = 'Invalid email domain';
+                }
+                // Common providers check
+                else if (!patterns.common.test(email)) {
+                    isValid = false;
+                    message = 'Please use a common email provider (Gmail, Yahoo, Outlook, Hotmail)';
+                }
+
+                // Update UI
+                if (isValid) {
+                    emailInput.classList.remove('invalid');
+                    emailInput.classList.add('valid');
+                    validationIcon.className = 'validation-icon fas fa-check-circle valid';
+                    errorMessage.style.display = 'none';
+                } else {
+                    emailInput.classList.remove('valid');
+                    emailInput.classList.add('invalid');
+                    validationIcon.className = 'validation-icon fas fa-times-circle invalid';
+                    errorMessage.textContent = message;
+                    errorMessage.style.display = 'block';
+                }
+
+                return isValid;
             }
 
-            // Show error message
-            function showError(message) {
-                errorMessage.textContent = message;
-                errorMessage.style.display = "block";
-                emailInput.style.borderColor = "red";
-            }
-
-            // Hide error message
-            function hideError() {
-                errorMessage.textContent = "";
-                errorMessage.style.display = "none";
-                emailInput.style.borderColor = "";
-            }
+            // Form submission
+            form.addEventListener('submit', function(e) {
+                if (!validateEmail()) {
+                    e.preventDefault();
+                }
+            });
         });
     </script>
 </body>

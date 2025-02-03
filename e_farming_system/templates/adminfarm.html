@@ -163,14 +163,76 @@
         .card a:hover {
             text-decoration: underline;
         }
+
+        .swal-custom-popup {
+            font-family: 'Roboto', sans-serif;
+            padding: 20px;
+        }
+
+        .swal-custom-title {
+            color: #2e7d32;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .swal-custom-content {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .swal-custom-confirm {
+            padding: 12px 24px !important;
+            font-size: 16px !important;
+            font-weight: 500 !important;
+            border-radius: 8px !important;
+        }
+
+        .swal-custom-confirm:focus {
+            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.2) !important;
+        }
+
+        .swal-custom-cancel {
+            padding: 12px 24px !important;
+            font-size: 16px !important;
+            font-weight: 500 !important;
+            border-radius: 8px !important;
+        }
+
+        .swal-custom-cancel:focus {
+            box-shadow: 0 0 0 3px rgba(211, 51, 51, 0.2) !important;
+        }
+
+        /* Animation for the success message */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translate3d(0, 20px, 0);
+            }
+            to {
+                opacity: 1;
+                transform: translate3d(0, 0, 0);
+            }
+        }
+
+        .swal2-popup {
+            animation: fadeInUp 0.3s ease-out;
+        }
+
+        .swal2-backdrop-show {
+            background: rgba(0, 0, 0, 0.5) !important;
+            backdrop-filter: blur(3px);
+        }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     <!-- Top Navbar -->
     <div class="navbar">
         <span class="navbar-brand">E-Farming Admin Dashboard</span>
         <ul>
-            <li><a href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+            <li><a href="javascript:void(0)" onclick="confirmLogout()">
+                <i class="fa-solid fa-right-from-bracket"></i> Logout
+            </a></li>
         </ul>
     </div>
 
@@ -229,5 +291,44 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function confirmLogout() {
+            Swal.fire({
+                title: 'Ready to Leave?',
+                text: "Are you sure you want to logout?",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#2e7d32',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, Logout',
+                cancelButtonText: 'Cancel',
+                background: '#fff',
+                borderRadius: '15px',
+                customClass: {
+                    popup: 'swal-custom-popup',
+                    title: 'swal-custom-title',
+                    content: 'swal-custom-content',
+                    confirmButton: 'swal-custom-confirm',
+                    cancelButton: 'swal-custom-cancel'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Logging Out',
+                        text: 'You will be redirected to the home page.',
+                        icon: 'success',
+                        timer: 1500,
+                        showConfirmButton: false,
+                        customClass: {
+                            popup: 'swal-custom-popup'
+                        }
+                    }).then(() => {
+                        window.location.href = "{% url 'logout' %}";
+                    });
+                }
+            });
+        }
+    </script>
 </body>
 </html>

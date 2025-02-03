@@ -48,6 +48,7 @@ def about(request):
 def contact(request):
     return render(request,'contact.html')
 
+
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def adminfarm(request):
     return render(request,'adminfarm.html')
