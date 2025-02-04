@@ -110,5 +110,126 @@
             <button type="submit" class="update-button" disabled>Update Crop</button>
         </form>
     </div>
+
+    <!-- Add this right after your existing script -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const stockInput = document.getElementById("stock");
+            const updateButton = document.querySelector(".update-button");
+            
+            // Create error message element
+            const errorDiv = document.createElement("div");
+            errorDiv.className = "stock-error";
+            stockInput.parentNode.appendChild(errorDiv);
+            
+            function validateStock() {
+                const stockValue = parseInt(stockInput.value);
+                const maxStock = 50; // Maximum stock limit
+                
+                if (stockValue > maxStock) {
+                    errorDiv.textContent = `Stock cannot exceed ${maxStock} kg`;
+                    errorDiv.style.display = "block";
+                    stockInput.classList.add("invalid");
+                    updateButton.disabled = true;
+                    return false;
+                } else if (stockValue < 0) {
+                    errorDiv.textContent = "Stock cannot be negative";
+                    errorDiv.style.display = "block";
+                    stockInput.classList.add("invalid");
+                    updateButton.disabled = true;
+                    return false;
+                } else {
+                    errorDiv.style.display = "none";
+                    stockInput.classList.remove("invalid");
+                    updateButton.disabled = false;
+                    return true;
+                }
+            }
+
+            // Add event listener for stock input
+            stockInput.addEventListener("input", validateStock);
+            
+            // Add form submission validation
+            const form = document.querySelector("form");
+            form.addEventListener("submit", function(e) {
+                if (!validateStock()) {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: 'Invalid Stock Value',
+                        text: `Stock must be between 0 and 50 kg`,
+                        icon: 'error',
+                        confirmButtonColor: '#d33',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            });
+        });
+    </script>
+
+    <!-- Add these styles -->
+    <style>
+        .stock-error {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 5px;
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        input.invalid {
+            border-color: #dc3545 !important;
+            background-color: rgba(220, 53, 69, 0.05) !important;
+        }
+
+        input.invalid:focus {
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+        }
+
+        /* Tooltip for stock input */
+        .input-tooltip {
+            position: relative;
+        }
+
+        .input-tooltip::after {
+            content: 'Maximum: 50 kg';
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .input-tooltip:hover::after {
+            opacity: 1;
+        }
+
+        /* Add visual feedback for valid input */
+        input:valid:not(.invalid) {
+            border-color: #28a745;
+            background-color: rgba(40, 167, 69, 0.05);
+        }
+
+        input:valid:not(.invalid):focus {
+            box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+        }
+    </style>
 </body>
 </html>

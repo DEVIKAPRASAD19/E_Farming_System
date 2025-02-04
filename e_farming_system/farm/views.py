@@ -1168,9 +1168,9 @@ def weather_update(request):
 def expert_consultation(request):
     # Sample expert data
     experts = [
-        {'name': 'Dr. A. Kumar', 'expertise': 'Agronomy', 'contact': '+91 98765 43210', 'email': 'a.kumar@example.com'},
-        {'name': 'Ms. B. Sharma', 'expertise': 'Horticulture', 'contact': '+91 87654 32109', 'email': 'b.sharma@example.com'},
-        {'name': 'Mr. C. Verma', 'expertise': 'Soil Science', 'contact': '+91 76543 21098', 'email': 'c.verma@example.com'},
+        {'name': 'Dr. A. Kumar', 'expertise': 'Agronomy', 'contact': '+91 7510508273', 'email': 'a.kumar@example.com'},
+        {'name': 'Ms. B. Sharma', 'expertise': 'Horticulture', 'contact': '+91 9747911520', 'email': 'b.sharma@example.com'},
+        {'name': 'Mr. C. Verma', 'expertise': 'Soil Science', 'contact': '+91 9947078273', 'email': 'c.verma@example.com'},
     ]
 
     return render(request, 'expert_consultation.html', {'experts': experts})

@@ -693,6 +693,18 @@
             background: #e8f5e9;
             color: #2e7d32;
         }
+
+        .status-option.disabled {
+            opacity: 0.5 !important;
+            pointer-events: none !important;
+            cursor: not-allowed !important;
+            background-color: #f5f5f5 !important;
+        }
+
+        .status-option.disabled:hover {
+            transform: none !important;
+            box-shadow: none !important;
+        }
     </style>
 </head>
 <body>
@@ -829,7 +841,7 @@
                     </thead>
                     <tbody>
                         {% for order in assigned_orders %}
-                        <tr>
+                        <tr data-order-id="{{ order.id }}">
                             <td>#{{ order.id }}</td>
                             <td>{{ order.name }}</td>
                             <td>{{ order.delivery_address }}, {{ order.pincode }}</td>
@@ -1095,6 +1107,48 @@
             });
         });
 
+        // Function to check and disable status options based on current status
+        function updateStatusOptions(currentStatus) {
+            const statusOptions = document.querySelectorAll('.status-option');
+            
+            statusOptions.forEach(option => {
+                const status = option.getAttribute('data-status');
+                
+                // If current status is "Out for Delivery", disable "Accepted"
+                if (currentStatus === 'Out for Delivery' && status === 'Accepted') {
+                    option.style.opacity = '0.5';
+                    option.style.cursor = 'not-allowed';
+                    option.onclick = (e) => {
+                        e.stopPropagation();
+                        Swal.fire({
+                            title: 'Not Allowed',
+                            text: 'Cannot change status back to Accepted once Out for Delivery',
+                            icon: 'warning',
+                            confirmButtonColor: '#2e7d32'
+                        });
+                    };
+                }
+            });
+        }
+
+        // Update the existing openStatusModal function
+        const originalOpenStatusModal = openStatusModal;
+        openStatusModal = function(orderId) {
+            const row = document.querySelector(`tr[data-order-id="${orderId}"]`);
+            const currentStatus = row.querySelector('.status-badge').textContent.trim();
+            
+            document.getElementById('orderId').value = orderId;
+            document.getElementById('statusModal').style.display = 'block';
+
+            // Disable Accepted option if current status is Out for Delivery
+            if (currentStatus === 'Out for Delivery') {
+                const acceptedOption = document.querySelector('.status-option[data-status="Accepted"]');
+                acceptedOption.classList.add('disabled');
+                acceptedOption.style.pointerEvents = 'none';
+                acceptedOption.style.opacity = '0.5';
+            }
+        }
+
         function openStatusModal(orderId) {
             document.getElementById('orderId').value = orderId;
             document.getElementById('statusModal').style.display = 'block';
@@ -1143,6 +1197,38 @@
                 document.getElementById('profileDropdown').style.display = 'none';
             }
         }
+
+        // Add this function to handle status option clicks
+        function handleStatusOptionClick(event) {
+            const statusOptions = document.querySelectorAll('.status-option');
+            const clickedOption = event.currentTarget;
+            const selectedStatus = clickedOption.getAttribute('data-status');
+
+            // If the option is disabled, prevent selection and show message
+            if (clickedOption.classList.contains('disabled')) {
+                event.preventDefault();
+                event.stopPropagation();
+                Swal.fire({
+                    title: 'Invalid Selection',
+                    text: 'Cannot change to a previous status',
+                    icon: 'warning',
+                    confirmButtonColor: '#2e7d32'
+                });
+                return false;
+            }
+
+            // Remove selected class from all options
+            statusOptions.forEach(opt => opt.classList.remove('selected'));
+            
+            // Add selected class to clicked option
+            clickedOption.classList.add('selected');
+            selectedStatus = clickedOption.getAttribute('data-status');
+        }
+
+        // Add click event listeners to all status options
+        document.querySelectorAll('.status-option').forEach(option => {
+            option.addEventListener('click', handleStatusOptionClick);
+        });
     </script>
 </body>
 </html>
