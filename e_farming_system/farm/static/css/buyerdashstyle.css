@@ -75,7 +75,7 @@ body {
 .navbar {
     display: flex;
     align-items: center; /* Align items vertically in the center */
-    background-color: #3faa64; /* Darker shade for navbar */
+    background-color: #11601e; /* Darker shade for navbar */
     color: white;
     padding: 10px; /* Padding for spacing */
     border-radius: 5px; /* Slight rounding for aesthetics */

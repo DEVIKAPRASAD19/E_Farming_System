@@ -6,229 +6,160 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Update Crop</title>
     <link rel="stylesheet" href="{% static 'css/update_crop.css' %}">
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const form = document.querySelector("form");
-            const nameInput = document.getElementById("name");
-            const descriptionTextarea = document.getElementById("description");
-            const priceInput = document.getElementById("price");
-            const categorySelect = document.getElementById("category");
-            const imageInput = document.getElementById("image");
-            const stockInput = document.getElementById("stock");  // New stock input
-            const updateButton = document.querySelector(".update-button");
-
-            function validateForm() {
-                let valid = true;
-
-                // Validate Name
-                if (nameInput.value.trim() === "") {
-                    valid = false;
-                    alert("Name is required.");
-                }
-
-                // Validate Description
-                if (descriptionTextarea.value.trim() === "") {
-                    valid = false;
-                    alert("Description is required.");
-                }
-
-                // Validate Price
-                const priceValue = parseFloat(priceInput.value);
-                if (isNaN(priceValue) || priceValue <= 0) {
-                    valid = false;
-                    alert("Price must be a positive number.");
-                }
-
-                // Validate Stock (must be a non-negative integer)
-                const stockValue = parseInt(stockInput.value);
-                if (isNaN(stockValue) || stockValue < 0) {
-                    valid = false;
-                    alert("Stock must be a non-negative number.");
-                }
-
-                // Validate Image Type
-                const validImageTypes = ["image/jpeg", "image/png", "image/gif"];
-                const files = imageInput.files;
-                for (let i = 0; i < files.length; i++) {
-                    if (!validImageTypes.includes(files[i].type)) {
-                        valid = false;
-                        alert("Only JPG, PNG, and GIF formats are allowed for images.");
-                        break;
-                    }
-                }
-
-                // Disable the submit button if the form is not valid
-                updateButton.disabled = !valid;
-                return valid;
-            }
-
-            // Add event listeners for live validation
-            nameInput.addEventListener("input", validateForm);
-            descriptionTextarea.addEventListener("input", validateForm);
-            priceInput.addEventListener("input", validateForm);
-            stockInput.addEventListener("input", validateForm);  // Add event listener for stock input
-            imageInput.addEventListener("change", validateForm);
-
-            // Initial validation on page load
-            validateForm();
-        });
-    </script>
 </head>
 <body>
-    <div class="header">
-        <h1>Update Crop: {{ crop.name }}</h1>
-        <button class="back-button" onclick="window.history.back();">Back</button>
-    </div>
-
-    <div class="update-form">
+    <div class="container">
+        <h1>Update Crop</h1>
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-            <label for="name">Name:</label>
-            <input type="text" id="name" name="name" value="{{ crop.name }}" required>
+            
+            <div class="form-group">
+                <label for="name">Crop Name:</label>
+                <input type="text" id="name" name="name" value="{{ crop.name }}" required>
+            </div>
 
-            <label for="description">Description:</label>
-            <textarea id="description" name="description" required>{{ crop.description }}</textarea>
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <textarea id="description" name="description" required>{{ crop.description }}</textarea>
+            </div>
 
-            <label for="price">Price(Rs.):</label>
-            <input type="number" id="price" name="price" value="{{ crop.price }}" required>
+            <div class="form-group">
+                <label for="price">Price (Rs.):</label>
+                <input type="number" id="price" name="price" value="{{ crop.price }}" required>
+            </div>
 
-            <label for="category">Category:</label>
-            <select id="category" name="category" required>
-                <option value="fruit" {% if crop.category == 'fruit' %}selected{% endif %}>Fruits</option>
-                <option value="vegetable" {% if crop.category == 'vegetable' %}selected{% endif %}>Vegetables</option>
-                <option value="grain" {% if crop.category == 'grain' %}selected{% endif %}>Grains</option>
-                <option value="other" {% if crop.category == 'other' %}selected{% endif %}>Other</option>
-            </select>
+            <div class="form-group">
+                <label for="category">Category:</label>
+                <select id="category" name="category" required>
+                    <option value="Vegetables" {% if crop.category.name == 'Vegetables' %}selected{% endif %}>Vegetables</option>
+                    <option value="Fruits" {% if crop.category.name == 'Fruits' %}selected{% endif %}>Fruits</option>
+                    <option value="Grains" {% if crop.category.name == 'Grains' %}selected{% endif %}>Grains</option>
+                    <option value="Pulses" {% if crop.category.name == 'Pulses' %}selected{% endif %}>Pulses</option>
+                    <option value="Spices" {% if crop.category.name == 'Spices' %}selected{% endif %}>Spices</option>
+                </select>
+            </div>
 
-            <label for="image">Update Image:</label>
-            <input type="file" id="image" name="image" multiple>
+            <div class="form-group">
+                <label for="subcategory">Variety:</label>
+                <input type="text" id="subcategory" name="subcategory" value="{{ crop.subcategory.name }}" required>
+            </div>
 
-            <!-- New field to update stock -->
-            <label for="stock">Update Stock(kg):</label>
-            <input type="number" id="stock" name="stock" value="{{ crop.stock }}" min="0" required>
+            <div class="form-group">
+                <label for="stock">Stock (kg):</label>
+                <input type="number" id="stock" name="stock" value="{{ crop.stock }}" required>
+            </div>
 
-            <button type="submit" class="update-button" disabled>Update Crop</button>
+            <div class="form-group">
+                <label for="image">Update Image:</label>
+                <input type="file" id="image" name="image" accept="image/*">
+                
+                {% if crop.images.first %}
+                <p class="current-image">Current Image:</p>
+                <img src="{{ crop.images.first.image.url }}" alt="Crop Image" class="image-preview">
+                {% endif %}
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="update-btn">Update Crop</button>
+                <a href="{% url 'farmercrops' %}" class="cancel-btn">Cancel</a>
+            </div>
         </form>
     </div>
 
-    <!-- Add this right after your existing script -->
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const stockInput = document.getElementById("stock");
-            const updateButton = document.querySelector(".update-button");
-            
-            // Create error message element
-            const errorDiv = document.createElement("div");
-            errorDiv.className = "stock-error";
-            stockInput.parentNode.appendChild(errorDiv);
-            
-            function validateStock() {
-                const stockValue = parseInt(stockInput.value);
-                const maxStock = 50; // Maximum stock limit
-                
-                if (stockValue > maxStock) {
-                    errorDiv.textContent = `Stock cannot exceed ${maxStock} kg`;
-                    errorDiv.style.display = "block";
-                    stockInput.classList.add("invalid");
-                    updateButton.disabled = true;
-                    return false;
-                } else if (stockValue < 0) {
-                    errorDiv.textContent = "Stock cannot be negative";
-                    errorDiv.style.display = "block";
-                    stockInput.classList.add("invalid");
-                    updateButton.disabled = true;
-                    return false;
-                } else {
-                    errorDiv.style.display = "none";
-                    stockInput.classList.remove("invalid");
-                    updateButton.disabled = false;
-                    return true;
-                }
-            }
-
-            // Add event listener for stock input
-            stockInput.addEventListener("input", validateStock);
-            
-            // Add form submission validation
-            const form = document.querySelector("form");
-            form.addEventListener("submit", function(e) {
-                if (!validateStock()) {
-                    e.preventDefault();
-                    Swal.fire({
-                        title: 'Invalid Stock Value',
-                        text: `Stock must be between 0 and 50 kg`,
-                        icon: 'error',
-                        confirmButtonColor: '#d33',
-                        confirmButtonText: 'OK'
-                    });
-                }
-            });
-        });
-    </script>
-
-    <!-- Add these styles -->
     <style>
-        .stock-error {
-            color: #dc3545;
-            font-size: 0.875rem;
-            margin-top: 5px;
-            display: none;
-            animation: fadeIn 0.3s ease-in-out;
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
         }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-5px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        h1 {
+            color: #2e7d32;
+            text-align: center;
+            margin-bottom: 30px;
         }
 
-        input.invalid {
-            border-color: #dc3545 !important;
-            background-color: rgba(220, 53, 69, 0.05) !important;
+        .form-group {
+            margin-bottom: 20px;
         }
 
-        input.invalid:focus {
-            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
         }
 
-        /* Tooltip for stock input */
-        .input-tooltip {
-            position: relative;
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
         }
 
-        .input-tooltip::after {
-            content: 'Maximum: 50 kg';
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(0, 0, 0, 0.7);
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .update-btn, .cancel-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .update-btn {
+            background: #2e7d32;
             color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
+            flex: 1;
         }
 
-        .input-tooltip:hover::after {
-            opacity: 1;
+        .cancel-btn {
+            background: #f44336;
+            color: white;
+            flex: 1;
         }
 
-        /* Add visual feedback for valid input */
-        input:valid:not(.invalid) {
-            border-color: #28a745;
-            background-color: rgba(40, 167, 69, 0.05);
+        .update-btn:hover, .cancel-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
         }
 
-        input:valid:not(.invalid):focus {
-            box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+        .current-image {
+            margin-top: 5px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .image-preview {
+            max-width: 150px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 15px;
+                padding: 15px;
+            }
         }
     </style>
 </body>

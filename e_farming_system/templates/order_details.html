@@ -497,6 +497,7 @@
     </style>
 </head>
 <body>
+    
     <a href="{% url 'order_history' %}" class="back-button">
         <i class="fas fa-arrow-left"></i> Back to Orders
     </a>
@@ -606,6 +607,21 @@
                 </button>
                 {% endif %}
             </div>
+
+            <div class="tracking-info" style="margin-top: 20px; text-align: center;">
+                <h3 style="display: inline;">Track Your Delivery</h3>
+                <a href="{% url 'track_delivery' order.id %}" style="margin-left: 10px;">
+                    <i class="fas fa-map-marker-alt" style="font-size: 24px; color: #2e7d32;"></i>
+                </a>
+            </div>
+
+            <!-- Add QR Code Section Here -->
+            {% if order.status == "Out for Delivery" %}
+    <div class="qr-code-section" style="text-align: center; margin-top: 30px;">
+        <h2>Scan QR Code to Complete Delivery</h2>
+        <img src="{% url 'generate_qr_code' order.id %}" alt="Order QR Code" style="max-width: 200px; height: auto;">
+    </div>
+{% endif %}          
         </div>
     </div>
 

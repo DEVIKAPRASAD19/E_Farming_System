@@ -1,6 +1,9 @@
 from django.db import models
 from django.utils import timezone
+from django.db.models import Count
 from django.contrib.auth.hashers import make_password, check_password
+
+
 
 
 # Define the choices for the Role field
@@ -47,23 +50,47 @@ class Registeruser(models.Model):
 from django.db import models
 from django.contrib.auth.models import User
 
+class Category(models.Model):
+    name = models.CharField(max_length=255, unique=True)  # Example: Grains, Vegetables, Fruits
+
+    def __str__(self):
+        return self.name
+
+class SubCategory(models.Model):
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="subcategories")
+    name = models.CharField(max_length=255)
+
+    class Meta:
+        unique_together = ('category', 'name')  # Prevent duplicate subcategories under the same category
+
+    def __str__(self):
+        return f"{self.category.name} - {self.name}"
+
+
 class Crop(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    category = models.CharField(max_length=100)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    subcategory = models.ForeignKey(SubCategory, on_delete=models.CASCADE, null=True, blank=True)  # New field
     farmer = models.ForeignKey(Registeruser, on_delete=models.CASCADE)  # Link to the User model
     stock = models.IntegerField(default=0)  # Stock for available quantity
     status = models.BooleanField(default=True)         # 1 if available, else 0
-    is_verified = models.BooleanField(default=False)  # Admin verification field
+    is_verified = models.BooleanField(default=True)  # Admin verification field
     added_at = models.DateTimeField(auto_now_add=True) # Timestamp for when the product is added
     updated_at = models.DateTimeField(auto_now=True)   # Timestamp for when the product is last updated
 
     class Meta:
-        unique_together = ('name', 'farmer')  # Ensure that the same crop cannot be added by the same farmer
+        unique_together = ('name', 'farmer', 'subcategory')  # Ensure that the same crop cannot be added by the same farmer
     
     def __str__(self):
-        return self.name
+         return f"{self.name} - {self.subcategory.name if self.subcategory else ''}"
+    
+    @classmethod
+    def search_varieties(cls, crop_name):
+        return cls.objects.filter(
+            name__iexact=crop_name
+        ).select_related('subcategory', 'farmer')
     
     
 
@@ -133,7 +160,26 @@ class Order(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
     order_date = models.DateTimeField(auto_now_add=True)
     assigned_delivery_boy = models.ForeignKey('DeliveryBoyDetail',on_delete=models.SET_NULL,null=True,blank=True,related_name='assigned_orders')
+    updated_at = models.DateTimeField(auto_now=True)
     is_accepted = models.BooleanField(default=False)
+    is_canceled = models.BooleanField(default=False)  # Track cancellations
+    is_verified = models.BooleanField(default=False)  # Mark order as delivered after QR scan
+    
+    def save(self, *args, **kwargs):
+        """Automatically assigns a delivery boy to the order when saved."""
+        if self.assigned_delivery_boy is None and not self.is_canceled:
+            self.assign_delivery_boy()
+        super().save(*args, **kwargs)
+
+    def assign_delivery_boy(self):
+        """Automatically assigns the least busy verified delivery boy."""
+        available_boys = DeliveryBoyDetail.objects.filter(verified=True).annotate(
+            order_count=Count('assigned_orders')
+        ).order_by('order_count')  # Assign the delivery boy with the least orders
+
+        if available_boys.exists():
+            self.assigned_delivery_boy = available_boys.first()
+
 
     def __str__(self):
         return f"Order {self.id} - {self.user.name}"
@@ -193,6 +239,9 @@ class DeliveryBoyDetail(models.Model):
     additional_documents = models.FileField(upload_to='delivery_docs/', blank=True, null=True)
     completed_registration = models.BooleanField(default=False)
     verified = models.BooleanField(default=False)
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
+    current_orders = models.IntegerField(default=0) 
 
     def __str__(self):
         return f"Delivery Details for {self.user.name}"

@@ -35,6 +35,15 @@
             <div class="crop-info">
                 <p><strong>Description:</strong> <span id="cropDescription">{{ crop.description }}</span></p>
                 <p><strong>Category:</strong> <span id="cropCategory">{{ crop.category }}</span></p>
+                {% if crop.subcategory %}
+                <p class="variety-info">
+                    <strong>Variety:</strong> 
+                    <span class="variety-tag">
+                        <i class="fas fa-leaf"></i>
+                        <span id="cropVariety">{{ crop.subcategory.name }}</span>
+                    </span>
+                </p>
+                {% endif %}
                 <p><strong>Price:</strong> <span id="cropPrice">Rs.{{ crop.price }}</span></p>
                 <p><strong>Stock Available:</strong> 
                     <span id="stockAvailable">
@@ -141,7 +150,48 @@
             opacity: 1;
         }
     }
+
+    .variety-info {
+        margin: 15px 0;
+    }
+
+    .variety-tag {
+        display: inline-flex;
+        align-items: center;
+        background: rgba(46, 125, 50, 0.1);
+        color: #2e7d32;
+        padding: 6px 15px;
+        border-radius: 20px;
+        font-size: 1rem;
+        margin-left: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .variety-tag i {
+        margin-right: 8px;
+        font-size: 0.9rem;
+    }
+
+    .variety-tag:hover {
+        background: rgba(46, 125, 50, 0.15);
+        transform: translateX(5px);
+    }
 </style>
+
+<script>
+    // Function to format text by removing underscores and capitalizing words
+    function formatText(text) {
+        return text.split('_')
+                  .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                  .join(' ');
+    }
+
+    // Format variety name
+    const varietySpan = document.getElementById('cropVariety');
+    if (varietySpan) {
+        varietySpan.textContent = formatText(varietySpan.textContent.trim());
+    }
+</script>
 
 </body>
 </html>

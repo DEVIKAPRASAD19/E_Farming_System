@@ -11,7 +11,7 @@
 <div class="form-container">
     <h2>Add a Crop</h2>
     
-    <form id="add-crop-form" method="POST" enctype="multipart/form-data">
+    <form id="add-crop-form" method="POST" enctype="multipart/form-data" action="{% url 'addcrops' %}">
         {% csrf_token %}
         
         <div class="form-group">
@@ -32,17 +32,32 @@
             <span class="error-message" id="price-error" style="color: red;"></span>
         </div>
         
-        <div class="form-group">
+        <div class="form-group category-section">
             <label for="category">Category:</label>
             <select id="category" name="category" required>
-                <option value="" disabled selected>Select your crop</option>
-                <option value="Vegetable">Vegetable</option>
-                <option value="Fruit">Fruit</option>
-                <option value="Grain">Grain</option>
-                <option value="Herb">Herb</option>
-                <option value="Other">Other</option>
+                <option value="" disabled selected>Select a category</option>
+                <option value="grains">Grains</option>
+                <option value="vegetables">Vegetables</option>
+                <option value="fruits">Fruits</option>
+                <option value="pulses">Pulses</option>
+                <option value="spices">Spices</option>
+                <option value="nuts">Nuts & Seeds</option>
             </select>
-            <span class="error-message" id="category-error" style="color: red;"></span>
+            <span class="error-message" id="category-error"></span>
+        </div>
+
+        <div class="form-group subcategory-section">
+            <label for="subcategory">Variety/Subcategory:</label>
+            <select id="subcategory" name="subcategory" required disabled>
+                <option value="" disabled selected>Select a subcategory</option>
+            </select>
+            <span class="error-message" id="subcategory-error"></span>
+        </div>
+        
+        <div class="form-group other-subcategory" style="display: none;">
+            <label for="other_subcategory">Specify Other Variety:</label>
+            <input type="text" id="other_subcategory" name="other_subcategory" 
+                   placeholder="Enter the variety name">
         </div>
         
         <div class="form-group">
@@ -159,4 +174,363 @@
         });
     });
 </script>
+<script>
+    const categorySubcategories = {
+        grains: [
+            "Basmati Rice",
+            "Ponni Rice",
+            "Sona Masoori",
+            "Brown Rice",
+            "Wheat",
+            "Barley",
+            "Oats",
+            "Millets"
+        ],
+        vegetables: [
+            "Leafy Greens",
+            "Root Vegetables",
+            "Cruciferous",
+            "Allium",
+            "Gourds",
+            "Nightshades",
+            "Beans & Peas"
+        ],
+        fruits: [
+            "Citrus",
+            "Tropical",
+            "Berries",
+            "Stone Fruits",
+            "Pome Fruits",
+            "Melons"
+        ],
+        pulses: [
+            "Lentils",
+            "Chickpeas",
+            "Black Gram",
+            "Green Gram",
+            "Red Beans",
+            "Pigeon Peas"
+        ],
+        spices: [
+            "Whole Spices",
+            "Ground Spices",
+            "Seeds",
+            "Herbs",
+            "Blends"
+        ],
+        nuts: [
+            "Tree Nuts",
+            "Ground Nuts",
+            "Seeds",
+            "Dried Fruits"
+        ]
+    };
+
+    document.getElementById('category').addEventListener('change', function() {
+        const subcategorySelect = document.getElementById('subcategory');
+        const selectedCategory = this.value;
+        
+        // Clear current options
+        subcategorySelect.innerHTML = '<option value="" disabled selected>Select a subcategory</option>';
+        
+        if (selectedCategory && categorySubcategories[selectedCategory]) {
+            // Add new options
+            categorySubcategories[selectedCategory].forEach(subcategory => {
+                const option = document.createElement('option');
+                option.value = subcategory.toLowerCase().replace(/ /g, '_');
+                option.textContent = subcategory;
+                subcategorySelect.appendChild(option);
+            });
+            
+            // Enable select
+            subcategorySelect.disabled = false;
+            
+            // Add animation
+            subcategorySelect.style.animation = 'fadeIn 0.3s ease-out';
+        } else {
+            subcategorySelect.disabled = true;
+        }
+    });
+</script>
+
+<script>
+    // Get the subcategory select element
+    const subcategorySelect = document.getElementById('subcategory');
+    const otherSubcategoryDiv = document.querySelector('.other-subcategory');
+    const otherSubcategoryInput = document.getElementById('other_subcategory');
+
+    // Add "Other" option to subcategory select
+    function addOtherOption() {
+        const otherOption = document.createElement('option');
+        otherOption.value = 'other';
+        otherOption.textContent = 'Other';
+        subcategorySelect.appendChild(otherOption);
+    }
+
+    // Handle subcategory change
+    subcategorySelect.addEventListener('change', function() {
+        if (this.value === 'other') {
+            otherSubcategoryDiv.style.display = 'block';
+            otherSubcategoryInput.required = true;
+        } else {
+            otherSubcategoryDiv.style.display = 'none';
+            otherSubcategoryInput.required = false;
+        }
+    });
+
+    // Add "Other" option when category changes
+    document.getElementById('category').addEventListener('change', function() {
+        const selectedCategory = this.value;
+        
+        if (selectedCategory) {
+            // Wait for existing options to be populated
+            setTimeout(() => {
+                addOtherOption();
+            }, 100);
+        }
+    });
+
+    // Handle form submission
+    document.getElementById('add-crop-form').addEventListener('submit', function(e) {
+        // e.preventDefault(); // Uncomment this line for testing
+        const formData = new FormData(this);
+        
+        // Get the subcategory value
+        const subcategorySelect = document.getElementById('subcategory');
+        const otherSubcategoryInput = document.getElementById('other_subcategory');
+        
+        if (subcategorySelect.value === 'other') {
+            // If "Other" is selected, use the custom input value
+            formData.set('subcategory', otherSubcategoryInput.value.trim());
+        }
+        
+        // Debug log to check form data
+        for (let pair of formData.entries()) {
+            console.log(pair[0] + ': ' + pair[1]);
+        }
+    });
+</script>
+
+<script>
+    // Handle form submission for custom subcategory
+    document.getElementById('add-crop-form').addEventListener('submit', function(e) {
+        // e.preventDefault(); // Uncomment for testing
+        
+        const subcategorySelect = document.getElementById('subcategory');
+        const otherSubcategoryInput = document.getElementById('other_subcategory');
+        const nameInput = document.getElementById('name');
+        
+        // Ensure name is not empty
+        if (!nameInput.value.trim()) {
+            e.preventDefault();
+            nameInput.focus();
+            return;
+        }
+        
+        if (subcategorySelect.value === 'other') {
+            // If "Other" is selected, use the custom input value as the subcategory
+            const customValue = otherSubcategoryInput.value.trim();
+            if (customValue) {
+                // Create a new option with the custom value
+                const newOption = document.createElement('option');
+                newOption.value = customValue;
+                newOption.textContent = customValue;
+                
+                // Add the new option and select it
+                subcategorySelect.appendChild(newOption);
+                subcategorySelect.value = customValue;
+            }
+        }
+        
+        // Log form data for debugging
+        const formData = new FormData(this);
+        for (let pair of formData.entries()) {
+            console.log(pair[0] + ': ' + pair[1]);
+        }
+    });
+</script>
+
+<style>
+    body {
+        background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+        min-height: 100vh;
+        padding: 20px;
+        font-family: 'Poppins', sans-serif;
+        margin: 0;
+    }
+
+    .form-container {
+        max-width: 800px;
+        margin: 20px auto;
+        background: white;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar {
+        margin-bottom: 20px;
+        padding: 15px 30px;
+        background: transparent;
+    }
+
+    .back-button {
+        background: #2e7d32;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .back-button:hover {
+        background: #1b5e20;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    h2 {
+        color: #2e7d32;
+        text-align: center;
+        margin-bottom: 30px;
+        font-size: 2.2rem;
+        font-weight: 600;
+        position: relative;
+        padding-bottom: 10px;
+    }
+
+    h2:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        height: 3px;
+        background: #2e7d32;
+        border-radius: 2px;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    label {
+        color: #333;
+        font-weight: 500;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    textarea,
+    select {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+        border-color: #2e7d32;
+        box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+        outline: none;
+    }
+
+    button[type="submit"] {
+        width: 100%;
+        background: #2e7d32;
+        color: white;
+        padding: 15px;
+        border: none;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 20px;
+    }
+
+    button[type="submit"]:hover {
+        background: #1b5e20;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(46, 125, 50, 0.2);
+    }
+
+    .error-message {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 5px;
+    }
+
+    .messages {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+    }
+
+    .alert {
+        padding: 15px 25px;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        animation: slideIn 0.3s ease;
+    }
+
+    .alert-success {
+        background: #2e7d32;
+        color: white;
+        box-shadow: 0 5px 15px rgba(46, 125, 50, 0.2);
+    }
+
+    @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* Make the page responsive */
+    @media (max-width: 768px) {
+        .form-container {
+            padding: 20px;
+            margin: 10px;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+        }
+    }
+
+    .other-subcategory {
+        margin-top: 15px;
+        animation: fadeIn 0.3s ease-out;
+    }
+
+    .other-subcategory input {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .other-subcategory input:focus {
+        border-color: #2e7d32;
+        box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+        outline: none;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
 {% endblock %}

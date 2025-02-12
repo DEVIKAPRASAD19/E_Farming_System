@@ -4,32 +4,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}E-Farming System{% endblock %}</title> <!-- Block for title -->
-    <link rel="stylesheet" href="{% static 'css/main.css' %}"> <!-- Common CSS file -->
+    <title>{% block title %}E-Farming System{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/buyerdashstyle.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> <!-- For Icons -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- SweetAlert2 -->
 </head>
 <body>
-    <!-- Common header for all pages -->
-    <header>
-        <nav>
-            <ul>
-                <li><a href="{% url 'index' %}">Home</a></li>
-                <li><a href="{% url 'addcrops' %}">Add Crop</a></li>
-                {% comment %} <li><a href="{% url 'crop_list' %}">Crops</a></li> {% endcomment %}
-                <li><a href="{% url 'index' %}">Logout</a></li>
+    <div class="navbar">
+        <div class="sidebar-header">
+            <h2><i class="fas fa-leaf"></i> Buyer Dashboard</h2>
+        </div>
+        <div class="scrolling-text">
+            <h1>Welcome to the Crops World</h1> <!-- Scrolling welcome message -->
+        </div>
+        <div class="profile-dropdown">
+            <a href="#" class="dropbtn">
+                <img src="{% static 'images/profile_icon.png' %}" alt="Profile Icon">
+            </a>
+            <div class="dropdown-content">
+                {% comment %} <a href="{% url 'view_profile' user.user_id %}">View Profile</a> {% endcomment %}
+                <a href="{% url 'updatebuyer' %}">Update Profile</a>
+                <a href="#" id="logout-btn">Logout</a> <!-- SweetAlert2 Logout -->
+            </div>
+        </div>
+    </div>
+
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <ul class="components">
+                <li><a href="{% url 'buyer_dashboard' %}"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
+                <li><a href="{% url 'crops_page' %}"><i class="fas fa-seedling"></i> Crops Page</a></li>
+                <li><a href="{% url 'wishlist' %}"><i class="fas fa-heart"></i> My Wishlists</a></li>
+                <li><a href="{% url 'viewcart' %}"><i class="fas fa-shopping-cart"></i> My Cart</a></li> <!-- Cart Icon -->
+                <li><a href="{% url 'order_history' %}"><i class="fas fa-box"></i> Your Orders</a></li> <!-- New Orders Link -->
+                <li><a href="{% url 'predict-price-form' %}"><i class="fas fa-chart-line"></i> Predict Price</a></li>
+                {% comment %} <li><a href="{% url 'purchase_history' %}">Purchase History</a></li>  {% endcomment %}
             </ul>
         </nav>
-    </header>
 
-    <!-- Block for content that will be overridden in child templates -->
-    <main>
-        {% block content %}
-        <!-- Content specific to each page goes here -->
-        {% endblock %}
-    </main>
+        <!-- Page Content -->
+        <div id="content">
+            {% block content %}
+            <!-- Default content can go here -->
+            {% endblock %}
+        </div>
+    </div>
 
-    <!-- Common footer for all pages -->
-    <footer>
-        <p>&copy; 2024 E-Farming System</p>
-    </footer>
+    <script>
+        // SweetAlert2 for Logout Confirmation
+        document.getElementById('logout-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            Swal.fire({
+                title: 'Are you sure you want to logout?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: 'darkgreen',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, logout!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "{% url 'logout' %}"; // Redirect to logout URL
+                }
+            });
+        });
+    </script>
 </body>
 </html>

@@ -484,7 +484,7 @@
         </div>
 
         <div class="assignment-form">
-            <h2 class="section-title"><i class="fas fa-clipboard-list"></i> New Assignment</h2>
+            {% comment %} <h2 class="section-title"><i class="fas fa-clipboard-list"></i> New Assignment</h2>
             <form method="POST" id="assignmentForm" onsubmit="return showConfirmation(event)">
                 {% csrf_token %}
                 <div class="form-group">
@@ -522,7 +522,7 @@
                     <i class="fas fa-check-circle"></i> Assign Delivery Boy
                 </button>
             </form>
-        </div>
+        </div> {% endcomment %}
 
         <div class="recent-assignments">
             <h2 class="section-title"><i class="fas fa-history"></i> Recent Assignments</h2>
@@ -559,11 +559,14 @@
                         </td>
                         <td>
                             {% if order.status != 'Delivered' %}
-                            <button onclick="showUnassignConfirmation('{{ order.id }}')" class="unassign-btn">
-                                <i class="fas fa-user-minus"></i> Unassign
-                            </button>
+                                <a href="javascript:void(0);" 
+                                   class="unassign-btn"
+                                   onclick="openUnassignModal('{{ order.id }}')">
+                                    <i class="fas fa-user-minus"></i> Unassign
+                                </a>
                             {% endif %}
                         </td>
+                        
                     </tr>
                     {% empty %}
                     <tr>
@@ -695,7 +698,8 @@
             </div>
             <div class="modal-body">
                 <p>Are you sure you want to unassign this delivery boy from the order?</p>
-                <form id="unassignForm" method="POST" action="{% url 'unassign_delivery_boy' %}" style="margin-top: 20px;">
+                <form id="unassignForm" method="POST" action="" style="margin-top: 20px;">
+                    <input type="hidden" name="order_id" id="unassignOrderId">                
                     {% csrf_token %}
                     <input type="hidden" name="order_id" id="unassignOrderId">
                     <div style="display: flex; gap: 10px; justify-content: flex-end;">
@@ -789,5 +793,16 @@
         {% endfor %}
         {% endif %}
     </script>
+    <script>
+        function openUnassignModal(orderId) {
+            document.getElementById("unassignOrderId").value = orderId;
+            document.getElementById("unassignForm").action = `/unassign-delivery-boy/${orderId}/`; 
+            document.getElementById("unassignConfirmationModal").style.display = "block";
+        }
+    
+        function closeUnassignModal() {
+            document.getElementById("unassignConfirmationModal").style.display = "none";
+        }
+    </script>    
 </body>
 </html>

@@ -18,7 +18,8 @@ urlpatterns = [
     path('buyer_dashboard', views.buyer_dashboard, name='buyer_dashboard'),
     path('logout', views.logout, name='logout'),
     path('farmercrops/', views.farmercrops, name='farmercrops'),
-    path('update_crop/<int:id>/', views.update_crop, name='update_crop'),
+    path('update_crop/<int:crop_id>/', views.update_crop, name='update_crop'),
+    path('delete_crop/<int:crop_id>/', views.delete_crop, name='delete_crop'),
     path('salesview', views.salesview, name='salesview'),
     path('profile', views.profile, name='profile'),
     path('forgotpass', views.forgotpass, name='forgotpass'),
@@ -80,13 +81,19 @@ urlpatterns = [
     path('check-new-orders/', views.check_new_orders, name='check_new_orders'),
 
     path('post_harvest/', views.post_harvest, name='post_harvest'),
-    path('unassign-delivery-boy/', views.unassign_delivery_boy, name='unassign_delivery_boy'),
+    path('unassign-delivery-boy/<int:order_id>/', views.unassign_delivery_boy, name='unassign_delivery_boy'),
 
     path('predict-price/', views.get_predicted_price, name='predict-price'),
     path('predict-price-form/', views.show_predict_form, name='predict-price-form'),
    
-   
+    path('get-subcategories/', views.get_subcategories, name='get_subcategories'),
 
+    path('generate_qr/<int:order_id>/', views.generate_qr_code, name='generate_qr_code'),
+    path('verify_qr/<int:order_id>/', views.verify_qr, name='verify_qr'),
+    path("confirm-delivery/<int:order_id>/", views.confirm_delivery, name="confirm_delivery"),
+
+    path('track_delivery/<int:order_id>/', views.track_delivery, name='track_delivery'),
+    path('send_location/', views.send_location, name='send_location'),
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

@@ -1229,6 +1229,36 @@
         document.querySelectorAll('.status-option').forEach(option => {
             option.addEventListener('click', handleStatusOptionClick);
         });
+
+        function sendLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+
+                    fetch('/send_location/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}',
+                        },
+                        body: JSON.stringify({
+                            delivery_boy_id: '{{ delivery_boy.id }}',  // Pass the delivery boy's ID
+                            latitude: latitude,
+                            longitude: longitude,
+                        }),
+                    })
+                    .then(response => response.json())
+                    .then(data => console.log(data))
+                    .catch(error => console.error('Error:', error));
+                });
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        // Send location every 30 seconds
+        setInterval(sendLocation, 30000);  // 30 seconds
     </script>
 </body>
 </html>

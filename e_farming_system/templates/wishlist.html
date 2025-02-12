@@ -10,19 +10,22 @@
     <style>
         /* Sidebar Styling */
         .sidebar {
-            min-width: 250px;
-            background: #11601e; /* Main sidebar color */
-            color: white;
-            height: 100vh; /* Full height for sidebar */
-            padding: 20px 0;
+            width: 240px;
+            background: linear-gradient(180deg, #1b5e20 0%, #2e7d32 100%);
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
             position: fixed;
+            height: 100vh;
+            z-index: 1000;
+            box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
         }
 
         .sidebar-header {
             text-align: center;
-            padding: 20px 0;
+            padding: 18px 0;
             border-bottom: 1px solid #e6e6e6;
-            font-size: 22px; /* Larger font size for the header */
+            font-size: 20px; /* Larger font size for the header */
             font-weight: bold;
             color: white;
         }
@@ -60,12 +63,12 @@
 <!-- Sidebar -->
 <nav class="sidebar">
     <div class="sidebar-header">
-        Welcome to Crops World
+        <h2>Welcome to Crops World</h2>
     </div>
     <ul class="components">
         <li>
             <a href="{% url 'buyer_dashboard' %}">
-                <i class="fas fa-home"></i> Buyer Dashboard
+                <i class="fas fa-home"></i>  Dashboard
             </a>
         </li>
         <li>
@@ -95,9 +98,9 @@
 <div class="main-content">
     <div class="container">
         <!-- Back button -->
-        <div class="back-btn-container">
+        {% comment %} <div class="back-btn-container">
             <a href="{% url 'crops_page' %}" class="back-btn">Back</a>
-        </div>
+        </div> {% endcomment %}
 
         <h1>My Wishlist</h1>
 

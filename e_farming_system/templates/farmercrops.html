@@ -262,6 +262,27 @@
                 padding: 20px;
             }
         }
+
+        .variety-tag {
+            display: inline-block;
+            background: rgba(46, 125, 50, 0.1);
+            color: #2e7d32;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 14px;
+            margin-left: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .variety-tag i {
+            margin-right: 5px;
+            font-size: 12px;
+        }
+
+        .variety-tag:hover {
+            background: rgba(46, 125, 50, 0.15);
+            transform: translateX(5px);
+        }
     </style>
 </head>
 <body>
@@ -284,9 +305,14 @@
                     {% endif %}
                     <div class="crop-content">
                         <h2>{{ crop.name }}</h2>
+                        {% if crop.subcategory %}
+                        <span class="variety-tag">
+                            <i class="fas fa-leaf"></i> {{ crop.subcategory.name }}
+                        </span>
+                        {% endif %}
                         <p class="description">{{ crop.description|truncatewords:20 }}</p>
                         <p class="price"><i class="fas fa-rupee-sign"></i> {{ crop.price }}</p>
-                        <p class="category"><i class="fas fa-tag"></i> {{ crop.category }}</p>
+                        <p class="category"><i class="fas fa-tag"></i> {{ crop.category.name }}</p>
 
                         <p class="status">
                             Status: 
@@ -327,5 +353,20 @@
             {% endif %}
         </div>
     </div>
+
+    <script>
+        // Function to format text by removing underscores and capitalizing words
+        function formatText(text) {
+            return text.split('_')
+                       .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                       .join(' ');
+        }
+
+        // Format all variety tags
+        document.querySelectorAll('.variety-tag').forEach(tag => {
+            const originalText = tag.textContent.trim();
+            tag.textContent = formatText(originalText);
+        });
+    </script>
 </body>
 </html>

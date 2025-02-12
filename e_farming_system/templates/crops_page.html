@@ -46,7 +46,7 @@
 
         .sidebar-header h2 {
             color: white;
-            font-size: 24px;
+            font-size: 28px;
             font-weight: 600;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
         }
@@ -199,6 +199,67 @@
             text-align: center;
         }
 
+        .crop-info {
+            padding: 15px;
+            background: white;
+        }
+
+        .crop-info h2 {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .variety-tag {
+            display: inline-block;
+            background: rgba(46, 125, 50, 0.1);
+            color: #2e7d32;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 14px;
+            margin-top: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .variety-tag i {
+            margin-right: 5px;
+            font-size: 12px;
+        }
+
+        .crop-item:hover .variety-tag {
+            background: rgba(46, 125, 50, 0.15);
+            transform: translateX(5px);
+        }
+
+        .crop-item {
+            transition: all 0.3s ease;
+            border-radius: 15px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .crop-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .crop-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: all 0.3s ease;
+        }
+
+        .crop-item:hover .crop-image {
+            transform: scale(1.05);
+        }
+
+        .crop-info {
+            position: relative;
+            z-index: 1;
+        }
+
         @media (max-width: 1024px) {
             .sidebar {
                 width: 90px;
@@ -233,17 +294,27 @@
                 gap: 15px;
                 text-align: center;
             }
+
+            .crop-info h2 {
+                font-size: 16px;
+            }
+
+            .variety-tag {
+                font-size: 12px;
+                padding: 3px 10px;
+            }
         }
     </style>
 </head>
 <body>
+
     <!-- Sidebar -->
     <nav class="sidebar">
         <div class="sidebar-header">
             <h2>Welcome to Crops World</h2>
         </div>
         <ul class="components">
-            <li>
+            <li><br>
                 <a href="{% url 'buyer_dashboard' %}">
                     <i class="fas fa-home"></i>
                     <span>Dashboard</span>
@@ -287,10 +358,12 @@
             <form method="GET" action="{% url 'search_crops' %}">
                 <input type="text" name="query" placeholder="Search for crops..." class="search-bar" value="{{ request.GET.query }}">
                 <select name="category" class="search-category">
-                    <option value="" {% if not request.GET.category %}selected{% endif %}>All Categories</option>
-                    <option value="fruit" {% if request.GET.category == "fruit" %}selected{% endif %}>Fruits</option>
-                    <option value="vegetable" {% if request.GET.category == "vegetable" %}selected{% endif %}>Vegetables</option>
-                    <option value="grain" {% if request.GET.category == "grain" %}selected{% endif %}>Grains</option>
+                    <option value="">All Categories</option>
+                    <option value="Vegetables" {% if request.GET.category == "Vegetables" %}selected{% endif %}>Vegetables</option>
+                    <option value="Fruits" {% if request.GET.category == "Fruits" %}selected{% endif %}>Fruits</option>
+                    <option value="Grains" {% if request.GET.category == "Grains" %}selected{% endif %}>Grains</option>
+                    <option value="Pulses" {% if request.GET.category == "Pulses" %}selected{% endif %}>Pulses</option>
+                    <option value="Spices" {% if request.GET.category == "Spices" %}selected{% endif %}>Spices</option>
                     <option value="Other" {% if request.GET.category == "Other" %}selected{% endif %}>Other</option>
                 </select>
                 <button type="submit" class="search-btn">
@@ -306,7 +379,14 @@
                 <div class="crop-item">
                     <a href="{% url 'crop_details' crop.id %}">
                         <img src="{{ crop.images.first.image.url }}" alt="{{ crop.name }}" class="crop-image">
-                        <h2>{{ crop.name }}</h2>
+                        <div class="crop-info">
+                            <h2>{{ crop.name }}</h2>
+                            {% if crop.subcategory %}
+                            <span class="variety-tag">
+                                <i class="fas fa-leaf"></i> {{ crop.subcategory.name }}
+                            </span>
+                            {% endif %}
+                        </div>
                     </a>
                 </div>
                 {% endfor %}
@@ -315,5 +395,22 @@
             {% endif %}
         </div>
     </div>
+
+    <!-- Add this script at the bottom of your page, just before </body> -->
+    <script>
+        // Function to format text by removing underscores and capitalizing words
+        function formatText(text) {
+            return text.split('_')
+                      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                      .join(' ');
+        }
+
+        // Format all variety tags
+        document.querySelectorAll('.variety-tag').forEach(tag => {
+            const text = tag.textContent.trim();
+            const icon = '<i class="fas fa-leaf"></i> ';
+            tag.innerHTML = icon + formatText(text);
+        });
+    </script>
 </body>
 </html>

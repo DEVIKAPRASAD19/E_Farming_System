@@ -12,7 +12,7 @@ from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.contrib.auth.tokens import default_token_generator as custom_token_generator
 from django.utils.html import strip_tags
-from .models import Registeruser, Adminm, Cart, Wishlist, Order, OrderItem, Notification, Feedback, DeliveryBoyDetail
+from .models import Registeruser, Adminm, Cart, Wishlist, Order, OrderItem, Notification, Feedback, DeliveryBoyDetail, Crop, Category, SubCategory, CropImage
 from .forms import SetPasswordForm
 from .tokens import custom_token_generator
 from django.contrib.sites.shortcuts import get_current_site
@@ -22,7 +22,6 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from django.core.files.storage import FileSystemStorage
 from django.contrib.auth import logout 
-from .models import Crop, CropImage
 from django.views.decorators.cache import cache_control
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, JsonResponse
@@ -35,6 +34,7 @@ from django.db.models import Sum
 from datetime import datetime
 import pickle
 import os
+from django.db import transaction
 
 
 
@@ -413,59 +413,62 @@ def updatebuyer(request):
 
 def addcrops(request):
     if request.method == 'POST':
-        name = request.POST.get('name')
-        description = request.POST.get('description')
-        price = request.POST.get('price')
-        stock = int(request.POST.get('stock', 0))  # Capture stock from form and convert to int
-        category = request.POST.get('category')
-        
-        # Get user_id from the session
-        farmer_user_id = request.session.get('user_id')  # Assuming 'user_id' is stored in session for farmers
-        
         try:
-            # Fetch the Registeruser instance
-            register_user = Registeruser.objects.get(user_id=farmer_user_id)
-            
-            # Check if a User instance exists for this Registeruser
-            try:
-                farmer = User.objects.get(email=register_user.email)  # Fetch the User instance by email
-            except User.DoesNotExist:
-                # If the User does not exist, you may want to create it
-                farmer = User.objects.create_user(
-                    username=register_user.email,  # You can adjust this to fit your requirements
-                    email=register_user.email,
-                    password='set_a_default_password_here'  # Set a password if needed, ideally use hashing
+            with transaction.atomic():
+                # Get form data
+                name = request.POST.get('name')
+                description = request.POST.get('description')
+                price = request.POST.get('price')
+                category_name = request.POST.get('category')
+                subcategory_name = request.POST.get('subcategory')
+                stock = request.POST.get('stock')
+                farmer_id = request.session.get('user_id')
+
+                # Get or create Category
+                category, _ = Category.objects.get_or_create(name=category_name)
+                
+                # Get or create SubCategory
+                subcategory, _ = SubCategory.objects.get_or_create(
+                    name=subcategory_name,
+                    category=category
                 )
-        
-        except Registeruser.DoesNotExist:
-            messages.error(request, 'User not found.')
-            return redirect('addcrops')  # Handle user not found
 
-        try:
-            # Create the Crop instance
-            crop_instance = Crop.objects.create(
-                name=name,
-                description=description,
-                price=price,
-                category=category,
-                farmer=register_user,  # Linking to Registeruser
-                stock=stock
-            )
-            
-            # Handle crop images
-            crop_photos = request.FILES.getlist('crop_photos')  # Handling multiple image files
-            for photo in crop_photos:
-                CropImage.objects.create(crop=crop_instance, image=photo)  # Saving each image to CropImage
-            
-            messages.success(request, 'Crop added successfully.')
-        
+                # Create the crop
+                crop = Crop.objects.create(
+                    name=name,
+                    description=description,
+                    price=price,
+                    category=category,
+                    subcategory=subcategory,
+                    farmer_id=farmer_id,
+                    stock=stock,
+                    status=True,
+                    is_verified=True
+                )
+
+                # Handle image upload
+                if 'crop_photos' in request.FILES:
+                    image = request.FILES['crop_photos']
+                    CropImage.objects.create(
+                        crop=crop,
+                        image=image
+                    )
+
+                messages.success(request, 'Crop added successfully!')
+                return redirect('farmer_dashboard')
+
         except Exception as e:
-            messages.error(request, 'Error adding crop: ' + str(e))  # Handle exceptions
-        
-        return redirect('farmer_dashboard')  # Redirect to the farmer dashboard after crop addition
-    
-    return render(request, 'addcrops.html')  # Render the crop addition form
+            print(f"Error: {str(e)}")  # For debugging
+            messages.error(request, f'Error adding crop: {str(e)}')
+            return redirect('addcrops')
 
+    return render(request, 'addcrops.html')
+
+# Add this view to get subcategories for AJAX
+def get_subcategories(request):
+    category_id = request.GET.get('category_id')
+    subcategories = SubCategory.objects.filter(category_id=category_id).values('id', 'name')
+    return JsonResponse(list(subcategories), safe=False)
 
 
 def crops_page(request):
@@ -592,7 +595,7 @@ def farmercrops(request):
 
     # Ensure the user is a farmer
     if farmer.role != 'farmer':
-        return redirect('home')  # Redirect non-farmer users to another page
+        return redirect('index')  # Redirect non-farmer users to another page
 
     # Check if the user wants to view inactive crops
     show_inactive = request.GET.get('show_inactive', 'false') == 'true'
@@ -646,28 +649,43 @@ def reject_crop(request, crop_id):
 
 
 
-def update_crop(request, id):
-    crop_instance = get_object_or_404(Crop, id=id)
+def update_crop(request, crop_id):
+    crop = get_object_or_404(Crop, id=crop_id, farmer_id=request.session.get('user_id'))
 
     if request.method == 'POST':
-        # Update crop details
-        crop_instance.name = request.POST.get('name')
-        crop_instance.description = request.POST.get('description')
-        crop_instance.price = request.POST.get('price')
-        crop_instance.category = request.POST.get('category')
-        crop_instance.stock = request.POST.get('stock') 
+        crop.name = request.POST.get('name')
+        crop.description = request.POST.get('description')
+        crop.price = request.POST.get('price')
+        crop.stock = request.POST.get('stock')
 
-        # Handle image update
+        # ✅ Correct category assignment
+        category_name = request.POST.get('category')
+        try:
+            crop.category = Category.objects.get(name=category_name)
+        except Category.DoesNotExist:
+            messages.error(request, "Invalid category selected.")
+            return redirect('update_crop', crop_id=crop_id)
+
+        # Handling images
         if 'image' in request.FILES:
-            crop_instance.images.all().delete()  # Optionally delete old images
-            # Assuming you have a related CropImage model
-            for image in request.FILES.getlist('image'):
-                CropImage.objects.create(crop=crop_instance, image=image)
-        
-        crop_instance.save()  # Save the updated crop instance
-        return redirect('farmercrops')  # Redirect to your crops list page
+            # Delete old images
+            crop.images.all().delete()
+            # Add new image
+            CropImage.objects.create(crop=crop, image=request.FILES['image'])
 
-    return render(request, 'update_crop.html', {'crop': crop_instance})
+        crop.save()
+        messages.success(request, 'Crop updated successfully!')
+        return redirect('farmercrops')
+
+    return render(request, 'update_crop.html', {'crop': crop})
+
+
+def delete_crop(request, crop_id):
+    if request.method == 'POST':
+        crop = get_object_or_404(Crop, id=crop_id, farmer_id=request.session.get('user_id'))
+        crop.delete()
+        messages.success(request, 'Crop deleted successfully!')
+    return redirect('farmer_crops')
 
 
 # View to update user
@@ -756,17 +774,32 @@ def view_profile(request, user_id):
 def search_crops(request):
     query = request.GET.get('query', '')
     category = request.GET.get('category', '')
+    
+    # Debug print
+    print("Received category:", category)
+    print("All GET parameters:", request.GET)
 
-    # Filter crops based on query and category, ensuring only activated crops are included
-    crops = Crop.objects.filter(status=1, is_verified=1)  # Ensure only activated crops are considered
+    # Filter crops based on status and verification
+    crops = Crop.objects.filter(status=True, is_verified=True)
 
     if query:
-        crops = crops.filter(name__icontains=query)  # Search by name if query is provided
+        crops = crops.filter(name__icontains=query)  # Search by crop name
 
     if category:
-        crops = crops.filter(category=category)  # Filter by category if specified
+        # Debug print
+        print("Searching for category:", category)
+        # Get all categories in DB for comparison
+        all_cats = Category.objects.all().values_list('name', flat=True)
+        print("Available categories in DB:", list(all_cats))
+        
+        crops = crops.filter(category__name__iexact=category)
 
+    # Debug print
+    print("Number of crops found:", crops.count())
+    
     return render(request, 'crops_page.html', {'crops': crops})
+
+
 
 
 
@@ -1635,6 +1668,31 @@ def assign_delivery_boy(request):
     return render(request, 'assign_delivery_boy.html', context)
 
 
+
+def assign_delivery_boy_auto():
+    """Automatically assigns unassigned orders to available delivery boys."""
+    unassigned_orders = Order.objects.filter(assigned_delivery_boy__isnull=True, is_canceled=False)
+    available_boys = DeliveryBoyDetail.objects.filter(verified=True)
+
+    for order in unassigned_orders:
+        least_busy_boy = available_boys.annotate(order_count=models.Count('assigned_orders')).order_by('order_count').first()
+        
+        if least_busy_boy:
+            order.assigned_delivery_boy = least_busy_boy
+            order.save()
+            print(f"Assigned Order {order.id} to {least_busy_boy.name}")
+
+def order_list(request):
+    """View all orders, auto-assign delivery boys if needed."""
+    assign_delivery_boy_auto()  # Automatically assign delivery boys before showing orders
+    orders = Order.objects.all().order_by('-order_date')
+
+    context = {
+        'orders': orders,
+    }
+    return render(request, 'orders_list.html', context)
+
+
 def delivery_boy_orders(request, delivery_boy_id):
     user_id = request.session.get('user_id')
     if not user_id:
@@ -1731,31 +1789,33 @@ def post_harvest(request):
     return render(request, 'post_harvest_form.html', {'submitted': False})
 
 
-def unassign_delivery_boy(request):
-    if request.method == 'POST':
-        try:
-            order_id = request.POST.get('order_id')
-            order = get_object_or_404(Order, id=order_id)
-            
-            # Only allow unassigning if order is not delivered
-            if order.status == 'Delivered':
-                messages.error(request, 'Cannot unassign delivery boy from delivered orders')
-                return redirect('assign_delivery_boy')
-            
-            # Store delivery boy info for message
-            delivery_boy_name = order.assigned_delivery_boy.name
-            
-            # Unassign delivery boy
-            order.assigned_delivery_boy = None
-            order.status = 'Pending'  # Reset status to pending
+def unassign_delivery_boy(request, order_id):
+    """Unassign a delivery boy from an order and reassign if a previous order exists with the same address/pincode."""
+    
+    if request.method == "POST":  
+        order = get_object_or_404(Order, id=order_id)  # Fetch order safely
+
+        if order.assigned_delivery_boy:  
+            order.assigned_delivery_boy = None  # Unassign the delivery boy
             order.save()
-            
-            messages.success(request, f'Successfully unassigned {delivery_boy_name} from order #{order.id}')
-            
-        except Exception as e:
-            messages.error(request, f'Error unassigning delivery boy: {str(e)}')
-            
-    return redirect('assign_delivery_boy')
+            messages.success(request, f"Delivery boy unassigned from Order #{order.id}.")
+        else:
+            messages.warning(request, f"Order #{order.id} has no assigned delivery boy.")
+        
+        # Check for any previous order with the same delivery_address or pincode
+        previous_order = Order.objects.filter(
+            delivery_address=order.delivery_address,  # Correct field name
+            assigned_delivery_boy__isnull=False  # Ensure a delivery boy is assigned
+        ).order_by('-id').first()  # Get the latest matching order
+
+        if previous_order:
+            order.assigned_delivery_boy = previous_order.assigned_delivery_boy  # Assign the same delivery boy
+            order.save()
+            messages.success(request, f"Order #{order.id} reassigned to delivery boy {order.assigned_delivery_boy.name}.")
+
+    return redirect('assign_delivery_boy')  # Redirect to orders page
+
+
 
 
 
@@ -1827,3 +1887,88 @@ def show_predict_form(request):
     return render(request, 'predict_price_form.html')
 
 
+
+
+
+from django.http import HttpResponse
+import qrcode
+from io import BytesIO
+
+def generate_qr_code(request, order_id):
+    """Dynamically generates a QR code for order confirmation."""
+    order = get_object_or_404(Order, id=order_id)
+
+    if order.status != "Out for Delivery":
+        return HttpResponse("QR Code is only available when the order is 'Out for Delivery'.", status=400)
+
+    confirmation_url = f"http://127.0.0.1:8000/confirm-delivery/{order_id}/"  # Replace with production URL
+    qr = qrcode.make(confirmation_url)
+    
+    buffer = BytesIO()
+    qr.save(buffer, format="PNG")
+    buffer.seek(0)
+
+    return HttpResponse(buffer.getvalue(), content_type="image/png")
+
+
+
+
+
+
+
+def verify_qr(request, order_id):
+    """Verify QR Code and mark order as delivered"""
+    order = get_object_or_404(Order, id=order_id)
+
+    if order.status == "out_for_delivery":
+        order.status = "delivered"
+        order.is_verified = True
+        order.save()
+        return JsonResponse({"message": "Order successfully delivered!"})
+    else:
+        return JsonResponse({"error": "Invalid Order Status"}, status=400)
+    
+
+def confirm_delivery(request, order_id):
+    """Mark order as delivered when QR code is scanned."""
+    order = get_object_or_404(Order, id=order_id)
+
+    if order.status == "Out for Delivery":
+        order.status = "Delivered"
+        order.save()
+        return HttpResponse("Order has been successfully marked as Delivered!")
+
+    return HttpResponse("Invalid QR Code or Order is not Out for Delivery.")
+
+
+
+
+@csrf_exempt
+def send_location(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        delivery_boy_id = data.get('delivery_boy_id')
+        latitude = data.get('latitude')
+        longitude = data.get('longitude')
+
+        # Update the location in the database
+        try:
+            delivery_boy = DeliveryBoyDetail.objects.get(id=delivery_boy_id)
+            delivery_boy.latitude = latitude
+            delivery_boy.longitude = longitude
+            delivery_boy.save()
+            return JsonResponse({'status': 'success', 'message': 'Location updated successfully'})
+        except DeliveryBoyDetail.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Delivery boy not found'})
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+def track_delivery(request, order_id):
+    # Fetch the order using the given order_id
+    order = get_object_or_404(Order, id=order_id)
+
+    # Retrieve the delivery boy assigned to the order
+    delivery_boy = order.assigned_delivery_boy  # Use the correct field name
+
+    # Pass the delivery boy details and order to the template
+    return render(request, 'farm/track_delivery.html', {'delivery_boy': delivery_boy, 'order': order})
