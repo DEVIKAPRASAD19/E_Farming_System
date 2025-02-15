@@ -214,6 +214,11 @@
                                 <i class="fas fa-edit"></i> Update Status
                             </button>
                         </td> {% endcomment %}
+                        <td>
+                            <button onclick="openOrderDetails({id: '{{ order.id }}', name: '{{ order.name }}', delivery_address: '{{ order.delivery_address }}', total_price: '{{ order.total_price }}', location: '{{ order.location }}', status: '{{ order.status }}'})" class="action-btn update-status">
+                                <i class="fas fa-eye"></i> View Details
+                            </button>
+                        </td>
                     </tr>
                     {% empty %}
                     <tr>
@@ -222,6 +227,16 @@
                     {% endfor %}
                 </tbody>
             </table>
+        </div>
+
+        <div class="order-details" id="orderDetails" style="display: none;">
+            <h3>Order Details</h3>
+            <p><strong>Order ID:</strong> <span id="orderIdDetail"></span></p>
+            <p><strong>Buyer:</strong> <span id="buyerNameDetail"></span></p>
+            <p><strong>Delivery Address:</strong> <span id="deliveryAddressDetail"></span></p>
+            <p><strong>Total Price:</strong> <span id="totalPriceDetail"></span></p>
+            <p><strong>Current Location:</strong> <span id="currentLocationDetail"></span></p>
+            <p><strong>Status:</strong> <span id="statusDetail"></span></p>
         </div>
     </div>
 
@@ -313,6 +328,17 @@
             if (event.target == modal) {
                 closeStatusModal();
             }
+        }
+
+        function openOrderDetails(order) {
+            document.getElementById('orderIdDetail').innerText = order.id;
+            document.getElementById('buyerNameDetail').innerText = order.name;
+            document.getElementById('deliveryAddressDetail').innerText = order.delivery_address;
+            document.getElementById('totalPriceDetail').innerText = '₹' + order.total_price;
+            document.getElementById('currentLocationDetail').innerText = order.location || 'Location not available';
+            document.getElementById('statusDetail').innerText = order.status;
+
+            document.getElementById('orderDetails').style.display = 'block';
         }
     </script>
 </body>

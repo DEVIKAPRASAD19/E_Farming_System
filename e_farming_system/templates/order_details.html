@@ -308,117 +308,123 @@
         }
 
         .order-progress-section {
-            background: white;
-            border-radius: 20px;
-            padding: 40px 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            margin: 40px 0;
+            padding: 20px;
         }
 
         .progress-track {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
             position: relative;
-            padding: 0 30px;
+            margin-bottom: 100px; /* Space for details */
         }
-
-        .progress-track::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: #e0e0e0;
-            transform: translateY(-50%);
-            z-index: 1;
-        }
-
-        .progress-track::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            height: 3px;
-            background: #2e7d32;
-            transform: translateY(-50%);
-            z-index: 1;
-            transition: width 0.5s ease;
-        }
-
-        .progress-track.pending::after { width: 20%; }
-        .progress-track.assigned::after { width: 40%; }
-        .progress-track.accepted::after { width: 60%; }
-        .progress-track.out-for-delivery::after { width: 80%; }
-        .progress-track.delivered::after { width: 100%; }
 
         .progress-step {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
+            flex: 1;
+            text-align: center;
             position: relative;
-            z-index: 2;
         }
 
         .step-icon {
-            width: 50px;
-            height: 50px;
-            background: white;
-            border: 3px solid #e0e0e0;
+            width: 40px;
+            height: 40px;
+            background-color: #f0f0f0;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
-            color: #e0e0e0;
-            transition: all 0.3s ease;
+            margin: 0 auto 10px;
+            position: relative;
+            z-index: 1;
         }
 
-        .progress-step.active .step-icon {
-            border-color: #2e7d32;
-            color: #2e7d32;
-            background: #e8f5e9;
+        .step-icon i {
+            color: #999;
         }
 
         .step-label {
             font-size: 14px;
             color: #666;
-            font-weight: 500;
-            text-align: center;
+            margin-top: 5px;
+        }
+
+        .progress-step.active .step-icon {
+            background-color: #2e7d32;
+        }
+
+        .progress-step.active .step-icon i {
+            color: white;
+        }
+
+        .progress-step.completed .step-icon {
+            background-color: #2e7d32;
+        }
+
+        .progress-step.completed .step-icon i {
+            color: white;
+        }
+
+        .step-details {
             position: absolute;
-            bottom: -25px;
-            width: 120px;
+            top: 100%;
             left: 50%;
             transform: translateX(-50%);
+            width: 200px;
+            margin-top: 20px;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            z-index: 2;
         }
 
-        .progress-step.active .step-label {
+        .step-location {
             color: #2e7d32;
-            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 12px;
         }
 
+        .step-time {
+            color: #666;
+            font-size: 12px;
+        }
+
+        .step-details i {
+            margin-right: 5px;
+        }
+
+        /* Progress line between steps */
+        .progress-track::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 40px;
+            right: 40px;
+            height: 2px;
+            background: #f0f0f0;
+            z-index: 0;
+        }
+
+        /* Responsive styles */
         @media (max-width: 768px) {
-            .order-progress-section {
-                padding: 30px 15px;
-                overflow-x: auto;
-            }
-
             .progress-track {
-                min-width: 600px;
-                padding: 0 15px;
+                flex-direction: column;
+                align-items: center;
+                margin-bottom: 20px;
             }
 
-            .step-icon {
-                width: 40px;
-                height: 40px;
-                font-size: 16px;
+            .progress-step {
+                margin-bottom: 60px;
             }
 
-            .step-label {
-                font-size: 12px;
-                width: 100px;
+            .progress-track::before {
+                display: none;
+            }
+
+            .step-details {
+                width: 150px;
+                font-size: 11px;
             }
         }
 
@@ -494,6 +500,143 @@
                 color: #666;
             }
         }
+
+        .order-tracking-container {
+            margin: 40px auto;
+            max-width: 1000px;
+            padding: 20px;
+        }
+
+        .order-progress {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            margin-bottom: 100px;
+        }
+
+        .progress-line-container {
+            position: absolute;
+            top: 30px;
+            left: 0;
+            right: 0;
+            z-index: 0;
+        }
+
+        .progress-line {
+            height: 2px;
+            background-color: #fff; /* Default white line */
+            width: 100%;
+        }
+
+        .progress-line.active {
+            background-color: #2e7d32; /* Green line for active */
+        }
+
+        .progress-step {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            flex: 1;
+        }
+
+        .step-icon {
+            width: 60px;
+            height: 60px;
+            background-color: #fff; /* Default white background */
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #ddd; /* Default gray border */
+            position: relative;
+        }
+
+        .step-icon i {
+            font-size: 24px;
+            color: #ddd; /* Default gray icon */
+        }
+
+        .step-label {
+            font-size: 14px;
+            color: #666;
+            margin-top: 8px;
+        }
+
+        /* Active state */
+        .progress-step.active .step-icon {
+            background-color: #fff; /* White background */
+            border-color: #2e7d32; /* Green border */
+        }
+
+        .progress-step.active .step-icon i {
+            color: #2e7d32; /* Green icon */
+        }
+
+        /* Completed state */
+        .progress-step.completed .step-icon {
+            background-color:rgb(207, 221, 207); /* Green background */
+            border-color: #2e7d32; /* Green border */
+        }
+
+        .progress-step.completed .step-icon i {
+            color: #2e7d32; /* White icon */
+        }
+
+        .step-details {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            margin-top: 20px;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            z-index: 2;
+        }
+
+        .step-location {
+            color: #2e7d32;
+            margin-bottom: 5px;
+            font-size: 12px;
+        }
+
+        .step-time {
+            color: #666;
+            font-size: 12px;
+        }
+
+        .step-details i {
+            margin-right: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .order-progress {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .progress-step {
+                margin-bottom: 30px;
+                width: 100%;
+            }
+
+            .progress-line-container {
+                display: none;
+            }
+
+            .step-details {
+                width: calc(100% - 60px);
+                left: calc(50% + 30px);
+            }
+        }
+
+        .progress-line-container .progress-line.active {
+            background-color: #2e7d32; /* Green line for active */
+        }
     </style>
 </head>
 <body>
@@ -543,36 +686,121 @@
             </div>
 
             <div class="order-progress-section">
-                <div class="progress-track">
-                    <div class="progress-step {% if order.status in 'Pending,Assigned,Accepted,Out for Delivery,Delivered' %}active{% endif %}">
-                        <div class="step-icon">
-                            <i class="fas fa-clipboard-check"></i>
+                <div class="order-tracking-container">
+                    <div class="order-progress">
+                        <div class="progress-line-container">
+                            <div class="progress-line {% if order.status == 'Pending' or order.status == 'Assigned' %}active{% endif %}"></div>
                         </div>
-                        <div class="step-label">Order Placed</div>
-                    </div>
-                    <div class="progress-step {% if order.status in 'Assigned,Accepted,Out for Delivery,Delivered' %}active{% endif %}">
-                        <div class="step-icon">
-                            <i class="fas fa-user-check"></i>
+
+                        <!-- Order Placed -->
+                        <div class="progress-step {% if order.status != 'Pending' %}completed{% endif %} {% if order.status == 'Pending' %}active{% endif %}">
+                            <div class="step-icon {% if order.status == 'Pending' %}active{% endif %}">
+                                <i class="fas fa-clipboard-check"></i>
+                            </div>
+                            <div class="step-label">Order Placed</div>
+                            {% for history in status_history %}
+                                {% if history.status == 'Pending' %}
+                                    <div class="step-details">
+                                        <div class="step-location">
+                                            <i class="fas fa-map-marker-alt"></i> 
+                                            {{ history.location|default:"Location not available" }}
+                                        </div>
+                                        <div class="step-time">
+                                            <i class="far fa-clock"></i> 
+                                            {{ history.timestamp|date:"M d, Y H:i" }}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
                         </div>
-                        <div class="step-label">Assigned</div>
-                    </div>
-                    <div class="progress-step {% if order.status in 'Accepted,Out for Delivery,Delivered' %}active{% endif %}">
-                        <div class="step-icon">
-                            <i class="fas fa-box"></i>
+
+                        <!-- Assigned -->
+                        <div class="progress-step {% if order.status == 'Assigned' or order.status == 'Accepted' or order.status == 'Out for Delivery' or order.status == 'Delivered' %}completed{% endif %} {% if order.status == 'Assigned' %}active{% endif %}">
+                            <div class="step-icon {% if order.status == 'Assigned' %}active{% endif %}">
+                                <i class="fas fa-user-check"></i>
+                            </div>
+                            <div class="step-label">Assigned</div>
+                            {% for history in status_history %}
+                                {% if history.status == 'Assigned' %}
+                                    <div class="step-details">
+                                        <div class="step-location">
+                                            <i class="fas fa-map-marker-alt"></i> 
+                                            {{ history.location|default:"Location not available" }}
+                                        </div>
+                                        <div class="step-time">
+                                            <i class="far fa-clock"></i> 
+                                            {{ history.timestamp|date:"M d, Y H:i" }}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
                         </div>
-                        <div class="step-label">Accepted</div>
-                    </div>
-                    <div class="progress-step {% if order.status in 'Out for Delivery,Delivered' %}active{% endif %}">
-                        <div class="step-icon">
-                            <i class="fas fa-truck"></i>
+
+                        <!-- Accepted -->
+                        <div class="progress-step {% if order.status == 'Accepted' or order.status == 'Out for Delivery' or order.status == 'Delivered' %}completed{% endif %} {% if order.status == 'Accepted' %}active{% endif %}">
+                            <div class="step-icon {% if order.status == 'Accepted' %}active{% endif %}">
+                                <i class="fas fa-box"></i>
+                            </div>
+                            <div class="step-label">Accepted</div>
+                            {% for history in status_history %}
+                                {% if history.status == 'Accepted' %}
+                                    <div class="step-details">
+                                        <div class="step-location">
+                                            <i class="fas fa-map-marker-alt"></i> 
+                                            {{ history.location|default:"Location not available" }}
+                                        </div>
+                                        <div class="step-time">
+                                            <i class="far fa-clock"></i> 
+                                            {{ history.timestamp|date:"M d, Y H:i" }}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
                         </div>
-                        <div class="step-label">Out for Delivery</div>
-                    </div>
-                    <div class="progress-step {% if order.status == 'Delivered' %}active{% endif %}">
-                        <div class="step-icon">
-                            <i class="fas fa-home"></i>
+
+                        <!-- Out for Delivery -->
+                        <div class="progress-step {% if order.status == 'Out for Delivery' or order.status == 'Delivered' %}completed{% endif %} {% if order.status == 'Out for Delivery' %}active{% endif %}">
+                            <div class="step-icon {% if order.status == 'Out for Delivery' %}active{% endif %}">
+                                <i class="fas fa-truck"></i>
+                            </div>
+                            <div class="step-label">Out for Delivery</div>
+                            {% for history in status_history %}
+                                {% if history.status == 'Out for Delivery' %}
+                                    <div class="step-details">
+                                        <div class="step-location">
+                                            <i class="fas fa-map-marker-alt"></i> 
+                                            {{ history.location|default:"Location not available" }}
+                                        </div>
+                                        <div class="step-time">
+                                            <i class="far fa-clock"></i> 
+                                            {{ history.timestamp|date:"M d, Y H:i" }}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
                         </div>
-                        <div class="step-label">Delivered</div>
+
+                        <!-- Delivered -->
+                        <div class="progress-step {% if order.status == 'Delivered' %}completed active{% endif %}">
+                            <div class="step-icon {% if order.status == 'Delivered' %}active{% endif %}">
+                                <i class="fas fa-home"></i>
+                            </div>
+                            <div class="step-label">Delivered</div>
+                            <div class="step-details">
+                                {% comment %} <div class="step-location">
+                                    <i class="fas fa-map-marker-alt"></i> 
+                                    {{ history.location|default:"Location not available" }}
+                                </div> {% endcomment %}
+                                <div class="step-time">
+                                    <i class="far fa-clock"></i> 
+                                    {{ history.timestamp|date:"M d, Y H:i" }}
+                                </div>
+                                <div class="step-time">
+                                    <i class="far fa-calendar-alt"></i> 
+                                    <strong>Expected Delivery Date:</strong> {{ expected_delivery_date|date:"Y-m-d" }}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -614,6 +842,7 @@
                     <i class="fas fa-map-marker-alt" style="font-size: 24px; color: #2e7d32;"></i>
                 </a>
             </div>
+            
 
             <!-- Add QR Code Section Here -->
             {% if order.status == "Out for Delivery" %}

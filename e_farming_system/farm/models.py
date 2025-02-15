@@ -164,6 +164,19 @@ class Order(models.Model):
     is_accepted = models.BooleanField(default=False)
     is_canceled = models.BooleanField(default=False)  # Track cancellations
     is_verified = models.BooleanField(default=False)  # Mark order as delivered after QR scan
+
+    def save(self, *args, **kwargs):
+        """Override save method to log status history on status change."""
+        if self.pk:  # Check if the order is being updated
+            previous_order = Order.objects.get(pk=self.pk)
+            if previous_order.status != self.status:
+                # Record the status change
+                OrderStatusHistory.objects.create(
+                    order=self,
+                    status=self.status,
+                    location=self.place  # Assuming place is used as location
+                )
+        super().save(*args, **kwargs)
     
     def save(self, *args, **kwargs):
         """Automatically assigns a delivery boy to the order when saved."""
@@ -183,6 +196,16 @@ class Order(models.Model):
 
     def __str__(self):
         return f"Order {self.id} - {self.user.name}"
+
+class OrderStatusHistory(models.Model):
+    order = models.ForeignKey('Order', on_delete=models.CASCADE, related_name='status_history')
+    status = models.CharField(max_length=20, choices=Order.STATUS_CHOICES)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    location = models.CharField(max_length=255, null=True, blank=True)
+
+    def __str__(self):
+        return f"Order {self.order.id} - {self.status} at {self.timestamp}"
+
 
 
 class OrderItem(models.Model):

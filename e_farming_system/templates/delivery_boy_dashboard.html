@@ -705,6 +705,45 @@
             transform: none !important;
             box-shadow: none !important;
         }
+
+        /* Add these styles to your existing CSS */
+        .location-input {
+            margin: 15px 0;
+        }
+
+        .location-input label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .location-input input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .get-location-btn {
+            background: #2e7d32;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .get-location-btn:hover {
+            background: #1b5e20;
+        }
+
+        .get-location-btn i {
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
@@ -821,6 +860,8 @@
             </div>
         </div>
 
+        {% comment %} <p>Your current location: {{ location }}</p> {% endcomment %}
+
         <!-- Orders Section -->
         <div class="orders-section">
             <div class="section-header">
@@ -918,6 +959,14 @@
                         <div class="status-option" data-status="Delivered">
                             <i class="fas fa-box-check"></i> Delivered
                         </div>
+                    </div>
+                    <!-- Add location input field -->
+                    <div class="location-input">
+                        <label for="locationInput">Current Location:</label>
+                        <input type="text" id="locationInput" name="location" required>
+                        <button type="button" onclick="getCurrentLocation()" class="get-location-btn">
+                            <i class="fas fa-map-marker-alt"></i> Get Current Location
+                        </button>
                     </div>
                     <button type="submit" class="update-btn">Update Status</button>
                 </form>
@@ -1078,15 +1127,19 @@
         document.getElementById('statusUpdateForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
+            const orderId = document.getElementById('orderId').value;
+            const location = document.getElementById('locationInput').value;
+            const selectedStatus = document.querySelector('.status-option.selected');
+
             if (!selectedStatus) {
                 alert('Please select a status');
                 return;
             }
 
-            const orderId = document.getElementById('orderId').value;
             const formData = new FormData();
             formData.append('order_id', orderId);
-            formData.append('status', selectedStatus);
+            formData.append('status', selectedStatus.dataset.status);
+            formData.append('location', location);
             formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
 
             fetch('/update-order-status/', {
@@ -1096,14 +1149,15 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    location.reload();
+                    alert('Status updated successfully!');
+                    // Redirect to delivery boy dashboard
+                    window.location.href = "{% url 'delivery_boy_dashboard' %}";
                 } else {
-                    alert(data.error || 'Error updating status');
+                    alert(data.message);
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Error updating status');
             });
         });
 
@@ -1259,6 +1313,50 @@
 
         // Send location every 30 seconds
         setInterval(sendLocation, 30000);  // 30 seconds
+
+        // Geolocation script
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+                document.getElementById("location-display").innerText =
+                    `Latitude: ${latitude}, Longitude: ${longitude}`;
+            }, function(error) {
+                console.error("Error fetching location:", error.message);
+            });
+        } else {
+            document.getElementById("location-display").innerText = 
+                "Geolocation is not supported by this browser.";
+        }
+
+        // Display location
+        document.write('<p id="location-display" style="position: fixed; bottom: 10px; right: 10px; background: rgba(255, 255, 255, 0.8); padding: 10px; border-radius: 5px; box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);">Fetching your current location...</p>');
+
+        // Add this to your existing JavaScript
+        function getCurrentLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+                    
+                    // Use reverse geocoding to get address (optional)
+                    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const address = data.display_name;
+                            document.getElementById('locationInput').value = address;
+                        })
+                        .catch(error => {
+                            document.getElementById('locationInput').value = `${latitude}, ${longitude}`;
+                        });
+                }, function(error) {
+                    console.error("Error getting location:", error);
+                    alert("Error getting location. Please enter manually.");
+                });
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
     </script>
 </body>
 </html>

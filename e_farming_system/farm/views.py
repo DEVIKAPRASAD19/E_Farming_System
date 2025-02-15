@@ -12,7 +12,7 @@ from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.contrib.auth.tokens import default_token_generator as custom_token_generator
 from django.utils.html import strip_tags
-from .models import Registeruser, Adminm, Cart, Wishlist, Order, OrderItem, Notification, Feedback, DeliveryBoyDetail, Crop, Category, SubCategory, CropImage
+from .models import Registeruser, Adminm, Cart, Wishlist, Order, OrderItem, Notification, Feedback, DeliveryBoyDetail, Crop, Category, SubCategory, CropImage,  OrderStatusHistory
 from .forms import SetPasswordForm
 from .tokens import custom_token_generator
 from django.contrib.sites.shortcuts import get_current_site
@@ -685,7 +685,7 @@ def delete_crop(request, crop_id):
         crop = get_object_or_404(Crop, id=crop_id, farmer_id=request.session.get('user_id'))
         crop.delete()
         messages.success(request, 'Crop deleted successfully!')
-    return redirect('farmer_crops')
+    return redirect('farmercrops')
 
 
 # View to update user
@@ -1246,6 +1246,8 @@ def farmer_notifications(request):
     })
 
 
+from datetime import timedelta
+
 def order_details(request, order_id):
     # Check if the user is logged in through session
     user_id = request.session.get('user_id')  # Retrieve user ID from session
@@ -1263,8 +1265,20 @@ def order_details(request, order_id):
         # If the user does not match the order's user, redirect to order history
         return redirect('order_history')  # Redirect to order history if not authorized
 
-    # Render the order details page
-    return render(request, 'order_details.html', {'order': order})
+    # Get the status history for this order
+    status_history = OrderStatusHistory.objects.filter(order=order).order_by('timestamp')
+
+    # Calculate the expected delivery date (3 days after the order date)
+    expected_delivery_date = order.order_date + timedelta(days=3)
+
+    context = {
+        'order': order,
+        'status_history': status_history,
+        'expected_delivery_date': expected_delivery_date,
+    }
+
+    # Render the order details page with the context
+    return render(request, 'order_details.html', context)
 
 
 
@@ -1702,9 +1716,12 @@ def delivery_boy_orders(request, delivery_boy_id):
     try:
         # Fetch the delivery boy using the provided delivery_boy_id
         delivery_boy = get_object_or_404(DeliveryBoyDetail, id=delivery_boy_id, user__user_id=user_id)
-        orders = Order.objects.filter(
-            assigned_delivery_boy=delivery_boy
-        ).order_by('-order_date')
+        orders = Order.objects.filter(assigned_delivery_boy=delivery_boy).order_by('-order_date')
+
+        # Fetch the latest location for each order
+        for order in orders:
+            latest_status = OrderStatusHistory.objects.filter(order=order).order_by('-timestamp').first()
+            order.location = latest_status.location if latest_status else 'Location not available'
 
         context = {
             'delivery_boy': delivery_boy,
@@ -1723,6 +1740,7 @@ def update_order_status(request):
     try:
         order_id = request.POST.get('order_id')
         new_status = request.POST.get('status')
+        location = request.POST.get('location')  # Capture the location
         order = get_object_or_404(Order, id=order_id)
 
         # Check delivery boy authorization
@@ -1735,10 +1753,18 @@ def update_order_status(request):
         order.status = new_status
         order.save()
 
+        # Create a new OrderStatusHistory entry
+        OrderStatusHistory.objects.create(
+            order=order,
+            status=new_status,
+            location=location  # Save the location with the status
+        )
+
         return JsonResponse({'success': True, 'new_status': new_status})
 
     except Exception as e:
         return JsonResponse({'success': False, 'message': f'Error updating order status: {str(e)}'})
+
 
 
 def check_new_orders(request):
@@ -1883,6 +1909,7 @@ def get_predicted_price(request):
 
 
 
+
 def show_predict_form(request):
     return render(request, 'predict_price_form.html')
 
@@ -1909,6 +1936,10 @@ def generate_qr_code(request, order_id):
     buffer.seek(0)
 
     return HttpResponse(buffer.getvalue(), content_type="image/png")
+
+
+
+
 
 
 
