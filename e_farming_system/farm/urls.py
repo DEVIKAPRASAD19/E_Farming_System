@@ -80,7 +80,7 @@ urlpatterns = [
     path('update-order-status/', views.update_order_status, name='update_order_status'),
     path('check-new-orders/', views.check_new_orders, name='check_new_orders'),
 
-    path('post_harvest/', views.post_harvest, name='post_harvest'),
+
     path('unassign-delivery-boy/<int:order_id>/', views.unassign_delivery_boy, name='unassign_delivery_boy'),
 
     path('predict-price/', views.get_predicted_price, name='predict-price'),
@@ -94,6 +94,11 @@ urlpatterns = [
 
     path('track_delivery/<int:order_id>/', views.track_delivery, name='track_delivery'),
     path('send_location/', views.send_location, name='send_location'),
+
+    path('predict_spoilage/', views.predict_spoilage, name='predict_spoilage'),
+
+    path('qr-scan/<int:order_id>/', views.qr_scan_details, name='qr_scan_details'),
+    path('confirm-delivery-scan/<int:order_id>/', views.process_delivery_confirmation, name='process_delivery_confirmation'),
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

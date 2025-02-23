@@ -35,6 +35,11 @@ from datetime import datetime
 import pickle
 import os
 from django.db import transaction
+import numpy as np
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+import qrcode
+from io import BytesIO
 
 
 
@@ -1791,28 +1796,6 @@ def check_new_orders(request):
         return redirect('login')
 
 
-def post_harvest(request):
-    if request.method == 'POST':
-        # Collect data from the form
-        crop = request.POST.get('crop')
-        temperature = request.POST.get('temperature')
-        humidity = request.POST.get('humidity')
-        sale_date = request.POST.get('sale_date')
-        storage = request.POST.get('storage')
-
-        # Mock response (Replace this with your ML logic or database queries)
-        recommendations = {
-            "spoilage_prediction": "Tomatoes will spoil in 4 days under current conditions.",
-            "action": "Reduce temperature to 20°C and humidity to 50%.",
-            "packaging": "Use padded crates to reduce bruising.",
-            "market_price": "Sell within 5 days for Rs 2.50/kg."
-        }
-
-        # Render results on the same page or redirect to another page
-        return render(request, 'post_harvest_form.html', {'recommendations': recommendations, 'submitted': True})
-
-    # If GET request, show the form
-    return render(request, 'post_harvest_form.html', {'submitted': False})
 
 
 def unassign_delivery_boy(request, order_id):
@@ -1922,19 +1905,18 @@ import qrcode
 from io import BytesIO
 
 def generate_qr_code(request, order_id):
-    """Dynamically generates a QR code for order confirmation."""
     order = get_object_or_404(Order, id=order_id)
-
     if order.status != "Out for Delivery":
         return HttpResponse("QR Code is only available when the order is 'Out for Delivery'.", status=400)
-
-    confirmation_url = f"http://127.0.0.1:8000/confirm-delivery/{order_id}/"  # Replace with production URL
+    
+    # Update this line to use the new view
+    confirmation_url = f"http://127.0.0.1:8000/qr-scan/{order_id}/"
     qr = qrcode.make(confirmation_url)
     
     buffer = BytesIO()
     qr.save(buffer, format="PNG")
     buffer.seek(0)
-
+    
     return HttpResponse(buffer.getvalue(), content_type="image/png")
 
 
@@ -2003,3 +1985,209 @@ def track_delivery(request, order_id):
 
     # Pass the delivery boy details and order to the template
     return render(request, 'farm/track_delivery.html', {'delivery_boy': delivery_boy, 'order': order})
+
+
+
+
+
+def post_harvest(request):
+    if request.method == 'POST':
+        # Collect data from the form
+        crop = request.POST.get('crop')
+        temperature = request.POST.get('temperature')
+        humidity = request.POST.get('humidity')
+        sale_date = request.POST.get('sale_date')
+        storage = request.POST.get('storage')
+
+        # Mock response (Replace this with your ML logic or database queries)
+        recommendations = {
+            "spoilage_prediction": "Tomatoes will spoil in 4 days under current conditions.",
+            "action": "Reduce temperature to 20°C and humidity to 50%.",
+            "packaging": "Use padded crates to reduce bruising.",
+            "market_price": "Sell within 5 days for Rs 2.50/kg."
+        }
+
+        # Render results on the same page or redirect to another page
+        return render(request, 'post_harvest_form.html', {'recommendations': recommendations, 'submitted': True})
+
+    # If GET request, show the form
+    return render(request, 'post_harvest_form.html', {'submitted': False})
+
+
+import os
+import pickle
+import numpy as np
+from django.conf import settings
+from django.http import JsonResponse
+from django.shortcuts import render
+from sklearn.ensemble import RandomForestClassifier
+
+def predict_spoilage(request):
+    try:
+        if request.method == 'POST':
+            # Convert input values to float first
+            temperature = float(request.POST.get('temperature'))
+            humidity = float(request.POST.get('humidity'))
+            crop = request.POST.get('crop').lower()
+
+            # Load the model and feature columns
+            model_path = os.path.join(settings.BASE_DIR, 'ml_model', 'ml_models', 'post_harvest_model.pkl')
+            feature_columns_path = os.path.join(settings.BASE_DIR, 'ml_model', 'ml_models', 'feature_columns.pkl')
+            
+            with open(model_path, 'rb') as file:
+                model = pickle.load(file)
+            
+            with open(feature_columns_path, 'rb') as file:
+                feature_columns = pickle.load(file)
+
+            # Create DataFrame with explicit data types
+            input_data = pd.DataFrame(0, index=[0], columns=feature_columns)
+            
+            # Convert numeric columns to float64
+            input_data['temperature'] = input_data['temperature'].astype('float64')
+            input_data['humidity'] = input_data['humidity'].astype('float64')
+            
+            # Set the values after converting data types
+            input_data.at[0, 'temperature'] = float(temperature)
+            input_data.at[0, 'humidity'] = float(humidity)
+            
+            # Set the crop type
+            crop_column = f'crop_type_{crop}'
+            if crop_column in input_data.columns:
+                input_data.at[0, crop_column] = 1
+            else:
+                return JsonResponse({
+                    'error': f"Crop type '{crop}' not found in training data. Available crops: " + 
+                            ", ".join(col.replace('crop_type_', '') for col in feature_columns if col.startswith('crop_type_'))
+                })
+
+            # Define optimal ranges for different crops
+            optimal_conditions = {
+                'wheat': {'temp_min': 10, 'temp_max': 25, 'humidity_min': 45, 'humidity_max': 65, 'max_days': 180},
+                'rice': {'temp_min': 12, 'temp_max': 28, 'humidity_min': 50, 'humidity_max': 70, 'max_days': 160},
+                'maize': {'temp_min': 10, 'temp_max': 30, 'humidity_min': 40, 'humidity_max': 60, 'max_days': 150},
+                # Add more crops as needed based on your CSV data
+            }
+
+            # Make prediction
+            prediction_prob = model.predict_proba(input_data)[0]
+            risk_probability = prediction_prob[1]
+
+            # Calculate spoilage days
+            if crop in optimal_conditions:
+                crop_conditions = optimal_conditions[crop]
+            else:
+                # Default conditions if crop not in optimal_conditions
+                crop_conditions = {
+                    'temp_min': 15, 'temp_max': 25,
+                    'humidity_min': 45, 'humidity_max': 65,
+                    'max_days': 90
+                }
+
+            # Calculate factors
+            temp_factor = 1.0
+            humidity_factor = 1.0
+
+            if temperature < crop_conditions['temp_min']:
+                temp_factor = 0.7 + (temperature / crop_conditions['temp_min']) * 0.3
+            elif temperature > crop_conditions['temp_max']:
+                temp_factor = 1.0 - ((temperature - crop_conditions['temp_max']) / crop_conditions['temp_max']) * 0.5
+
+            if humidity < crop_conditions['humidity_min']:
+                humidity_factor = 0.7 + (humidity / crop_conditions['humidity_min']) * 0.3
+            elif humidity > crop_conditions['humidity_max']:
+                humidity_factor = 1.0 - ((humidity - crop_conditions['humidity_max']) / crop_conditions['humidity_max']) * 0.5
+
+            spoilage_days = round(crop_conditions['max_days'] * temp_factor * humidity_factor)
+
+            # Generate recommendations
+            recommendations = []
+            if temperature < crop_conditions['temp_min']:
+                recommendations.append(
+                    f"Increase temperature from {temperature}°C to between "
+                    f"{crop_conditions['temp_min']}°C and {crop_conditions['temp_max']}°C"
+                )
+            elif temperature > crop_conditions['temp_max']:
+                recommendations.append(
+                    f"Decrease temperature from {temperature}°C to between "
+                    f"{crop_conditions['temp_min']}°C and {crop_conditions['temp_max']}°C"
+                )
+
+            if humidity < crop_conditions['humidity_min']:
+                recommendations.append(
+                    f"Increase humidity from {humidity}% to between "
+                    f"{crop_conditions['humidity_min']}% and {crop_conditions['humidity_max']}%"
+                )
+            elif humidity > crop_conditions['humidity_max']:
+                recommendations.append(
+                    f"Decrease humidity from {humidity}% to between "
+                    f"{crop_conditions['humidity_min']}% and {crop_conditions['humidity_max']}%"
+                )
+
+            # Add optimal conditions message
+            recommendations.append(
+                f"Optimal storage conditions for {crop}:\n"
+                f"Temperature: {crop_conditions['temp_min']}°C to {crop_conditions['temp_max']}°C\n"
+                f"Humidity: {crop_conditions['humidity_min']}% to {crop_conditions['humidity_max']}%"
+            )
+
+            # Determine risk level
+            if risk_probability > 0.75:
+                risk_level = "Very High"
+            elif risk_probability > 0.5:
+                risk_level = "High"
+            elif risk_probability > 0.25:
+                risk_level = "Moderate"
+            else:
+                risk_level = "Low"
+
+            return JsonResponse({
+                'result': f"{risk_level} risk of spoilage",
+                'probability': f"{risk_probability:.2%}",
+                'spoilage_days': spoilage_days,
+                'details': {
+                    'temperature': temperature,
+                    'humidity': humidity,
+                    'crop': crop,
+                    'recommendations': recommendations
+                }
+            })
+
+        return render(request, 'post_harvest_form.html')
+
+    except Exception as e:
+        print(f"Error in predict_spoilage: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)
+
+def qr_scan_details(request, order_id):
+    """Display order details after QR scan"""
+    order = get_object_or_404(Order, id=order_id)
+    order_items = OrderItem.objects.filter(order=order)
+    
+    context = {
+        'order': order,
+        'order_items': order_items,
+        'scan_time': datetime.now()
+    }
+    return render(request, 'qr_scan_confirmation.html', context)
+
+def process_delivery_confirmation(request, order_id):
+    """Handle the delivery confirmation POST request"""
+    if request.method == 'POST':
+        order = get_object_or_404(Order, id=order_id)
+        if order.status == "Out for Delivery":
+            order.status = "Delivered"
+            order.delivery_confirmed_at = datetime.now()
+            order.is_verified = True
+            order.save()
+            
+            # Log the status change
+            OrderStatusHistory.objects.create(
+                order=order,
+                status="Delivered",
+                location=order.place,
+                timestamp=datetime.now()
+            )
+            
+            return JsonResponse({'success': True})
+    return JsonResponse({'success': False})

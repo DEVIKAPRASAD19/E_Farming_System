@@ -3,140 +3,500 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Post-Harvest Management</title>
+    <title>Post-Harvest Prediction</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* General Reset */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
         }
 
         body {
-            font-family: 'Arial', sans-serif;
-            line-height: 1.6;
-            background-color: #f4f4f9;
-            color: #333;
-            padding: 20px;
+            background: linear-gradient(135deg, #a8e6cf 0%, #3eadcf 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
         }
 
-        /* Container Styling */
-        .container {
-            max-width: 600px;
-            margin: 50px auto;
-            background: #fff;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
         }
 
-        /* Form Heading */
-        .container h1 {
-            text-align: center;
-            margin-bottom: 20px;
+        h1 {
             color: #2c3e50;
-        }
-
-        .container p {
             text-align: center;
-            font-size: 14px;
-            color: #7f8c8d;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
+            font-size: 32px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
         }
 
-        /* Form Groups */
+        h1:after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 4px;
+            background: #3eadcf;
+            margin: 15px auto 0;
+            border-radius: 2px;
+        }
+
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
 
         label {
             display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
+            margin-bottom: 10px;
             color: #34495e;
-        }
-
-        input, textarea {
-            width: 100%;
-            padding: 10px;
+            font-weight: 500;
             font-size: 16px;
-            border: 1px solid #bdc3c7;
-            border-radius: 5px;
-            background: #ecf0f1;
         }
 
-        input:focus, textarea:focus {
-            border-color: #3498db;
+        .input-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        input:focus {
+            border-color: #3eadcf;
+            box-shadow: 0 0 0 3px rgba(62, 173, 207, 0.1);
             outline: none;
-            background: #ffffff;
         }
 
-        /* Button Styling */
-        .btn {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            font-size: 16px;
-            font-weight: bold;
-            color: #fff;
-            background: #3498db;
+        button {
+            padding: 15px 30px;
             border: none;
-            border-radius: 5px;
+            border-radius: 12px;
             cursor: pointer;
-            transition: background 0.3s ease-in-out;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-size: 15px;
         }
 
-        .btn:hover {
-            background: #2980b9;
+        .fetch-button {
+            background-color: #3eadcf;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .fetch-button:hover {
+            background-color: #2d8dad;
+            transform: translateY(-2px);
+        }
+
+        .predict-button {
+            background: linear-gradient(135deg, #3eadcf 0%, #2d8dad 100%);
+            color: white;
+            width: 100%;
+            margin-top: 30px;
+            font-size: 16px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .predict-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(45, 141, 173, 0.3);
+        }
+
+        .prediction-details {
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .detail-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .detail-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .risk-indicator {
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 15px;
+            color: white;
+            text-align: center;
+            font-weight: 500;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .risk-high { background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%); }
+        .risk-medium { background: linear-gradient(135deg, #ffbb33 0%, #ff8800 100%); }
+        .risk-low { background: linear-gradient(135deg, #00C851 0%, #007E33 100%); }
+
+        .chart-container {
+            margin-top: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        #result, #recommendation {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 15px;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 5px solid #2ecc71;
+        }
+
+        .error-message {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 5px solid #dc3545;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .loading:after {
+            content: '';
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3eadcf;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        li {
+            margin-bottom: 12px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            position: relative;
+            padding-left: 35px;
+            line-height: 1.6;
+        }
+
+        li:before {
+            content: '•';
+            color: #3eadcf;
+            font-size: 24px;
+            position: absolute;
+            left: 15px;
+        }
+
+        .icon {
+            margin-right: 10px;
+            color: #3eadcf;
+        }
+
+        @media (max-width: 768px) {
+            .form-container {
+                padding: 25px;
+            }
+
+            .input-group {
+                flex-direction: column;
+            }
+
+            .fetch-button {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Post-Harvest Management</h1>
-        <p>Optimize your crop storage and sales by entering the details below:</p>
-        <form action="/post_harvest/" method="post">
+    <div class="form-container">
+        <h1><i class="fas fa-leaf icon"></i>Post-Harvest Management</h1>
+        
+        <form id="prediction-form">
             {% csrf_token %}
             <div class="form-group">
-                <label for="crop">Crop Type</label>
-                <input type="text" id="crop" name="crop" placeholder="Enter crop type (e.g., Tomato)" required>
+                <label for="temperature"><i class="fas fa-thermometer-half icon"></i>Temperature (°C)</label>
+                <div class="input-group">
+                    <input type="number" id="temperature" name="temperature" step="0.1" required 
+                           placeholder="Enter temperature">
+                    <button type="button" class="fetch-button" onclick="fetchTemperature()">
+                        <i class="fas fa-sync-alt"></i> Fetch
+                    </button>
+                </div>
             </div>
-        
+
             <div class="form-group">
-                <label for="temperature">Storage Temperature (°C)</label>
-                <input type="number" id="temperature" name="temperature" step="0.1" placeholder="e.g., 25.5" required>
+                <label for="humidity"><i class="fas fa-tint icon"></i>Humidity (%)</label>
+                <div class="input-group">
+                    <input type="number" id="humidity" name="humidity" step="0.1" required
+                           placeholder="Enter humidity">
+                    <button type="button" class="fetch-button" onclick="fetchHumidity()">
+                        <i class="fas fa-sync-alt"></i> Fetch
+                    </button>
+                </div>
             </div>
-        
+
             <div class="form-group">
-                <label for="humidity">Humidity Level (%)</label>
-                <input type="number" id="humidity" name="humidity" step="0.1" placeholder="e.g., 60" required>
+                <label for="crop"><i class="fas fa-seedling icon"></i>Crop Name</label>
+                <input type="text" id="crop" name="crop" required placeholder="Enter crop name">
             </div>
-        
-            <div class="form-group">
-                <label for="sale_date">Planned Sale Date</label>
-                <input type="date" id="sale_date" name="sale_date" required>
-            </div>
-        
-            <div class="form-group">
-                <label for="storage">Storage Conditions</label>
-                <textarea id="storage" name="storage" rows="3" placeholder="Describe storage conditions (e.g., ventilated room)" required></textarea>
-            </div>
-        
-            <button type="submit" class="btn">Get Recommendations</button>
+
+            <button type="submit" class="predict-button">
+                <i class="fas fa-chart-line"></i> Predict Spoilage
+            </button>
         </form>
-        
-        {% if submitted %}
-        <div style="margin-top: 20px; padding: 15px; background-color: #eafaf1; border: 1px solid #27ae60; border-radius: 8px;">
-            <h3>Recommendations:</h3>
-            <ul>
-                <li><strong>Spoilage Prediction:</strong> {{ recommendations.spoilage_prediction }}</li>
-                <li><strong>Action:</strong> {{ recommendations.action }}</li>
-                <li><strong>Packaging Suggestions:</strong> {{ recommendations.packaging }}</li>
-                <li><strong>Market Price Prediction:</strong> {{ recommendations.market_price }}</li>
-            </ul>
+
+        <div class="loading" id="loading"></div>
+        <div class="prediction-details" id="prediction-details" style="display: none;">
+            <div class="detail-card">
+                <h3>Risk Level</h3>
+                <div id="risk-indicator" class="risk-indicator"></div>
+            </div>
+            <div class="detail-card">
+                <h3>Spoilage Timeline</h3>
+                <div class="chart-container">
+                    <canvas id="spoilageChart"></canvas>
+                </div>
+            </div>
         </div>
-        {% endif %}
-        
+        <div id="result"></div>
+        <div id="recommendation"></div>
     </div>
+
+    <script>
+        const API_KEY = '1c192ab813182062b3023f96fc2ad1a6';  // Replace with your actual OpenWeatherMap API key
+        const CITY = 'Kerala';  // Replace with your city name
+
+        async function fetchTemperature() {
+            try {
+                const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${CITY}&appid=${API_KEY}&units=metric`);
+                if (!response.ok) {
+                    throw new Error('Weather data not available');
+                }
+                const data = await response.json();
+                if (data && data.main && data.main.temp) {
+                    document.getElementById('temperature').value = data.main.temp.toFixed(1);
+                } else {
+                    throw new Error('Temperature data not available');
+                }
+            } catch (error) {
+                alert('Error fetching temperature: ' + error.message);
+            }
+        }
+
+        async function fetchHumidity() {
+            try {
+                const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${CITY}&appid=${API_KEY}&units=metric`);
+                if (!response.ok) {
+                    throw new Error('Weather data not available');
+                }
+                const data = await response.json();
+                if (data && data.main && data.main.humidity) {
+                    document.getElementById('humidity').value = data.main.humidity;
+                } else {
+                    throw new Error('Humidity data not available');
+                }
+            } catch (error) {
+                alert('Error fetching humidity: ' + error.message);
+            }
+        }
+
+        let spoilageChart = null;
+
+        function createSpoilageChart(days, riskLevels) {
+            if (spoilageChart) {
+                spoilageChart.destroy();
+            }
+
+            const ctx = document.getElementById('spoilageChart').getContext('2d');
+            spoilageChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: days}, (_, i) => `Day ${i + 1}`),
+                    datasets: [{
+                        label: 'Spoilage Risk',
+                        data: riskLevels,
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1,
+                        fill: true,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Risk Level (%)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Days'
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Spoilage Risk Over Time'
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateRiskIndicator(riskLevel, probability) {
+            const indicator = document.getElementById('risk-indicator');
+            let riskClass = '';
+            let riskText = '';
+
+            probability = parseFloat(probability.replace('%', ''));
+
+            if (probability > 75) {
+                riskClass = 'risk-high';
+                riskText = 'High Risk';
+            } else if (probability > 50) {
+                riskClass = 'risk-medium';
+                riskText = 'Medium Risk';
+            } else {
+                riskClass = 'risk-low';
+                riskText = 'Low Risk';
+            }
+
+            indicator.className = 'risk-indicator ' + riskClass;
+            indicator.textContent = `${riskText} (${probability}%)`;
+        }
+
+        function generateRiskLevels(days, initialRisk) {
+            // Generate increasing risk levels over time
+            return Array.from({length: days}, (_, i) => {
+                const baseRisk = parseFloat(initialRisk);
+                return Math.min(100, baseRisk + (i * (100 - baseRisk) / days));
+            });
+        }
+
+        document.getElementById('prediction-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            document.getElementById('loading').style.display = 'block';
+            
+            const formData = new FormData(this);
+            try {
+                const response = await fetch('/predict_spoilage/', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                if (data.error) {
+                    document.getElementById('result').innerHTML = `
+                        <div class="error-message">
+                            <i class="fas fa-exclamation-circle"></i> Error: ${data.error}
+                        </div>`;
+                    document.getElementById('recommendation').innerHTML = '';
+                    document.getElementById('prediction-details').style.display = 'none';
+                } else {
+                    // Show prediction details
+                    document.getElementById('prediction-details').style.display = 'grid';
+                    
+                    // Update risk indicator
+                    const probability = data.probability;
+                    updateRiskIndicator(data.result, probability);
+
+                    // Create spoilage timeline chart
+                    const spoilageDays = data.spoilage_days;
+                    const initialRisk = parseFloat(probability);
+                    const riskLevels = generateRiskLevels(spoilageDays, initialRisk);
+                    createSpoilageChart(spoilageDays, riskLevels);
+
+                    // Update other results
+                    document.getElementById('result').innerHTML = `
+                        <div class="success-message">
+                            <h3 class="result-header">
+                                <i class="fas fa-chart-bar"></i> Prediction Results
+                            </h3>
+                            <p><strong>Risk Level:</strong> ${data.result}</p>
+                            <p><strong>Confidence:</strong> ${data.probability}</p>
+                            <p><strong>Expected Storage Life:</strong> ${data.spoilage_days} days</p>
+                        </div>
+                    `;
+                    
+                    if (data.details.recommendations && data.details.recommendations.length > 0) {
+                        const recommendationsList = data.details.recommendations
+                            .map(rec => `<li>${rec.replace(/\n/g, '<br>')}</li>`)
+                            .join('');
+                        
+                        document.getElementById('recommendation').innerHTML = `
+                            <div class="result-header">
+                                <i class="fas fa-clipboard-list"></i> Storage Recommendations
+                            </div>
+                            <ul>${recommendationsList}</ul>
+                        `;
+                    }
+                }
+            } catch (error) {
+                document.getElementById('result').innerHTML = `
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-circle"></i> Error: ${error.message}
+                    </div>`;
+                document.getElementById('recommendation').innerHTML = '';
+                document.getElementById('prediction-details').style.display = 'none';
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        });
+    </script>
 </body>
 </html>

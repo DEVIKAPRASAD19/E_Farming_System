@@ -1,0 +1,216 @@
+{% load static %}
+
+{% block content %}
+<div class="container mt-5" style="max-width: 800px;">
+    <div class="card shadow-lg">
+        <div class="card-header text-center bg-success text-white py-3">
+            <h4 class="mb-1">Order Confirmation</h4>
+            <small class="text-white-50">Order #{{ order.id }} - Scanned at: {{ scan_time|date:"F d, Y H:i:s" }}</small>
+        </div>
+        
+        <div class="card-body p-4">
+            <h5 class="text-success mb-3">
+                <i class="fas fa-user-circle me-2"></i> Buyer Details
+            </h5>
+            <div class="buyer-info mb-4 p-3">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="mb-2"><i class="fas fa-user me-2"></i><strong>Name:</strong> {{ order.name }}</p>
+                        <p class="mb-2"><i class="fas fa-phone me-2"></i><strong>Contact:</strong> {{ order.contact }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="mb-2"><i class="fas fa-map-marker-alt me-2"></i><strong>Delivery Address:</strong> {{ order.delivery_address }}</p>
+                        <p class="mb-2"><i class="fas fa-map-pin me-2"></i><strong>Pincode:</strong> {{ order.pincode }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <h5 class="text-success mb-3">
+                <i class="fas fa-shopping-basket me-2"></i> Order Contents
+            </h5>
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered">
+                    <thead class="bg-success text-white">
+                        <tr>
+                            <th class="py-2">Item</th>
+                            <th class="py-2" width="20%">Quantity</th>
+                            <th class="py-2" width="20%">Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in order_items %}
+                        <tr>
+                            <td class="py-2">{{ item.crop.name }}</td>
+                            <td class="py-2">{{ item.quantity }}</td>
+                            <td class="py-2">₹{{ item.price }}</td>
+                        </tr>
+                        {% endfor %}
+                        <tr class="font-weight-bold bg-light">
+                            <td colspan="2" class="py-2">Total Amount:</td>
+                            <td class="py-2">₹{{ order.total_price }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="text-center mt-4">
+                <button id="confirmDeliveryBtn" class="btn btn-success px-5 py-2">
+                    <i class="fas fa-check-circle me-2"></i> Confirm Delivery
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-body text-center p-4">
+                <div class="success-animation">
+                    <div class="checkmark">
+                        <svg class="checkmark-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                            <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+                            <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                        </svg>
+                    </div>
+                </div>
+                <h5 class="mt-3 text-success">Delivery Successful!</h5>
+                <p class="text-muted small">Order has been successfully delivered.</p>
+                <button type="button" class="btn btn-success btn-sm mt-2" onclick="window.location.href='/delivery-boy-dashboard/'">
+                    Back to Dashboard
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background-color: #f0f7f0;
+        font-family: 'Arial', sans-serif;
+    }
+
+    .card {
+        border-radius: 8px;
+        border: none;
+    }
+
+    .card-header {
+        border-top-left-radius: 8px !important;
+        border-top-right-radius: 8px !important;
+    }
+
+    .buyer-info {
+        background: #f8f9fa;
+        border: 1px solid #28a745;
+        border-radius: 6px;
+    }
+
+    .buyer-info p {
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+    }
+
+    .table {
+        font-size: 0.95rem;
+    }
+
+    .table th {
+        font-weight: 600;
+    }
+
+    #confirmDeliveryBtn {
+        border-radius: 50px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    #confirmDeliveryBtn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(40, 167, 69, 0.2);
+    }
+
+    .success-animation {
+        margin: 15px auto;
+    }
+
+    .checkmark {
+        width: 60px;
+        height: 60px;
+        margin: 0 auto;
+    }
+
+    .checkmark-circle {
+        stroke: #28a745;
+        stroke-width: 2;
+        stroke-dasharray: 166;
+        stroke-dashoffset: 166;
+        fill: none;
+        animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+    }
+
+    .checkmark-check {
+        stroke: #28a745;
+        stroke-width: 2;
+        stroke-dasharray: 48;
+        stroke-dashoffset: 48;
+        animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+    }
+
+    @keyframes stroke {
+        100% {
+            stroke-dashoffset: 0;
+        }
+    }
+
+    .modal-content {
+        border: none;
+        border-radius: 12px;
+    }
+
+    .me-2 {
+        margin-right: 0.5rem;
+    }
+
+    .fas {
+        width: 20px;
+        text-align: center;
+    }
+</style>
+
+<script>
+document.getElementById('confirmDeliveryBtn').addEventListener('click', function() {
+    if (confirm('Are you sure you want to confirm this delivery?')) {
+        fetch('/confirm-delivery-scan/{{ order.id }}/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                $('#successModal').modal('show');
+                setTimeout(function() {
+                    window.location.href = '/delivery-boy-dashboard/';
+                }, 3000);
+            } else {
+                alert('Error confirming delivery. Please try again.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while confirming delivery');
+        });
+    }
+});
+</script>
+
+<!-- Add these CDN links if not already in your base template -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}

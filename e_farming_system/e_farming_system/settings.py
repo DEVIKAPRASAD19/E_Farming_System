@@ -76,29 +76,29 @@ WSGI_APPLICATION = 'e_farming_system.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 
-# DATABASES = {
-#      'default': {
-#          'ENGINE': 'django.db.backends.mysql',
-#          'NAME': 'farming_db',
-#          'USER': 'root',
-#          'PASSWORD':'',
-#          'HOST': 'localhost',
-#          'PORT': '3306',
-#      }
-#  }
-
-
-
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'farming_chairranch',
-        'USER': 'farming_chairranch',
-        'PASSWORD':'9de8a976de80f72187d330c191fe5c011cc29edf',
-        'HOST': 'sc36o.h.filess.io',
-        'PORT': '3307',
-    }
-}
+     'default': {
+         'ENGINE': 'django.db.backends.mysql',
+         'NAME': 'farming_db',
+         'USER': 'root',
+         'PASSWORD':'',
+         'HOST': 'localhost',
+         'PORT': '3306',
+     }
+ }
+
+
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'farming_chairranch',
+#         'USER': 'farming_chairranch',
+#         'PASSWORD':'9de8a976de80f72187d330c191fe5c011cc29edf',
+#         'HOST': 'sc36o.h.filess.io',
+#         'PORT': '3307',
+#     }
+# }
 
 
 # Password validation
