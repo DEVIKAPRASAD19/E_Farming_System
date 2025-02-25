@@ -12,6 +12,10 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 from pathlib import Path
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -76,29 +80,29 @@ WSGI_APPLICATION = 'e_farming_system.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 
-DATABASES = {
-     'default': {
-         'ENGINE': 'django.db.backends.mysql',
-         'NAME': 'farming_db',
-         'USER': 'root',
-         'PASSWORD':'',
-         'HOST': 'localhost',
-         'PORT': '3306',
-     }
- }
-
-
-
 # DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'farming_chairranch',
-#         'USER': 'farming_chairranch',
-#         'PASSWORD':'9de8a976de80f72187d330c191fe5c011cc29edf',
-#         'HOST': 'sc36o.h.filess.io',
-#         'PORT': '3307',
-#     }
-# }
+#      'default': {
+#          'ENGINE': 'django.db.backends.mysql',
+#          'NAME': 'farming_db',
+#          'USER': 'root',
+#          'PASSWORD':'',
+#          'HOST': 'localhost',
+#          'PORT': '3306',
+#      }
+#  }
+
+
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'farming_chairranch',
+        'USER': 'farming_chairranch',
+        'PASSWORD':'9de8a976de80f72187d330c191fe5c011cc29edf',
+        'HOST': 'sc36o.h.filess.io',
+        'PORT': '3307',
+    }
+}
 
 
 # Password validation
@@ -150,7 +154,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'efarming2024@gmail.com'
-EMAIL_HOST_PASSWORD = 'klfn stkg wurz ptut'
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
 
 
