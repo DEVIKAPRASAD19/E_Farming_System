@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demand Prediction</title>
+    <style>
+        :root {
+            --primary-green: #2ecc71;
+            --dark-green: #27ae60;
+            --light-green: #e8f5e9;
+            --accent-green: #a5d6a7;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--light-green) 0%, #ffffff 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        h2 {
+            color: var(--dark-green);
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 2px 2px 4px rgba(46, 204, 113, 0.1);
+        }
+
+        h2::before {
+            content: "🌱";
+            margin-right: 10px;
+        }
+
+        form {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(46, 204, 113, 0.1);
+            margin-bottom: 30px;
+            border: 2px solid var(--accent-green);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        label {
+            color: var(--dark-green);
+            font-weight: 500;
+            margin-bottom: 12px;
+            display: block;
+            font-size: 16px;
+        }
+
+        label::before {
+            content: "🌿";
+            margin-right: 8px;
+        }
+
+        input[list="cropList"] {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid var(--accent-green);
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background-color: white;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        input[list="cropList"]:focus {
+            border-color: var(--primary-green);
+            box-shadow: 0 0 10px rgba(46, 204, 113, 0.2);
+            outline: none;
+        }
+
+        button[type="submit"] {
+            background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
+            color: white;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px auto;
+            width: auto;
+            min-width: 120px;
+        }
+
+        button[type="submit"]::before {
+            content: "🎯";
+            margin-right: 8px;
+            font-size: 16px;
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
+            background: linear-gradient(135deg, var(--dark-green), var(--primary-green));
+        }
+
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        th {
+            background: var(--primary-green);
+            color: white;
+            padding: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--light-green);
+            color: #2c3e50;
+        }
+
+        tr:hover td {
+            background-color: var(--light-green);
+        }
+
+        #loader {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner-border {
+            color: var(--primary-green);
+            width: 2.5rem;
+            height: 2.5rem;
+        }
+
+        #results {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(46, 204, 113, 0.1);
+            margin-top: 30px;
+            border: 2px solid var(--accent-green);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        canvas {
+            margin: 20px 0;
+            border-radius: 10px;
+            background: white;
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.1);
+            border: 1px solid var(--accent-green);
+        }
+
+        /* Beautiful scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--light-green);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-green);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--dark-green);
+        }
+
+        /* Add some nature-themed icons */
+        .stats-icon {
+            font-size: 24px;
+            color: var(--primary-green);
+            margin-bottom: 10px;
+        }
+
+        /* Animation for results */
+        @keyframes growIn {
+            from { 
+                transform: scale(0.9);
+                opacity: 0;
+            }
+            to { 
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        #results {
+            animation: growIn 0.5s ease-out;
+        }
+
+        /* Add decorative elements */
+        .form-container {
+            position: relative;
+        }
+
+        .form-container::before {
+            content: "🌾";
+            position: absolute;
+            top: -15px;
+            right: -15px;
+            font-size: 24px;
+            z-index: 1;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            form {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            button[type="submit"] {
+                width: 100%;
+            }
+        }
+
+        /* Add nature-themed icons to table headers */
+        th:first-child:before { content: "📅 "; }
+        th:nth-child(2):before { content: "📈 "; }
+        th:nth-child(3):before { content: "⚖️ "; }
+        th:last-child:before { content: "📊 "; }
+
+        /* Adjust button styles */
+        .predict-btn {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            padding: 8px 16px; /* Smaller padding for a smaller button */
+            border: none;
+            border-radius: 5px; /* Slightly smaller border radius */
+            cursor: pointer;
+            font-size: 14px; /* Smaller font size */
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: auto; /* Allow the button to size based on content */
+            margin-top: 10px; /* Add some space above the button */
+        }
+
+        .predict-btn:hover {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
+        }
+
+        /* Adjust input field for crop name */
+        .custom-select {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid var(--accent-green);
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background-color: white;
+            color: #2c3e50;
+        }
+
+        .custom-select:focus {
+            border-color: var(--primary-green);
+            box-shadow: 0 0 10px rgba(46, 204, 113, 0.2);
+            outline: none;
+        }
+
+        /* Adjust input group for better alignment */
+        .input-group {
+            display: flex;
+            align-items: center; /* Center align items */
+        }
+
+        .input-group input {
+            flex: 1; /* Allow input to take available space */
+            margin-left: 10px; /* Space between select and input */
+        }
+
+        /* Datalist dropdown styling */
+        input[list="cropList"]::-webkit-calendar-picker-indicator {
+            color: var(--dark-green);
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.3s ease;
+        }
+
+        input[list="cropList"]::-webkit-calendar-picker-indicator:hover {
+            opacity: 1;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .home-button {
+            background-color: #2ecc71; /* Primary green color */
+            color: white; /* Text color */
+            padding: 10px 20px; /* Padding for the button */
+            border: none; /* No border */
+            border-radius: 5px; /* Rounded corners */
+            font-size: 16px; /* Font size */
+            font-weight: 600; /* Bold text */
+            text-decoration: none; /* Remove underline */
+            display: inline-flex; /* Align icon and text */
+            align-items: center; /* Center icon vertically */
+            transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transitions */
+        }
+
+        .home-button:hover {
+            background-color: #27ae60; /* Darker green on hover */
+            transform: translateY(-2px); /* Slight lift effect */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Shadow effect */
+        }
+
+        .home-button i {
+            margin-right: 8px; /* Space between icon and text */
+        }
+    </style>
+</head>
+<body>
+    <div class="text-center" style="margin-bottom: 20px;">
+        <a href="{% url 'farmer_dashboard' %}" class="home-button">
+            <i class="fas fa-home"></i> Home
+        </a>
+    </div>
+    <h2>Predicted Crop Demand</h2>
+
+    <!-- Form to Select Crop and Predict Demand -->
+    <form action="/demand-prediction/" method="GET">
+        <div class="form-group">
+            <label for="crop">
+                <i class="fas fa-seedling"></i> Select or Type Crop Name
+            </label>
+            <input type="text" 
+                   list="cropList" 
+                   id="crop" 
+                   name="crop" 
+                   class="form-control custom-select" 
+                   placeholder="Type or select a crop..."
+                   required>
+            <datalist id="cropList">
+                {% for crop in available_crops %}
+                    <option value="{{ crop }}">
+                {% endfor %}
+            </datalist>
+        </div>
+        <div class="form-group">
+            {% comment %} <label for="prediction_months">
+                <i class="fas fa-calendar-alt"></i> Predict for
+            </label>
+            <input type="number" id="prediction_months" name="prediction_months" value="5" min="1" max="24" required> {% endcomment %}
+        </div>
+        <button type="submit">Predict Demand</button>
+    </form>
+    
+    <br>
+
+    <!-- Fix Graph Image Source -->
+    {% if selected_crop %}
+        <img src="{% url 'plot_crop_demand' %}?crop={{ selected_crop }}" alt="Crop Demand Graph">
+    {% endif %}
+
+    <br>
+
+    <!-- Table for Predicted Crop Demand -->
+    <table>
+        <tr>
+            <th>Month</th>
+            <th>Year</th>
+            <th>Predicted Sales (kg)</th>
+        </tr>
+        {% for prediction in predictions %}
+        <tr>
+            <td>{{ prediction.Month }}</td>
+            <td>{{ prediction.Year }}</td>
+            <td>{{ prediction.Predicted_Sales_kg }}</td>  <!-- Fixed Key -->
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="3">No predictions available.</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

@@ -100,6 +100,14 @@ urlpatterns = [
     path('qr-scan/<int:order_id>/', views.qr_scan_details, name='qr_scan_details'),
     path('confirm-delivery-scan/<int:order_id>/', views.process_delivery_confirmation, name='process_delivery_confirmation'),
 
+    path("demand-prediction/", views.predict_crop_demand, name="demand_prediction"),
+    path('demand-prediction/', views.predict_crop_demand, name='predict_crop_demand'),
+    path('plot-crop-demand/', views.plot_crop_demand, name='plot_crop_demand'),
+
+    path('farmer-sales-data/', views.farmer_sales_data, name='farmer_sales_data'),
+
+
+
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # path('password_reset/', views.password_reset_form, name='password_reset_form'),

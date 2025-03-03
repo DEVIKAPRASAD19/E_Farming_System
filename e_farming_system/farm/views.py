@@ -2191,3 +2191,155 @@ def process_delivery_confirmation(request, order_id):
             
             return JsonResponse({'success': True})
     return JsonResponse({'success': False})
+
+
+
+
+
+
+from django.http import JsonResponse
+import pandas as pd
+import joblib
+import os
+
+def predict_crop_demand(request):
+    selected_crop = request.GET.get("crop")
+    context = {
+        'selected_crop': selected_crop,
+        'predictions': []
+    }
+
+    if selected_crop:  # Only make prediction if a crop is selected
+        try:
+            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            model_dir = os.path.join(base_dir, "models")
+            model_path = os.path.join(model_dir, f"{selected_crop.replace(' ', '_')}_model.pkl")
+
+            if not os.path.exists(model_path):
+                context['error'] = f"No trained model found for {selected_crop}"
+            else:
+                # Load the trained model
+                model = joblib.load(model_path)
+
+                # Create future data for prediction
+                future_data = pd.DataFrame({
+                    "Month": [1, 2, 3, 4, 5],
+                    "Year": [2025] * 5,
+                    "Price (₹)": [50, 55, 60, 65, 70]
+                })
+
+                # Predict future demand
+                future_demand = model.predict(future_data)
+                future_data["Predicted_Sales_kg"] = future_demand
+                
+                context['predictions'] = future_data.to_dict('records')
+
+        except Exception as e:
+            context['error'] = str(e)
+
+    return render(request, 'demand_prediction.html', context)
+
+
+
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+from django.http import HttpResponse
+import io
+import pandas as pd
+import os
+from django.conf import settings  # Import settings to handle file paths
+
+def plot_crop_demand(request):
+    crop_name = request.GET.get("crop")  # Dynamically get crop from request
+
+    if not crop_name:
+        return HttpResponse("Crop name is required.", status=400)
+
+    # Construct the correct file path
+    csv_path = os.path.join(settings.BASE_DIR, "data", "future_demand_predictions.csv")
+
+    if not os.path.exists(csv_path):
+        return HttpResponse("Prediction data not found.", status=400)
+
+    # Read the CSV file
+    try:
+        future_data = pd.read_csv(csv_path)
+
+        # Ensure column names are properly formatted
+        future_data.columns = future_data.columns.str.strip()
+
+        if "Crop Name" not in future_data.columns or "Month" not in future_data.columns or "Predicted Sales (kg)" not in future_data.columns:
+            return HttpResponse("Invalid CSV format. Check column names.", status=400)
+
+        # Filter by crop name
+        future_data = future_data[future_data["Crop Name"].str.strip() == crop_name.strip()]
+
+        if future_data.empty:
+            return HttpResponse(f"No data found for {crop_name}.", status=400)
+
+        # Create the plot
+        plt.figure(figsize=(8, 4))
+        sns.lineplot(x=future_data["Month"], y=future_data["Predicted Sales (kg)"], marker="o")
+        plt.xlabel("Month")
+        plt.ylabel("Predicted Sales (kg)")
+        plt.title(f"Future Demand for {crop_name}")
+
+        # Convert plot to HTTP response
+        buf = io.BytesIO()
+        plt.savefig(buf, format="png")
+        plt.close()
+        buf.seek(0)
+
+        return HttpResponse(buf.getvalue(), content_type="image/png")
+
+    except Exception as e:
+        return HttpResponse(f"Error reading data: {str(e)}", status=500)
+
+
+
+from django.shortcuts import render
+from django.http import JsonResponse
+from django.db.models import Sum
+from .models import OrderItem, Crop
+
+def farmer_sales_data(request):
+    try:
+        # Get all orders and group them by status
+        order_stats = Order.objects.values('status').annotate(
+            count=Count('id')
+        )
+        print(f"Order statistics: {order_stats}")
+        
+        # Prepare data for the chart
+        labels = []
+        counts = []
+        colors = {
+            'Pending': 'rgba(255, 206, 86, 0.6)',      # Yellow
+            'Out for Delivery': 'rgba(54, 162, 235, 0.6)',     # Blue
+            'Delivered': 'rgba(75, 192, 192, 0.6)'    # Green
+        }
+        background_colors = []
+        
+        # Define the order of statuses as you want them to appear
+        status_order = ['Pending', 'Out for Delivery', 'Delivered']
+        
+        # Sort the data according to the defined order
+        for status in status_order:
+            for stat in order_stats:
+                if stat['status'] == status:
+                    labels.append(stat['status'])
+                    counts.append(stat['count'])
+                    background_colors.append(colors.get(stat['status'], 'rgba(201, 203, 207, 0.6)'))
+        
+        data = {
+            'labels': labels,
+            'counts': counts,
+            'backgroundColor': background_colors
+        }
+        print(f"Sending data: {data}")
+        
+        return JsonResponse(data)
+    except Exception as e:
+        print(f"Error in farmer_sales_data: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)
