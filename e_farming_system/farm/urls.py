@@ -43,7 +43,8 @@ urlpatterns = [
     path('wishlist/', views.wishlist, name='wishlist'),
     path('viewcart', views.viewcart, name='viewcart'),
     path('cart/add/<int:crop_id>/', views.add_to_cart, name='add_to_cart'),
-    path('cart/update/<int:crop_id>/', views.update_cart, name='update_cart'),
+
+    path('cart/update/<int:cart_id>/', views.update_cart, name='update_cart'),
     path('delete/<int:cart_id>/', views.delete_from_cart, name='delete_from_cart'),
     path('verify-otp/', views.verify_otp, name='verify_otp'),
     path('enter-email/', views.enter_email, name='enter_email'),
@@ -70,8 +71,6 @@ urlpatterns = [
     path('government-schemes/', views.government_schemes, name='government_schemes'),
     path('chat/', views.chat_with_bot, name='chat_with_bot'),
     path('chat-interface/', views.chatbot_page, name='chatbot_page'),
-   
-    
     path('manage-delivery-requests/', views.manage_delivery_boy_requests, name='manage_delivery_boy_requests'),
     path('complete-delivery-details/<int:user_id>/', views.complete_delivery_boy_details, name='complete_delivery_boy_details'),
     path('delivery-boy-dashboard/', views.delivery_boy_dashboard, name='delivery_boy_dashboard'),
@@ -79,32 +78,24 @@ urlpatterns = [
     path('delivery-boy/<int:delivery_boy_id>/orders/', views.delivery_boy_orders, name='delivery_boy_orders'),
     path('update-order-status/', views.update_order_status, name='update_order_status'),
     path('check-new-orders/', views.check_new_orders, name='check_new_orders'),
-
-
     path('unassign-delivery-boy/<int:order_id>/', views.unassign_delivery_boy, name='unassign_delivery_boy'),
-
     path('predict-price/', views.get_predicted_price, name='predict-price'),
     path('predict-price-form/', views.show_predict_form, name='predict-price-form'),
-   
     path('get-subcategories/', views.get_subcategories, name='get_subcategories'),
-
     path('generate_qr/<int:order_id>/', views.generate_qr_code, name='generate_qr_code'),
     path('verify_qr/<int:order_id>/', views.verify_qr, name='verify_qr'),
     path("confirm-delivery/<int:order_id>/", views.confirm_delivery, name="confirm_delivery"),
-
     path('track_delivery/<int:order_id>/', views.track_delivery, name='track_delivery'),
     path('send_location/', views.send_location, name='send_location'),
-
     path('predict_spoilage/', views.predict_spoilage, name='predict_spoilage'),
-
     path('qr-scan/<int:order_id>/', views.qr_scan_details, name='qr_scan_details'),
     path('confirm-delivery-scan/<int:order_id>/', views.process_delivery_confirmation, name='process_delivery_confirmation'),
-
     path("demand-prediction/", views.predict_crop_demand, name="demand_prediction"),
     path('demand-prediction/', views.predict_crop_demand, name='predict_crop_demand'),
     path('plot-crop-demand/', views.plot_crop_demand, name='plot_crop_demand'),
-
     path('farmer-sales-data/', views.farmer_sales_data, name='farmer_sales_data'),
+    path('sales-analytics/', views.sales_analytics, name='sales_analytics'),
+    
 
 
 

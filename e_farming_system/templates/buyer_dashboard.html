@@ -6,54 +6,442 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Buyer Dashboard - E-Farming System</title>
     <link rel="stylesheet" href="{% static 'css/buyerdashstyle.css' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> <!-- For Icons -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        :root {
+            --primary-color: #2ecc71;
+            --secondary-color: #27ae60;
+            --background-color: #f0f2f5;
+            --text-color: #2c3e50;
+            --card-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+            background-image: url('data:image/svg+xml,%3Csvg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="%239C92AC" fill-opacity="0.05"%3E%3Cpath d="M0 0h20L0 20z"%2F%3E%3Cpath d="M20 0v20H0z"%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E');
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg,rgb(4, 66, 30),rgb(3, 94, 41));
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 0.8rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            height: 80px;
+        }
+
+        .sidebar-header h2 {
+            color: white;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .wrapper {
+            display: flex;
+            margin-top: 60px;
+            min-height: calc(100vh - 60px);
+        }
+
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(135deg, rgb(4, 66, 30), rgb(3, 94, 41));
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.15);
+            position: fixed;
+            left: 0;
+            top: 60px;
+            bottom: 0;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        .sidebar .components {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar .components li {
+            margin: 0.8rem 0;
+        }
+
+        .sidebar .components li a {
+            color: white;
+            text-decoration: none;
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            background: transparent;
+        }
+
+        .sidebar .components li a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+            padding-left: 1.5rem;
+        }
+
+        .sidebar .components li a i {
+            width: 24px;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+
+        .sidebar .components li a.active {
+            background: rgba(255, 255, 255, 0.15);
+            font-weight: 500;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            margin-left: 250px;
+            padding: 2rem;
+            max-width: calc(100% - 250px);
+        }
+
+        .welcome-section {
+            background: linear-gradient(135deg, #ffffff, #f8faf8);
+            border: 1px solid rgba(46, 204, 113, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            text-align: center;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .welcome-section h1 {
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .welcome-section p {
+            color: #666;
+            font-size: 1.1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-title {
+            color: var(--text-color);
+            font-size: 1.8rem;
+            margin: 2rem 0 1.5rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 2px solid var(--primary-color);
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background: var(--secondary-color);
+        }
+
+        .crop-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 25px;
+            padding: 1.5rem 0;
+        }
+
+        .crop-item {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(46, 204, 113, 0.1);
+            position: relative;
+        }
+
+        .crop-item:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .crop-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .crop-item:hover .crop-image {
+            transform: scale(1.1);
+        }
+
+        .crop-name {
+            padding: 1rem;
+            font-weight: 600;
+            color: var(--text-color);
+            text-align: center;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.9), rgba(255,255,255,1));
+            position: relative;
+            border-top: 1px solid rgba(46, 204, 113, 0.1);
+        }
+
+        .empty-message {
+            background: linear-gradient(135deg, #ffffff, #f8faf8);
+            padding: 2.5rem;
+            border-radius: 15px;
+            text-align: center;
+            margin: 1.5rem 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(46, 204, 113, 0.1);
+        }
+
+        .empty-message i {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            opacity: 0.8;
+        }
+
+        .profile-dropdown {
+            position: relative;
+        }
+
+        .dropbtn img {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            border: 2px solid white;
+            cursor: pointer;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background: white;
+            min-width: 180px;
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+            z-index: 1001;
+        }
+
+        .dropdown-content a {
+            color: var(--text-color);
+            padding: 0.8rem 1rem;
+            text-decoration: none;
+            display: block;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f0f0f0;
+            color: var(--primary-color);
+        }
+
+        .profile-dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        footer {
+            background: linear-gradient(135deg, #ffffff, #f8faf8);
+            border: 1px solid rgba(46, 204, 113, 0.1);
+            box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            text-align: center;
+            margin-top: 2rem;
+            border-radius: 12px;
+        }
+
+        /* Add these new styles for image overlay effect */
+        .crop-item a {
+            position: relative;
+            display: block;
+            overflow: hidden;
+        }
+
+        .crop-item a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.3));
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .crop-item:hover a::before {
+            opacity: 1;
+        }
+
+        /* Animation for welcome section */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Enhance the welcome section */
+        .welcome-section {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,%3Csvg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="%239C92AC" fill-opacity="0.05"%3E%3Cpath d="M0 0h20v20H0z"%2F%3E%3Cpath d="M20 20h20v20H20z"%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E');
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+        .welcome-section h1, .welcome-section p {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+            .content-wrapper {
+                margin-left: 200px;
+                max-width: calc(100% - 200px);
+            }
+            .crop-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+
+        @media (max-width: 576px) {
+            .sidebar {
+                width: 0;
+                display: none;
+            }
+            .content-wrapper {
+                margin-left: 0;
+                max-width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="navbar">
         <div class="sidebar-header">
-            <h2><i class="fas fa-leaf"></i> Buyer Dashboard</h2>
-        </div>
-        <div class="scrolling-text">
-            <h1>Welcome to the Crops World</h1> <!-- Scrolling welcome message -->
+            <h2><i class="fas fa-leaf"></i> E-Farming System</h2>
         </div>
         <div class="profile-dropdown">
             <a href="#" class="dropbtn">
                 <img src="{% static 'images/profile_icon.png' %}" alt="Profile Icon">
             </a>
             <div class="dropdown-content">
-                <a href="{% url 'view_profile' user.user_id %}">View Profile</a>
-                <a href="{% url 'updatebuyer' %}">Update Profile</a>
-                <a href="#" id="logout-btn">Logout</a> <!-- SweetAlert2 Logout -->
+                <a href="{% url 'view_profile' user.user_id %}"><i class="fas fa-user"></i> View Profile</a>
+                <a href="{% url 'updatebuyer' %}"><i class="fas fa-edit"></i> Update Profile</a>
+                <a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
             </div>
         </div>
     </div>
 
     <div class="wrapper">
-        <!-- Sidebar -->
         <nav class="sidebar">
             <ul class="components">
-                <li><a href="{% url 'buyer_dashboard' %}"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
-                <li><a href="{% url 'crops_page' %}"><i class="fas fa-seedling"></i> Crops Page</a></li>
-                <li><a href="{% url 'wishlist' %}"><i class="fas fa-heart"></i> My Wishlists</a></li>
-                <li><a href="{% url 'viewcart' %}"><i class="fas fa-shopping-cart"></i> My Cart</a></li> <!-- Cart Icon -->
-                <li><a href="{% url 'order_history' %}"><i class="fas fa-box"></i> Your Orders</a></li> <!-- New Orders Link -->
-                <li><a href="{% url 'predict-price-form' %}"><i class="fas fa-chart-line"></i> Predict Price</a></li>
-                {% comment %} <li><a href="{% url 'purchase_history' %}">Purchase History</a></li>  {% endcomment %}
+                <li><a href="{% url 'buyer_dashboard' %}"><i class="fas fa-home"></i>Dashboard</a></li>
+                <li><a href="{% url 'crops_page' %}"><i class="fas fa-seedling"></i>Crops Page</a></li>
+                <li><a href="{% url 'wishlist' %}"><i class="fas fa-heart"></i>My Wishlists</a></li>
+                <li><a href="{% url 'viewcart' %}"><i class="fas fa-shopping-cart"></i>My Cart</a></li>
+                <li><a href="{% url 'order_history' %}"><i class="fas fa-box"></i>Your Orders</a></li>
+                <li><a href="{% url 'predict-price-form' %}"><i class="fas fa-chart-line"></i>Predict Price</a></li>
             </ul>
         </nav>
 
-        <!-- Page Content -->
-        <div id="content">
-            <header>
-                <h1>Welcome, {{ buyer_name }}! to Buyer Dashboard</h1> <!-- Dynamic Buyer Name -->
-            </header>
+        <div class="content-wrapper">
+            <div class="welcome-section">
+                <h1>Welcome back, {{ buyer_name }}! 👋</h1>
+                <p>Discover fresh crops and amazing deals from our trusted farmers</p>
+            </div>
 
             <section>
-                <h2>Explore Available Crops</h2>
-                <p>Browse through the crops listed by farmers and make purchases.</p>
-                <!-- Add more content specific to buyer here -->
-            </section><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+                <h2 class="section-title">Recently Viewed Crops</h2>
+                {% if recent_crops %}
+                    <div class="crop-grid">
+                        {% for view in recent_crops %}
+                            <div class="crop-item">
+                                <a href="{% url 'crop_details' view.crop.id %}">
+                                    {% if view.crop.images.first %}
+                                        <img src="{{ view.crop.images.first.image.url }}" alt="{{ view.crop.name }}" class="crop-image">
+                                    {% else %}
+                                        <img src="{% static 'images/default_crop.jpg' %}" alt="{{ view.crop.name }}" class="crop-image">
+                                    {% endif %}
+                                    <div class="crop-name">{{ view.crop.name }}</div>
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-message">
+                        <i class="fas fa-search"></i>
+                        <p>You haven't viewed any crops yet. Start exploring!</p>
+                    </div>
+                {% endif %}
+
+                <h2 class="section-title">Recommended Crops</h2>
+                {% if recommended_crops %}
+                    <div class="crop-grid">
+                        {% for crop in recommended_crops %}
+                            <div class="crop-item">
+                                <a href="{% url 'crop_details' crop.id %}">
+                                    {% if crop.images.first %}
+                                        <img src="{{ crop.images.first.image.url }}" alt="{{ crop.name }}" class="crop-image">
+                                    {% else %}
+                                        <img src="{% static 'images/default_crop.jpg' %}" alt="{{ crop.name }}" class="crop-image">
+                                    {% endif %}
+                                    <div class="crop-name">{{ crop.name }}</div>
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-message">
+                        <i class="fas fa-leaf"></i>
+                        <p>No recommendations yet. Check back soon!</p>
+                    </div>
+                {% endif %}
+            </section>
 
             <footer>
                 <p>&copy; 2024 E-Farming System. All rights reserved.</p>
@@ -62,19 +450,20 @@
     </div>
 
     <script>
-        // SweetAlert2 for Logout Confirmation
         document.getElementById('logout-btn').addEventListener('click', function(e) {
             e.preventDefault();
             Swal.fire({
-                title: 'Are you sure you want to logout?',
+                title: 'Ready to leave?',
+                text: 'You will be logged out of your account',
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: 'darkgreen',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, logout!'
+                confirmButtonColor: '#2ecc71',
+                cancelButtonColor: '#e74c3c',
+                confirmButtonText: 'Yes, logout!',
+                cancelButtonText: 'Cancel'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = "{% url 'logout' %}"; // Redirect to logout URL
+                    window.location.href = "{% url 'logout' %}";
                 }
             });
         });

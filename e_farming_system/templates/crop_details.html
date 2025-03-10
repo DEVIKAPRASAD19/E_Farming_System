@@ -11,6 +11,8 @@
     <div class="top-left">
         <a href="{% url 'crops_page' %}" class="back-button">Back to Crops</a>
     </div>
+     <!-- Google Translate Dropdown -->
+     <div id="google_translate_element"></div>
     
     <div class="container">
         <!-- Message display block -->
@@ -176,6 +178,65 @@
         background: rgba(46, 125, 50, 0.15);
         transform: translateX(5px);
     }
+    body {
+        background-image: url('https://www.novethic.fr/wp-content/uploads/fileadmin/ecologie-agriculture-benefices-646x407.jpg');
+        background-size: cover; /* Ensures the image covers the entire page */
+        background-position: center; /* Centers the image */
+        background-repeat: no-repeat; /* Prevents tiling */
+        background-attachment: fixed; /* Keeps the background fixed while scrolling */
+        height: 100vh; /* Ensures the background extends to full viewport height */
+        width: 100vw;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    /* Ensure the container takes up the full height */
+    .container {
+        flex: 1; /* Allows the container to expand and fill the available space */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Improve Google Translate Dropdown appearance */
+    #google_translate_element {
+        text-align: right;
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        background: rgba(255, 255, 255, 0.7);
+        padding: 8px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* Style for Select Language Dropdown */
+    .goog-te-combo {
+        font-size: 16px;
+        padding: 5px;
+        border: 2px solid #4CAF50;
+        border-radius: 5px;
+        background: white;
+        color: #333;
+        cursor: pointer;
+    }
+    
+    .goog-te-combo:hover {
+        background: #f1f1f1;
+    }
+    
+    .goog-te-gadget-simple {
+        border: none !important;
+        background: none !important;
+        font-size: 16px !important;
+        color: #333 !important;
+    }
+    
+    
 </style>
 
 <script>
@@ -192,6 +253,48 @@
         varietySpan.textContent = formatText(varietySpan.textContent.trim());
     }
 </script>
+<!-- Google Translate Script -->
+<script>
+    function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+            pageLanguage: 'en',
+            includedLanguages: 'hi,ta,te,ml,kn,bn,gu,mr,pa,ur,or,as', // Indian languages
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+        }, 'google_translate_element');
+    }
+</script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<style>
+    #google_translate_element {
+        margin: 10px;
+        text-align: right;
+    }
+
+    .sold-out-badge {
+        background-color: #dc3545;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: bold;
+        display: inline-block;
+        animation: pulse 2s infinite;
+    }
+
+    {% if crop.stock == 0 %}
+    .action-buttons form:first-child {
+        display: none;
+    }
+    {% endif %}
+
+    @keyframes pulse {
+        0% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.05); opacity: 0.8; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+</style>
+
 
 </body>
 </html>

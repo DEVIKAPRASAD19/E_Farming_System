@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.db.models import Count
+from django.utils.timezone import now
 from django.contrib.auth.hashers import make_password, check_password
 
 
@@ -216,6 +217,14 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f"{self.crop.name} (x{self.quantity})"
+
+class CropViewHistory(models.Model):
+    buyer = models.ForeignKey('Registeruser', on_delete=models.CASCADE, related_name='viewed_crops')
+    crop = models.ForeignKey('Crop', on_delete=models.CASCADE)
+    viewed_at = models.DateTimeField(default=now)
+
+    def __str__(self):
+        return f"{self.buyer.name} viewed {self.crop.name} at {self.viewed_at}"
 
 
 class Notification(models.Model):

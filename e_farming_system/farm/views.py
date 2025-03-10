@@ -30,7 +30,7 @@ import random
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 import json
-from django.db.models import Sum
+from django.db.models import Sum, Max
 from datetime import datetime
 import pickle
 import os
@@ -40,6 +40,8 @@ import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 import qrcode
 from io import BytesIO
+from django.db.models import Count
+
 
 
 
@@ -252,18 +254,47 @@ def buyer_dashboard(request):
     if request.session.get('user_id'):
         buyer_id = request.session.get('user_id')  # Get buyer's user ID from session
         try:
-            # Fetch the buyer's details from the database
-            buyer = Registeruser.objects.get(user_id=buyer_id)
-            buyer_name = buyer.name  # Get buyer's name from the fetched user details
+            buyer = Registeruser.objects.get(user_id=buyer_id)  # Fetch buyer details
+            buyer_name = buyer.name  # Get buyer's name
+
+            # Get the most recent view for each crop using a subquery
+            recent_crops = CropViewHistory.objects.filter(
+                buyer=buyer,
+                viewed_at__in=CropViewHistory.objects.filter(buyer=buyer)
+                    .values('crop')
+                    .annotate(max_date=Max('viewed_at'))
+                    .values('max_date')
+            ).order_by('-viewed_at')[:5]
+
+            # Fetch popular crops (most viewed)
+            popular_crops = CropViewHistory.objects.values('crop').annotate(
+                view_count=Count('crop')
+            ).order_by('-view_count')[:3]  # Reduced to 3 to make room for new crops
             
-            # Render the dashboard with the user's details
-            return render(request, 'buyer_dashboard.html', {'buyer_name': buyer_name, 'user': buyer})
+            popular_crop_ids = [item['crop'] for item in popular_crops]
+            
+            # Fetch newly added crops (last 2 crops added)
+            new_crops = Crop.objects.filter(
+                status=True,  # Only active crops
+                is_verified=True  # Only verified crops
+            ).order_by('-id')[:2]  # Get the 2 most recently added crops
+            
+            # Combine popular and new crops
+            recommended_crops = list(Crop.objects.filter(id__in=popular_crop_ids))
+            for crop in new_crops:
+                if crop not in recommended_crops:  # Avoid duplicates
+                    recommended_crops.append(crop)
+
+            return render(request, 'buyer_dashboard.html', {
+                'buyer_name': buyer_name,
+                'user': buyer,
+                'recent_crops': recent_crops,
+                'recommended_crops': recommended_crops
+            })
         except Registeruser.DoesNotExist:
-            # Handle the case where the user does not exist in the database
             return redirect('login')
     else:
         return redirect('login')
-
 
 
 
@@ -491,30 +522,34 @@ def crops_page(request):
     return render(request, 'crops_page.html', {'crops': crops})
 
 
+from django.utils.timezone import now
+from .models import CropViewHistory  # Import the model
+
 def crop_details(request, id):
-    # Fetch the crop object based on the id and ensure it's activated (status=1)
-    crop_instance = get_object_or_404(Crop, id=id, status=True, is_verified=True)  # Assuming status=True is for active crops
+    # Fetch the crop object based on the id and ensure it's activated
+    crop_instance = get_object_or_404(Crop, id=id, status=True, is_verified=True)
 
-    if request.method == 'POST':
-        if 'add_to_wishlist' in request.POST:
-            user_id = request.session.get('user_id')  # Fetch the user ID from session
-            if user_id:
-                user = get_object_or_404(Registeruser, user_id=user_id)  # Get the user
-                # Add crop to the wishlist or fetch it if it already exists
-                wishlist_item, created = Wishlist.objects.get_or_create(user=user, crop=crop_instance)
+    # Track viewed crop if a user is logged in
+    user_id = request.session.get('user_id')  # Fetch user ID from session
+    if user_id:
+        buyer = get_object_or_404(Registeruser, user_id=user_id)
+        # Save crop view history
+        CropViewHistory.objects.create(buyer=buyer, crop=crop_instance, viewed_at=now())
 
-                if created:
-                    messages.success(request, 'Crop added to your wishlist!')
-                else:
-                    messages.info(request, 'This crop is already in your wishlist.')
+    # Handle wishlist addition
+    if request.method == 'POST' and 'add_to_wishlist' in request.POST:
+        if user_id:
+            wishlist_item, created = Wishlist.objects.get_or_create(user=buyer, crop=crop_instance)
+            if created:
+                messages.success(request, 'Crop added to your wishlist!')
             else:
-                messages.error(request, 'You need to log in to add crops to your wishlist.')
+                messages.info(request, 'This crop is already in your wishlist.')
+        else:
+            messages.error(request, 'You need to log in to add crops to your wishlist.')
 
-    # Render the crop details page with the fetched crop instance
-    context = {
-        'crop': crop_instance,
-    }
-    return render(request, 'crop_details.html', context)
+    # Render the crop details page
+    return render(request, 'crop_details.html', {'crop': crop_instance})
+
 
 
 def submit_feedback(request, crop_id):
@@ -838,30 +873,35 @@ def add_to_cart(request, crop_id):
 
 # View the cart
 def viewcart(request):
-    user_id = request.session['user_id']  # Assuming the user is logged in
-    user = get_object_or_404(Registeruser, pk=user_id)  # Fetch the user from session
-    cart_items = Cart.objects.filter(user=user)  # Fetch the cart items for the user
+    user_id = request.session.get('user_id')  # Get user_id from session
+    if not user_id:
+        return redirect('login')  # Redirect if not logged in
+        
+    user = get_object_or_404(Registeruser, user_id=user_id)  # Fetch the user
+    cart_items = Cart.objects.filter(user=user)  # Fetch cart items
 
-    # Calculate the total price of the cart
+    # Calculate total price
     total_price = sum([item.get_total_price() for item in cart_items])
 
     context = {
         'cart_items': cart_items,
-        'total_price': total_price
+        'total_price': total_price,
+        'user': user  # Add user to context
     }
-    return render(request, 'viewcart.html', context)  # Render the cart view
+    return render(request, 'viewcart.html', context)
 
 # Update the quantity of a crop in the cart
-def update_cart(request, cart_id):
+def update_cart(request, cart_id):  # Expect cart_id, NOT crop_id
+    cart_item = get_object_or_404(Cart, pk=cart_id)
     if request.method == 'POST':
-        cart_item = get_object_or_404(Cart, pk=cart_id)  # Fetch the cart item by its ID
-        quantity = int(request.POST.get('quantity', 1))  # Get the new quantity from POST data
-
+        quantity = int(request.POST.get('quantity', 1))
         if quantity > 0:
-            cart_item.quantity = quantity  # Update the cart item quantity
-            cart_item.save()  # Save the changes
+            cart_item.quantity = quantity
+            cart_item.save()
+        else:
+            cart_item.delete()  # Optional: Remove item if quantity is 0
+        return redirect('viewcart')
 
-        return redirect('viewcart')  # Redirect to the cart view
 
 # Remove a crop from the cart
 def delete_from_cart(request, cart_id):
@@ -1155,15 +1195,27 @@ def order_summary(request, order_id):
 
 
 def order_history(request):
-    # Check if the user ID is stored in the session
+    # Check if user is logged in
     user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('login')
     
-    if user_id:
-        # Fetch orders for the user based on the user ID from the session and order by order_date descending
-        orders = Order.objects.filter(user_id=user_id).order_by('-order_date')
-        return render(request, 'order_history.html', {'orders': orders})
-    else:
-        return redirect('login')  # Redirect to login if user ID is not found in session
+    try:
+        # Fetch the user object
+        user = Registeruser.objects.get(user_id=user_id)
+        # Fetch orders for the user
+        orders = Order.objects.filter(user=user).order_by('-order_date')
+        
+        context = {
+            'orders': orders,
+            'user': user,  # Explicitly add user to context
+        }
+        return render(request, 'order_history.html', context)
+    
+    except Registeruser.DoesNotExist:
+        # Handle case where user doesn't exist
+        request.session.flush()  # Clear invalid session
+        return redirect('login')
 
 
 
@@ -2343,3 +2395,38 @@ def farmer_sales_data(request):
     except Exception as e:
         print(f"Error in farmer_sales_data: {str(e)}")
         return JsonResponse({'error': str(e)}, status=500)
+    
+
+
+def sales_analytics(request):
+    # Fetch all sold crops from OrderItem
+    order_items = OrderItem.objects.select_related('crop')
+
+    # Dictionary to store aggregated crop sales data
+    crop_sales = {}
+
+    for item in order_items:
+        crop_name = item.crop.name
+        quantity = item.quantity
+        revenue = item.quantity * item.price  
+
+        if crop_name in crop_sales:
+            crop_sales[crop_name]['quantity'] += quantity
+            crop_sales[crop_name]['revenue'] += revenue
+        else:
+            crop_sales[crop_name] = {'quantity': quantity, 'revenue': revenue}
+
+    # Extract data for the template
+    crops = list(crop_sales.keys())
+    quantities = [data['quantity'] for data in crop_sales.values()]
+    revenues = [data['revenue'] for data in crop_sales.values()]
+
+    return render(request, 'sales.html', {
+        'crops': crops,
+        'quantities': quantities,
+        'revenues': revenues,
+        'total_crops': len(crops),
+        'total_quantity': sum(quantities),
+        'total_revenue': sum(revenues),
+    })
+

@@ -1,144 +1,177 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Wishlist</title>
-    <link rel="stylesheet" href="{% static 'css/wishlist.css' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+{% block title %}My Wishlist - E-Farming System{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="welcome-section">
+        <h1>My Wishlist</h1>
+        <p>Your favorite crops saved for later</p>
+    </div>
+
     <style>
-        /* Sidebar Styling */
-        .sidebar {
-            width: 240px;
-            background: linear-gradient(180deg, #1b5e20 0%, #2e7d32 100%);
-            padding: 22px;
-            display: flex;
-            flex-direction: column;
-            position: fixed;
-            height: 100vh;
-            z-index: 1000;
-            box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .sidebar-header {
-            text-align: center;
-            padding: 18px 0;
-            border-bottom: 1px solid #e6e6e6;
-            font-size: 20px; /* Larger font size for the header */
-            font-weight: bold;
-            color: white;
-        }
-
-        .components {
-            list-style: none;
-            padding: 0;
-        }
-
-        .components li {
-            padding: 25px 20px;
-        }
-
-        .components li a {
-            color: white;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            font-size: 24px; /* Adjust font size */
-        }
-
-        .components li a i {
-            margin-right: 10px;
-        }
-
-        /* Adjust main content to make room for sidebar */
-        .main-content {
-            margin-left: 250px;
+        .crop-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
             padding: 20px;
         }
+
+        .crop-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+
+        .crop-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .crop-image-container {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .crop-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .crop-card:hover .crop-image {
+            transform: scale(1.05);
+        }
+
+        .crop-details {
+            padding: 15px;
+        }
+
+        .crop-name {
+            font-size: 1.2rem;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .crop-price {
+            color: #27ae60;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            padding: 10px 15px;
+            background: #f8f9fa;
+        }
+
+        .action-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+
+        .view-btn {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .view-btn:hover {
+            background: #27ae60;
+        }
+
+        .remove-btn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .remove-btn:hover {
+            background: #c0392b;
+        }
+
+        .empty-wishlist {
+            text-align: center;
+            padding: 40px 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin: 20px;
+        }
+
+        .empty-wishlist i {
+            font-size: 3rem;
+            color: #95a5a6;
+            margin-bottom: 20px;
+        }
+
+        .empty-wishlist p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        .shop-now-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #2ecc71;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+
+        .shop-now-btn:hover {
+            background: #27ae60;
+        }
     </style>
-</head>
-<body>
 
-<!-- Sidebar -->
-<nav class="sidebar">
-    <div class="sidebar-header">
-        <h2>Welcome to Crops World</h2>
-    </div>
-    <ul class="components">
-        <li>
-            <a href="{% url 'buyer_dashboard' %}">
-                <i class="fas fa-home"></i>  Dashboard
-            </a>
-        </li>
-        <li>
-            <a href="{% url 'crops_page' %}">
-                <i class="fas fa-seedling"></i> Crops Page
-            </a>
-        </li>
-        <li>
-            <a href="{% url 'wishlist' %}">
-                <i class="fas fa-heart"></i> My Wishlists
-            </a>
-        </li>
-        <li>
-            <a href="{% url 'viewcart' %}">
-                <i class="fas fa-shopping-cart"></i> My Cart
-            </a>
-        </li>
-        <li>
-            <a href="{% url 'order_history' %}">
-                <i class="fas fa-box"></i> Your Orders
-            </a>
-        </li>
-    </ul>
-</nav>
-
-<!-- Main Content -->
-<div class="main-content">
-    <div class="container">
-        <!-- Back button -->
-        {% comment %} <div class="back-btn-container">
-            <a href="{% url 'crops_page' %}" class="back-btn">Back</a>
-        </div> {% endcomment %}
-
-        <h1>My Wishlist</h1>
-
-        {% if crops %}
-        <ul class="wishlist-items">
+    {% if crops %}
+        <div class="crop-grid">
             {% for crop in crops %}
-                <li class="wishlist-item">
-                    <div class="crop-image">
-                        <a href="{% url 'crop_details' crop.id %}"> <!-- Link to the crop detail page -->
-                            {% if crop.images.all %}
-                                <img src="{{ crop.images.first.image.url }}" alt="{{ crop.name }}">
-                            {% else %}
-                                <p>No image available</p>
-                            {% endif %}
-                        </a>
+                <div class="crop-card">
+                    <div class="crop-image-container">
+                        {% if crop.images.first %}
+                            <img src="{{ crop.images.first.image.url }}" alt="{{ crop.name }}" class="crop-image">
+                        {% else %}
+                            <img src="{% static 'images/default_crop.jpg' %}" alt="{{ crop.name }}" class="crop-image">
+                        {% endif %}
                     </div>
-                    <div class="crop-info">
-                        <h2>{{ crop.name }}</h2>
-                        <p>{{ crop.description }}</p>
-                        <span class="crop-price">Price: Rs.{{ crop.price }}</span>
+                    <div class="crop-details">
+                        <div class="crop-name">{{ crop.name }}</div>
+                        <div class="crop-price">₹{{ crop.price }} per kg</div>
                     </div>
-                    <div class="actions">
-                        <form method="POST" style="display:inline;">
+                    <div class="action-buttons">
+                        <a href="{% url 'crop_details' crop.id %}" class="action-btn view-btn">View Details</a>
+                        <form method="POST" style="flex: 1;">
                             {% csrf_token %}
-                            <input type="hidden" name="remove_crop_id" value="{{ crop.id }}"> <!-- Change to match your variable name -->
-                            <button type="submit" class="btn btn-danger">Remove</button>
+                            <input type="hidden" name="remove_crop_id" value="{{ crop.id }}">
+                            <button type="submit" class="action-btn remove-btn">Remove</button>
                         </form>
                     </div>
-                    
-                </li>
+                </div>
             {% endfor %}
-        </ul>
-        
-        {% else %}
-            <p class="empty-message">Your wishlist is empty.</p>
-        {% endif %}
-    </div>
+        </div>
+    {% else %}
+        <div class="empty-wishlist">
+            <i class="fas fa-heart-broken"></i>
+            <p>Your wishlist is empty</p>
+            <a href="{% url 'crops_page' %}" class="shop-now-btn">
+                <i class="fas fa-shopping-basket"></i> Browse Crops
+            </a>
+        </div>
+    {% endif %}
 </div>
-
-</body>
-</html>
+{% endblock %}

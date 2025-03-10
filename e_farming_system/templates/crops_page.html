@@ -1,416 +1,313 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crops</title>
-    <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
 
-        body {
-            min-height: 100vh;
-            background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)),
-                        url('https://images.pexels.com/photos/2165688/pexels-photo-2165688.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-        }
+{% block title %}Available Crops - E-Farming System{% endblock %}
 
-        /* Sidebar Styles */
-        .sidebar {
-            width: 280px;
-            background: linear-gradient(180deg, #1b5e20 0%, #2e7d32 100%);
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            position: fixed;
-            height: 100vh;
-            z-index: 1000;
-            box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .sidebar-header {
-            text-align: center;
-            padding: 20px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 20px;
-        }
-
-        .sidebar-header h2 {
-            color: white;
-            font-size: 28px;
-            font-weight: 600;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        .components {
-            list-style: none;
-            padding: 0;
-        }
-
-        .components li {
-            margin-bottom: 15px;
-        }
-
-        .components li a {
-            display: flex;
-            align-items: center;
-            padding: 15px;
-            color: white;
-            text-decoration: none;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            font-size: 22px;
-        }
-
-        .components li a:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateX(5px);
-        }
-
-        .components li a i {
-            margin-right: 15px;
-            font-size: 20px;
-            width: 25px;
-        }
-
-        /* Main Content Styles */
-        .main-content {
-            margin-left: 280px;
-            padding: 40px;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            background: white;
-            padding: 20px 30px;
-            border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-        }
-
-        .header h1 {
-            color: #2e7d32;
-            font-size: 28px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .search-section {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-            margin-bottom: 30px;
-        }
-
-        .search-section form {
-            display: flex;
-            gap: 15px;
-        }
-
-        .search-bar {
-            flex: 1;
-            padding: 12px 20px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
-
-        .search-bar:focus {
-            border-color: #2e7d32;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
-        }
-
-        .search-category {
-            padding: 12px 20px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 16px;
-            min-width: 150px;
-            cursor: pointer;
-        }
-
-        .search-btn {
-            background: linear-gradient(135deg, #2e7d32, #1b5e20);
-            color: white;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .search-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(46, 125, 50, 0.2);
-        }
-
-        .crops-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 25px;
-            padding: 20px 0;
-        }
-
-        .crop-item {
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
-        }
-
-        .crop-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        }
-
-        .crop-item a {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .crop-image {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-bottom: 1px solid #eee;
-        }
-
-        .crop-item h2 {
-            padding: 15px;
-            font-size: 18px;
-            color: #333;
-            text-align: center;
-        }
-
-        .crop-info {
-            padding: 15px;
-            background: white;
-        }
-
-        .crop-info h2 {
-            color: #333;
-            font-size: 18px;
-            margin-bottom: 8px;
-        }
-
-        .variety-tag {
-            display: inline-block;
-            background: rgba(46, 125, 50, 0.1);
-            color: #2e7d32;
-            padding: 4px 12px;
-            border-radius: 15px;
-            font-size: 14px;
-            margin-top: 5px;
-            transition: all 0.3s ease;
-        }
-
-        .variety-tag i {
-            margin-right: 5px;
-            font-size: 12px;
-        }
-
-        .crop-item:hover .variety-tag {
-            background: rgba(46, 125, 50, 0.15);
-            transform: translateX(5px);
-        }
-
-        .crop-item {
-            transition: all 0.3s ease;
-            border-radius: 15px;
-            overflow: hidden;
-            background: white;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .crop-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        }
-
-        .crop-image {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            transition: all 0.3s ease;
-        }
-
-        .crop-item:hover .crop-image {
-            transform: scale(1.05);
-        }
-
-        .crop-info {
-            position: relative;
-            z-index: 1;
-        }
-
-        @media (max-width: 1024px) {
-            .sidebar {
-                width: 90px;
-            }
-
-            .sidebar-header h2,
-            .components li a span {
-                display: none;
-            }
-
-            .components li a i {
-                margin: 0;
-                font-size: 24px;
-            }
-
-            .main-content {
-                margin-left: 90px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .main-content {
-                padding: 20px;
-            }
-
-            .search-section form {
-                flex-direction: column;
-            }
-
-            .header {
-                flex-direction: column;
-                gap: 15px;
-                text-align: center;
-            }
-
-            .crop-info h2 {
-                font-size: 16px;
-            }
-
-            .variety-tag {
-                font-size: 12px;
-                padding: 3px 10px;
-            }
-        }
-    </style>
-</head>
-<body>
-
-    <!-- Sidebar -->
-    <nav class="sidebar">
-        <div class="sidebar-header">
-            <h2>Welcome to Crops World</h2>
-        </div>
-        <ul class="components">
-            <li><br>
-                <a href="{% url 'buyer_dashboard' %}">
-                    <i class="fas fa-home"></i>
-                    <span>Dashboard</span>
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'crops_page' %}">
-                    <i class="fas fa-seedling"></i>
-                    <span>Crops Page</span>
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'wishlist' %}">
-                    <i class="fas fa-heart"></i>
-                    <span>My Wishlist</span>
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'viewcart' %}">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span>My Cart</span>
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'order_history' %}">
-                    <i class="fas fa-history"></i>
-                    <span>Your Orders</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
-
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="header">
-            <h1><i class="fas fa-leaf"></i> Available Crops</h1>
-        </div>
-
-        <!-- Search form -->
-        <div class="search-section">
-            <form method="GET" action="{% url 'search_crops' %}">
-                <input type="text" name="query" placeholder="Search for crops..." class="search-bar" value="{{ request.GET.query }}">
-                <select name="category" class="search-category">
-                    <option value="">All Categories</option>
-                    <option value="Vegetables" {% if request.GET.category == "Vegetables" %}selected{% endif %}>Vegetables</option>
-                    <option value="Fruits" {% if request.GET.category == "Fruits" %}selected{% endif %}>Fruits</option>
-                    <option value="Grains" {% if request.GET.category == "Grains" %}selected{% endif %}>Grains</option>
-                    <option value="Pulses" {% if request.GET.category == "Pulses" %}selected{% endif %}>Pulses</option>
-                    <option value="Spices" {% if request.GET.category == "Spices" %}selected{% endif %}>Spices</option>
-                    <option value="Other" {% if request.GET.category == "Other" %}selected{% endif %}>Other</option>
-                </select>
-                <button type="submit" class="search-btn">
-                    <i class="fas fa-search"></i> Search
-                </button>
-            </form>
-        </div>
-
-        <!-- Crops List -->
-        <div class="crops-list">
-            {% if crops %}
-                {% for crop in crops %}
-                <div class="crop-item">
-                    <a href="{% url 'crop_details' crop.id %}">
-                        <img src="{{ crop.images.first.image.url }}" alt="{{ crop.name }}" class="crop-image">
-                        <div class="crop-info">
-                            <h2>{{ crop.name }}</h2>
-                            {% if crop.subcategory %}
-                            <span class="variety-tag">
-                                <i class="fas fa-leaf"></i> {{ crop.subcategory.name }}
-                            </span>
-                            {% endif %}
-                        </div>
-                    </a>
-                </div>
-                {% endfor %}
-            {% else %}
-                <p class="no-crops">No crops found matching your search criteria.</p>
-            {% endif %}
-        </div>
+{% block content %}
+<div class="content-wrapper">
+    <div class="welcome-section">
+        <h1>Available Crops</h1>
+        <p>Browse our selection of fresh crops from trusted farmers</p>
     </div>
 
-    <!-- Add this script at the bottom of your page, just before </body> -->
-    <script>
-        // Function to format text by removing underscores and capitalizing words
-        function formatText(text) {
-            return text.split('_')
-                      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-                      .join(' ');
-        }
+    <!-- Search Section -->
+    <div class="search-container">
+        <form method="GET" action="{% url 'search_crops' %}" class="search-form">
+            <div class="search-input-group">
+                <input type="text" name="query" placeholder="Search for crops..." value="{{ request.GET.query }}" class="search-input">
+                <select name="category" class="category-select">
+                    <option value="">All Categories</option>
+                    <option value="Fruits" {% if selected_category == "Fruits" %}selected{% endif %}>Fruits</option>
+                    <option value="Vegetables" {% if selected_category == "Vegetables" %}selected{% endif %}>Vegetables</option>
+                    <option value="Spices" {% if selected_category == "Spices" %}selected{% endif %}>Spices</option>
+                    <option value="Grains" {% if selected_category == "Grains" %}selected{% endif %}>Grains</option>
+                    <option value="Pulses" {% if selected_category == "Pulses" %}selected{% endif %}>Pulses</option>
+                    <option value="Herbs" {% if selected_category == "Herbs" %}selected{% endif %}>Herbs</option>
+    
+                    {% for category in categories %}
+                        {% if category.name not in categories_list %}
+                            <option value="{{ category.name }}" {% if selected_category == category.name %}selected{% endif %}>
+                                {{ category.name }}
+                            </option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+                <button type="submit" class="search-button">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <br>
 
-        // Format all variety tags
-        document.querySelectorAll('.variety-tag').forEach(tag => {
-            const text = tag.textContent.trim();
-            const icon = '<i class="fas fa-leaf"></i> ';
-            tag.innerHTML = icon + formatText(text);
-        });
-    </script>
-</body>
-</html>
+    <!-- Crops Grid -->
+    <div class="crops-grid">
+        {% if crops %}
+            {% for crop in crops %}
+            <a href="{% url 'crop_details' crop.id %}" class="crop-card-link">
+                <div class="crop-card">
+                    <div class="crop-image-wrapper">
+                        {% if crop.images.exists %}
+                            {% with crop_image=crop.images.first %}
+                                {% if crop_image.image %}
+                                    <img src="{{ crop_image.image.url }}" 
+                                         alt="{{ crop.name }}" 
+                                         class="crop-image"
+                                         onerror="this.onerror=null; this.src='{% static 'images/default_crop.jpg' %}'; this.classList.add('error');">
+                                {% else %}
+                                    <img src="{% static 'images/default_crop.jpg' %}" 
+                                         alt="{{ crop.name }}" 
+                                         class="crop-image">
+                                {% endif %}
+                            {% endwith %}
+                        {% else %}
+                            <img src="{% static 'images/default_crop.jpg' %}" 
+                                 alt="{{ crop.name }}" 
+                                 class="crop-image">
+                        {% endif %}
+                    </div>
+                    <div class="crop-info">
+                        <h3 class="crop-title">{{ crop.name }}</h3>
+                        {% if crop.subcategory %}
+                            <div class="crop-category">
+                                <i class="fas fa-leaf"></i> {{ crop.subcategory.name }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        {% else %}
+            <div class="no-results">
+                <i class="fas fa-search"></i>
+                <h3>No crops found</h3>
+                <p>Try adjusting your search criteria</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .content-wrapper {
+        padding: 0;
+        background-color: #f8f9fa;
+        margin-left: 160px;
+        width: calc(100% - 220px);
+        box-sizing: border-box;
+    }
+
+    .welcome-section {
+        margin-bottom: 1rem;
+        padding: 0.5rem;
+    }
+
+    .search-container {
+        margin-bottom: 0.5rem;
+        padding: 0.5rem;
+        background: white;
+    }
+
+    .search-form {
+        width: 100%;
+    }
+
+    .search-input-group {
+        display: flex;
+        gap: 5px;
+    }
+
+    .search-input, .category-select, .search-button {
+        padding: 8px 12px;
+    }
+
+    .search-input {
+        flex: 1;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 16px;
+    }
+
+    .category-select {
+        min-width: 200px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 16px;
+        background-color: white;
+    }
+
+    .search-button {
+        padding: 12px 24px;
+        background-color: #2e7d32;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .search-button:hover {
+        background-color: #1b5e20;
+    }
+
+    .crops-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+        padding: 0 0.5rem;
+    }
+
+    .crop-card-link {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+    }
+
+    .crop-card-link:hover {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .crop-card {
+        width: 100%;
+        max-width: 100%;
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        margin: 0;
+    }
+
+    .crop-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .crop-image-wrapper {
+        height: 150px;
+    }
+
+    .crop-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+        background-color: #f5f5f5;
+    }
+
+    .crop-image.error {
+        object-fit: contain;
+        padding: 10px;
+    }
+
+    .crop-image-wrapper {
+        position: relative;
+        background-color: #f5f5f5;
+    }
+
+    .crop-image-wrapper::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #f5f5f5;
+        z-index: -1;
+    }
+
+    .crop-info {
+        padding: 15px;
+    }
+
+    .crop-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 8px;
+    }
+
+    .crop-category {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 12px;
+        background-color: #e8f5e9;
+        color: #2e7d32;
+        border-radius: 20px;
+        font-size: 14px;
+    }
+
+    .crop-category i {
+        font-size: 12px;
+    }
+
+    .no-results {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 40px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .no-results i {
+        font-size: 48px;
+        color: #ddd;
+        margin-bottom: 20px;
+    }
+
+    @media (min-width: 1200px) {
+        .crops-grid {
+            grid-template-columns: repeat(4, 1fr);
+        }
+    }
+
+    @media (max-width: 1199px) {
+        .crops-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    @media (max-width: 991px) {
+        .crops-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 767px) {
+        .content-wrapper {
+            margin-left: 0;
+            width: 100%;
+        }
+        .crops-grid {
+            grid-template-columns: repeat(1, 1fr);
+        }
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const images = document.querySelectorAll('.crop-image');
+    
+    images.forEach(img => {
+        // Handle image loading errors
+        img.onerror = function() {
+            this.onerror = null;
+            this.src = "{% static 'images/default_crop.jpg' %}";
+            this.classList.add('error');
+        };
+        
+        // Check if image is already loaded
+        if (img.complete && img.naturalHeight === 0) {
+            img.src = "{% static 'images/default_crop.jpg' %}";
+            img.classList.add('error');
+        }
+    });
+});
+</script>
+{% endblock %}
