@@ -111,6 +111,8 @@ class Cart(models.Model):
     crop = models.ForeignKey(Crop, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
     added_at = models.DateTimeField(auto_now_add=True)
+    delivery_date = models.DateField(null=True, blank=True)  # Store the delivery date
+
 
     class Meta:
         unique_together = ('user', 'crop')  # Prevent duplicates for the same user and crop
@@ -277,3 +279,33 @@ class DeliveryBoyDetail(models.Model):
 
     def __str__(self):
         return f"Delivery Details for {self.user.name}"
+
+
+
+class BulkOrder(models.Model):
+    buyer = models.ForeignKey(Registeruser, on_delete=models.CASCADE)  # Buyer placing the order
+    crop = models.ForeignKey('Crop', on_delete=models.CASCADE)  # Crop being ordered
+    quantity = models.PositiveIntegerField()  # Quantity in kg
+    total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)  # Total cost
+    delivery_date = models.DateField()  # Scheduled delivery date
+    status = models.CharField(
+        max_length=20, 
+        choices=[
+            ('Pending', 'Pending'),
+            ('Accepted', 'Accepted'),
+            ('Rejected', 'Rejected'),
+            ('Payment Pending', 'Payment Pending'),  # New status before payment
+            ('Out for Delivery', 'Out for Delivery'), 
+            ('Delivered', 'Delivered')
+        ], 
+        default='Pending'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)  # Timestamp of order placement
+    updated_at = models.DateTimeField(auto_now=True)  # Timestamp of last update
+    is_paid = models.BooleanField(default=False)  # Tracks payment status
+    cart_status = models.BooleanField(default=False)  # New field to track if added to cart
+
+
+
+    def __str__(self):
+        return f"{self.buyer.username} - {self.crop.name} - {self.status}"

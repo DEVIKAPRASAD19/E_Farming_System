@@ -1,0 +1,120 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Bulk Orders</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            margin-top: 50px;
+            max-width: 900px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            background: white;
+        }
+        th, td {
+            text-align: center;
+            padding: 12px;
+        }
+        th {
+            background: #28a745;
+            color: white;
+        }
+        .status-pending {
+            color: #ffc107;
+            font-weight: bold;
+        }
+        .status-accepted {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .status-rejected {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        .btn-action {
+            padding: 5px 10px;
+            border-radius: 5px;
+            text-decoration: none;
+            color: white;
+        }
+        .btn-accept {
+            background: #28a745;
+        }
+        .btn-reject {
+            background: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="text-center mb-4">
+            <i class="fas fa-box-open"></i> Manage Bulk Orders
+        </h2>
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th><i class="fas fa-user"></i> Buyer</th>
+                    <th><i class="fas fa-seedling"></i> Crop</th>
+                    <th><i class="fas fa-weight-hanging"></i> Quantity</th>
+                    <th><i class="fas fa-calendar-alt"></i> Delivery Date</th>
+                    <th><i class="fas fa-info-circle"></i> Status</th>
+                    <th><i class="fas fa-cogs"></i> Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in bulk_orders %}
+                <tr>
+                    <td>{{ order.buyer.name }}</td>
+                    <td>{{ order.crop.name }}</td>
+                    <td>{{ order.quantity }} kg</td>
+                    <td>{{ order.delivery_date }}</td>
+                    <td>
+                        <span class="
+                            {% if order.status == 'Pending' %}status-pending
+                            {% elif order.status == 'Accepted' %}status-accepted
+                            {% elif order.status == 'Rejected' %}status-rejected
+                            {% endif %}
+                        ">
+                            {{ order.status }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if order.status == "Pending" %}
+                        <a href="{% url 'update_bulk_order_status' order.id 'Accepted' %}" class="btn-action btn-accept">
+                            <i class="fas fa-check"></i> Accept
+                        </a>
+                        <a href="{% url 'update_bulk_order_status' order.id 'Rejected' %}" class="btn-action btn-reject">
+                            <i class="fas fa-times"></i> Reject
+                        </a>
+                        {% else %}
+                        <i class="fas fa-lock"></i> No Actions
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center text-muted">No bulk orders available.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

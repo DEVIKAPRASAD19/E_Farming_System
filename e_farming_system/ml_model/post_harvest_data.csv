@@ -1079,3 +1079,1958 @@ temperature,humidity,crop_type,storage_days,spoilage_days
 28,38,bitter gourd,10,8
 31,61,bitter gourd,4,6
 16,30,bitter gourd,9,8
+28,66,alfalfa,8,11
+16,36,amaranth,11,10
+35,62,basil,9,4
+21,59,beetroot,13,15
+27,72,black gram,11,7
+33,41,blueberry,3,4
+20,35,bottle gourd,19,6
+18,71,buckwheat,10,13
+34,40,cassava,9,3
+37,80,celery,9,11
+30,65,chickpea,8,7
+34,73,cilantro,10,14
+37,36,clover,8,2
+15,76,coffee,9,15
+17,60,cotton,13,5
+39,35,dates,15,4
+16,42,dragon fruit,14,15
+21,76,eggplant,14,2
+23,57,fig,13,9
+25,80,flax,9,5
+35,43,garlic,17,9
+25,35,ginger,12,12
+26,75,green gram,11,14
+18,45,guava,15,5
+24,61,jalapeno,18,7
+26,32,jute,4,6
+25,48,kidney bean,10,15
+27,54,kiwi,16,14
+34,36,leek,17,2
+28,34,lemongrass,3,13
+36,63,lettuce,15,5
+35,65,millet,6,15
+31,65,mint,18,3
+28,69,mustard,18,8
+16,72,nutmeg,5,4
+36,59,okra,3,3
+20,51,olive,19,15
+39,34,parsley,5,4
+22,56,pea,10,10
+23,45,peanut,11,8
+18,52,pistachio,4,8
+28,70,quinoa,18,9
+34,42,radish,7,13
+39,46,raspberry,3,14
+30,36,red gram,8,8
+19,46,rose apple,15,14
+27,49,saffron,7,7
+38,64,soybean,6,10
+29,34,sugarcane,11,2
+22,55,sweet potato,7,2
+26,46,tea,11,11
+37,31,turnip,14,15
+23,46,vanilla,9,3
+31,75,walnut,15,4
+30,65,yam,12,10
+29,62,black pepper,20,20
+24,78,black pepper,13,10
+26,61,black pepper,12,4
+28,68,black pepper,27,10
+30,72,black pepper,15,7
+20,80,black pepper,8,16
+28,81,black pepper,10,3
+32,61,black pepper,14,7
+29,56,black pepper,24,7
+29,89,black pepper,23,6
+28,71,black pepper,9,19
+28,69,black pepper,19,5
+29,52,black pepper,30,12
+34,83,black pepper,27,15
+32,53,black pepper,29,20
+23,62,black pepper,10,12
+24,86,black pepper,15,2
+28,89,black pepper,23,20
+34,77,black pepper,9,8
+24,56,black pepper,15,9
+21,58,black pepper,19,8
+24,77,black pepper,16,9
+29,86,black pepper,15,14
+30,72,black pepper,23,3
+32,90,black pepper,13,6
+27,66,black pepper,7,2
+27,61,black pepper,5,4
+25,78,black pepper,18,3
+35,86,black pepper,29,17
+24,85,black pepper,10,20
+28,69,cardamom,21,11
+34,61,cardamom,13,13
+22,53,cardamom,13,3
+21,83,cardamom,6,6
+25,70,cardamom,9,6
+23,90,cardamom,25,9
+22,74,cardamom,27,11
+35,68,cardamom,25,4
+35,67,cardamom,10,10
+27,75,cardamom,14,2
+20,70,cardamom,7,8
+33,77,cardamom,23,8
+26,65,cardamom,17,8
+31,90,cardamom,11,16
+21,64,cardamom,17,11
+21,81,cardamom,29,12
+21,59,cardamom,15,19
+20,61,cardamom,22,17
+35,84,cardamom,20,15
+24,85,cardamom,8,15
+25,55,cardamom,16,12
+21,56,cardamom,6,12
+22,67,cardamom,11,20
+35,85,cardamom,15,3
+31,82,cardamom,26,13
+31,68,cardamom,17,5
+31,84,cardamom,25,6
+23,77,cardamom,6,6
+34,88,cardamom,18,6
+21,71,cardamom,20,10
+27,87,clove,27,11
+23,62,clove,6,7
+26,77,clove,10,9
+24,51,clove,22,13
+35,71,clove,18,7
+21,89,clove,24,20
+31,79,clove,15,13
+26,81,clove,19,7
+35,76,clove,5,7
+23,76,clove,27,9
+29,55,clove,27,4
+24,73,clove,6,20
+29,82,clove,16,9
+30,82,clove,14,4
+28,63,clove,22,18
+27,62,clove,11,15
+30,55,clove,7,16
+23,75,clove,30,3
+24,54,clove,17,18
+29,52,clove,15,8
+32,58,clove,8,14
+20,68,clove,7,9
+34,75,clove,5,13
+24,87,clove,9,14
+33,74,clove,26,18
+31,71,clove,9,15
+22,62,clove,13,10
+24,56,clove,6,16
+26,62,clove,18,11
+33,67,clove,28,17
+28,76,cocoa,20,3
+32,84,cocoa,27,5
+24,61,cocoa,22,19
+28,90,cocoa,27,9
+32,83,cocoa,29,13
+22,87,cocoa,7,14
+29,85,cocoa,19,8
+23,50,cocoa,20,14
+20,54,cocoa,24,11
+29,58,cocoa,25,17
+22,51,cocoa,16,3
+21,86,cocoa,20,15
+35,89,cocoa,6,11
+32,69,cocoa,22,15
+30,73,cocoa,9,14
+21,57,cocoa,7,6
+32,79,cocoa,26,19
+27,88,cocoa,15,6
+21,73,cocoa,15,12
+35,76,cocoa,10,19
+26,90,cocoa,20,15
+34,79,cocoa,8,3
+30,76,cocoa,10,13
+32,54,cocoa,15,2
+33,56,cocoa,6,15
+21,51,cocoa,21,6
+34,86,cocoa,19,20
+25,62,cocoa,10,16
+28,83,cocoa,6,8
+33,87,cocoa,26,3
+28,73,coffee,13,19
+20,65,coffee,25,6
+29,72,coffee,11,12
+35,80,coffee,27,12
+29,77,coffee,9,11
+25,81,coffee,5,9
+33,86,coffee,29,9
+21,80,coffee,6,20
+29,62,coffee,25,17
+35,50,coffee,12,2
+25,89,coffee,5,13
+29,80,coffee,23,3
+21,82,coffee,8,7
+30,76,coffee,8,16
+35,59,coffee,28,16
+26,83,coffee,16,19
+28,88,coffee,10,16
+23,53,coffee,12,12
+27,70,coffee,14,7
+21,53,coffee,23,17
+21,65,coffee,29,2
+22,69,coffee,8,7
+32,52,coffee,19,18
+35,82,coffee,17,8
+24,89,coffee,11,17
+26,88,coffee,8,2
+31,62,coffee,27,2
+22,90,coffee,28,16
+32,66,coffee,21,20
+26,85,coffee,26,5
+30,55,coconut,5,9
+28,51,coconut,19,2
+31,77,coconut,20,16
+29,55,coconut,13,2
+24,88,coconut,15,15
+34,61,coconut,13,17
+34,73,coconut,11,17
+25,89,coconut,8,8
+35,69,coconut,16,4
+23,76,coconut,10,11
+30,79,coconut,28,13
+28,82,coconut,17,14
+34,65,coconut,9,11
+26,79,coconut,9,5
+35,69,coconut,13,19
+26,83,coconut,15,8
+33,69,coconut,28,16
+33,55,coconut,13,11
+23,60,coconut,17,11
+28,82,coconut,27,16
+28,79,coconut,7,16
+23,85,coconut,30,18
+33,88,coconut,16,5
+31,52,coconut,19,3
+29,56,coconut,5,13
+22,79,coconut,16,5
+29,66,coconut,18,20
+29,65,coconut,22,13
+30,81,coconut,29,14
+29,54,coconut,17,14
+32,86,ginger,15,10
+21,52,ginger,20,12
+21,69,ginger,11,9
+22,86,ginger,10,14
+33,67,ginger,24,9
+24,51,ginger,12,5
+35,68,ginger,29,14
+27,64,ginger,17,18
+22,75,ginger,19,12
+30,81,ginger,24,2
+26,79,ginger,18,5
+23,75,ginger,24,18
+25,59,ginger,30,8
+28,65,ginger,11,12
+30,67,ginger,9,17
+24,66,ginger,27,20
+34,84,ginger,8,8
+22,54,ginger,8,15
+35,70,ginger,9,14
+33,84,ginger,21,15
+25,83,ginger,19,6
+35,52,ginger,18,11
+25,79,ginger,16,19
+29,79,ginger,28,16
+35,80,ginger,27,20
+33,69,ginger,21,9
+31,54,ginger,29,8
+26,64,ginger,16,8
+27,74,ginger,10,13
+26,61,ginger,6,20
+23,83,nutmeg,22,18
+35,58,nutmeg,19,14
+20,77,nutmeg,11,3
+26,69,nutmeg,6,7
+25,89,nutmeg,26,20
+29,86,nutmeg,10,8
+28,72,nutmeg,11,17
+21,83,nutmeg,15,15
+29,73,nutmeg,17,2
+22,80,nutmeg,22,16
+23,87,nutmeg,11,9
+34,61,nutmeg,9,3
+29,74,nutmeg,14,20
+22,53,nutmeg,9,7
+30,83,nutmeg,10,10
+24,56,nutmeg,18,8
+29,78,nutmeg,10,8
+23,55,nutmeg,26,13
+26,64,nutmeg,24,12
+32,73,nutmeg,29,4
+25,77,nutmeg,21,15
+20,87,nutmeg,20,18
+32,83,nutmeg,8,12
+20,81,nutmeg,18,18
+27,80,nutmeg,22,9
+24,82,nutmeg,29,16
+35,55,nutmeg,6,18
+33,70,nutmeg,30,5
+21,67,nutmeg,14,5
+31,79,nutmeg,8,10
+21,87,rubber,22,13
+26,78,rubber,12,15
+20,73,rubber,24,8
+29,64,rubber,20,11
+31,71,rubber,13,12
+30,85,rubber,19,13
+20,80,rubber,11,7
+20,78,rubber,13,9
+26,90,rubber,12,11
+29,69,rubber,26,13
+34,79,rubber,7,19
+23,81,rubber,10,18
+26,74,rubber,13,19
+23,58,rubber,25,20
+28,71,rubber,23,7
+27,51,rubber,25,8
+30,60,rubber,17,19
+25,63,rubber,17,10
+23,69,rubber,11,20
+34,74,rubber,15,2
+22,90,rubber,19,12
+20,71,rubber,26,4
+23,77,rubber,21,18
+29,52,rubber,18,13
+30,66,rubber,26,2
+34,76,rubber,15,6
+33,78,rubber,8,18
+29,59,rubber,21,6
+24,81,rubber,7,3
+22,57,rubber,26,3
+21,76,tapioca,28,18
+33,64,tapioca,30,14
+34,57,tapioca,22,6
+20,66,tapioca,14,14
+30,69,tapioca,22,6
+21,53,tapioca,29,18
+35,86,tapioca,6,2
+29,56,tapioca,10,6
+35,64,tapioca,6,4
+33,88,tapioca,13,15
+21,60,tapioca,27,16
+23,54,tapioca,11,12
+31,68,tapioca,14,10
+22,71,tapioca,8,9
+30,56,tapioca,20,4
+35,60,tapioca,21,10
+22,78,tapioca,16,14
+21,79,tapioca,25,3
+29,58,tapioca,19,9
+35,73,tapioca,8,8
+29,83,tapioca,25,14
+29,70,tapioca,9,14
+22,62,tapioca,6,9
+22,90,tapioca,25,10
+33,61,tapioca,11,10
+32,65,tapioca,30,10
+31,68,tapioca,5,12
+27,75,tapioca,29,13
+29,76,tapioca,11,8
+29,74,tapioca,13,6
+29,58,turmeric,11,4
+20,50,turmeric,15,20
+21,84,turmeric,15,4
+29,67,turmeric,14,5
+32,87,turmeric,18,13
+35,65,turmeric,11,19
+24,67,turmeric,15,7
+30,65,turmeric,25,16
+33,74,turmeric,16,6
+25,68,turmeric,24,9
+24,60,turmeric,24,19
+30,78,turmeric,25,7
+26,83,turmeric,20,4
+26,52,turmeric,24,8
+24,77,turmeric,14,20
+21,70,turmeric,22,3
+34,64,turmeric,27,6
+21,83,turmeric,27,14
+28,64,turmeric,8,4
+34,50,turmeric,20,3
+24,53,turmeric,15,6
+30,65,turmeric,14,19
+24,86,turmeric,10,4
+27,59,turmeric,10,17
+32,51,turmeric,17,14
+32,83,turmeric,29,14
+33,71,turmeric,17,20
+23,51,turmeric,5,17
+31,58,turmeric,13,2
+26,76,turmeric,14,4
+28,65,banana,12,5
+23,80,banana,26,2
+24,81,banana,16,14
+23,78,banana,5,20
+34,88,banana,17,6
+34,51,banana,12,18
+20,53,banana,19,18
+35,74,banana,16,11
+35,55,banana,27,18
+30,53,banana,27,10
+23,52,banana,11,5
+32,65,banana,7,3
+24,60,banana,10,9
+23,59,banana,24,11
+25,79,banana,17,11
+27,73,banana,9,11
+21,70,banana,27,2
+35,59,banana,6,9
+24,90,banana,27,14
+29,79,banana,7,14
+35,50,banana,18,2
+34,65,banana,11,3
+21,85,banana,23,20
+28,62,banana,14,19
+30,66,banana,15,11
+23,69,banana,29,13
+26,53,banana,25,9
+29,77,banana,5,8
+33,65,banana,5,9
+35,78,banana,5,14
+32,55,jackfruit,12,13
+35,55,jackfruit,26,18
+24,67,jackfruit,12,10
+22,83,jackfruit,17,6
+35,80,jackfruit,15,17
+34,63,jackfruit,16,12
+27,83,jackfruit,16,14
+26,69,jackfruit,13,6
+30,64,jackfruit,17,15
+33,56,jackfruit,26,20
+24,90,jackfruit,6,6
+25,82,jackfruit,5,13
+27,72,jackfruit,5,10
+30,90,jackfruit,17,10
+28,81,jackfruit,21,6
+23,76,jackfruit,8,10
+30,53,jackfruit,8,16
+23,85,jackfruit,29,14
+33,65,jackfruit,15,16
+21,84,jackfruit,9,8
+31,68,jackfruit,5,6
+25,67,jackfruit,11,16
+34,53,jackfruit,9,17
+32,59,jackfruit,29,14
+30,69,jackfruit,12,4
+24,76,jackfruit,12,7
+27,85,jackfruit,18,5
+22,62,jackfruit,14,9
+28,74,jackfruit,16,12
+26,52,jackfruit,20,10
+22,88,mango,8,16
+27,51,mango,11,15
+32,73,mango,7,14
+33,52,mango,29,11
+22,62,mango,15,11
+20,54,mango,12,17
+20,50,mango,29,11
+26,86,mango,13,17
+27,83,mango,11,20
+25,63,mango,18,11
+31,78,mango,8,9
+27,88,mango,29,19
+32,51,mango,9,3
+23,82,mango,18,5
+34,72,mango,8,6
+29,64,mango,22,19
+24,85,mango,26,17
+28,70,mango,27,17
+21,56,mango,6,2
+29,90,mango,20,5
+20,86,mango,19,8
+25,74,mango,30,13
+24,68,mango,5,7
+34,62,mango,10,19
+31,89,mango,18,12
+26,52,mango,8,4
+31,51,mango,30,6
+27,72,mango,15,14
+21,75,mango,16,15
+24,58,mango,29,17
+34,65,pineapple,8,13
+34,83,pineapple,20,3
+22,82,pineapple,15,15
+33,69,pineapple,25,5
+35,69,pineapple,30,18
+26,59,pineapple,18,17
+33,81,pineapple,26,3
+35,52,pineapple,26,14
+29,72,pineapple,26,5
+25,58,pineapple,24,7
+28,85,pineapple,19,17
+33,55,pineapple,11,14
+20,61,pineapple,23,4
+22,59,pineapple,16,12
+25,76,pineapple,19,7
+29,86,pineapple,5,2
+26,60,pineapple,7,3
+24,67,pineapple,5,20
+33,64,pineapple,22,19
+22,76,pineapple,14,5
+26,70,pineapple,30,17
+32,51,pineapple,13,19
+33,53,pineapple,7,13
+30,55,pineapple,16,5
+34,50,pineapple,7,18
+21,83,pineapple,24,19
+35,59,pineapple,22,15
+33,77,pineapple,8,9
+34,75,pineapple,13,7
+22,75,pineapple,17,8
+20,56,basil,18,13
+34,53,basil,14,15
+34,41,basil,20,13
+18,52,basil,3,11
+23,78,basil,12,2
+30,45,basil,17,10
+34,53,basil,11,9
+16,73,basil,10,15
+37,44,basil,13,6
+27,37,basil,10,4
+32,59,basil,14,3
+34,78,basil,20,15
+35,74,basil,13,3
+18,78,basil,8,10
+38,41,basil,15,12
+36,59,basil,17,7
+23,37,basil,10,5
+27,48,basil,9,3
+19,57,basil,5,12
+27,32,basil,15,7
+26,35,basil,17,10
+15,45,basil,12,3
+26,41,basil,9,10
+21,47,basil,5,4
+24,50,basil,8,14
+32,70,basil,16,8
+30,41,basil,17,6
+39,49,basil,17,9
+39,64,basil,9,7
+21,53,beetroot,14,7
+25,62,beetroot,20,10
+40,37,beetroot,9,13
+29,61,beetroot,3,11
+30,47,beetroot,3,6
+35,53,beetroot,19,7
+28,72,beetroot,8,9
+38,47,beetroot,18,13
+19,76,beetroot,16,9
+31,69,beetroot,12,5
+40,73,beetroot,19,6
+22,34,beetroot,9,9
+27,55,beetroot,6,13
+32,43,beetroot,12,6
+21,80,beetroot,17,4
+30,79,beetroot,17,8
+40,48,beetroot,7,6
+21,76,beetroot,20,2
+30,32,beetroot,19,7
+40,46,beetroot,7,5
+30,80,beetroot,17,11
+31,65,beetroot,4,9
+40,52,beetroot,9,5
+39,79,beetroot,13,2
+39,53,beetroot,5,5
+25,79,beetroot,10,2
+39,48,beetroot,7,14
+27,32,beetroot,12,4
+19,56,beetroot,17,2
+31,45,black gram,12,5
+36,76,black gram,14,2
+39,31,black gram,9,12
+15,64,black gram,14,4
+16,74,black gram,4,13
+15,67,black gram,20,13
+27,63,black gram,9,5
+40,68,black gram,18,9
+26,60,black gram,3,7
+24,33,black gram,6,9
+19,37,black gram,11,9
+26,60,black gram,18,12
+31,33,black gram,6,8
+18,77,black gram,7,4
+36,31,black gram,16,7
+33,41,black gram,16,5
+19,66,black gram,20,4
+28,67,black gram,6,2
+15,73,black gram,4,6
+22,68,black gram,8,2
+19,75,black gram,19,10
+40,33,black gram,4,3
+35,71,black gram,8,7
+39,48,black gram,3,11
+32,43,black gram,16,7
+35,65,black gram,16,11
+20,61,black gram,12,5
+21,44,black gram,12,7
+39,79,black gram,15,4
+24,47,blueberry,19,11
+15,35,blueberry,16,8
+34,75,blueberry,19,11
+31,56,blueberry,5,3
+23,69,blueberry,14,4
+15,74,blueberry,7,5
+36,78,blueberry,10,9
+24,60,blueberry,10,5
+17,72,blueberry,10,11
+35,73,blueberry,19,11
+22,32,blueberry,19,9
+22,41,blueberry,12,5
+24,64,blueberry,7,14
+27,34,blueberry,12,5
+26,31,blueberry,15,15
+35,34,blueberry,6,7
+16,71,blueberry,10,6
+30,64,blueberry,5,3
+15,40,blueberry,16,6
+27,75,blueberry,13,11
+26,68,blueberry,3,10
+16,38,blueberry,18,15
+32,59,blueberry,16,12
+24,48,blueberry,16,4
+22,76,blueberry,8,10
+28,73,blueberry,5,10
+22,63,blueberry,9,3
+18,68,blueberry,19,8
+33,33,blueberry,6,6
+29,79,bottle gourd,17,9
+24,66,bottle gourd,13,6
+32,59,bottle gourd,19,10
+28,80,bottle gourd,15,15
+31,30,bottle gourd,16,11
+35,74,bottle gourd,10,5
+17,59,bottle gourd,10,11
+18,78,bottle gourd,4,7
+39,49,bottle gourd,13,7
+30,31,bottle gourd,20,5
+27,55,bottle gourd,14,11
+40,36,bottle gourd,7,4
+28,50,bottle gourd,7,13
+32,48,bottle gourd,19,3
+22,31,bottle gourd,3,4
+24,46,bottle gourd,17,5
+26,41,bottle gourd,16,14
+37,61,bottle gourd,7,9
+16,51,bottle gourd,5,8
+30,32,bottle gourd,13,7
+15,54,bottle gourd,20,11
+16,73,bottle gourd,7,12
+19,69,bottle gourd,9,14
+25,72,bottle gourd,16,11
+18,36,bottle gourd,6,10
+30,61,bottle gourd,18,11
+24,59,bottle gourd,16,5
+28,40,bottle gourd,3,4
+18,54,bottle gourd,10,3
+25,63,buckwheat,19,7
+31,45,buckwheat,9,13
+31,74,buckwheat,14,7
+21,43,buckwheat,10,7
+40,59,buckwheat,15,8
+24,61,buckwheat,18,10
+16,42,buckwheat,15,5
+16,65,buckwheat,8,12
+38,66,buckwheat,17,2
+37,56,buckwheat,15,14
+35,37,buckwheat,12,11
+34,56,buckwheat,3,14
+37,40,buckwheat,3,10
+20,79,buckwheat,17,10
+19,44,buckwheat,19,14
+22,76,buckwheat,8,2
+40,35,buckwheat,19,8
+26,40,buckwheat,7,11
+38,53,buckwheat,11,3
+39,30,buckwheat,12,6
+26,53,buckwheat,18,7
+15,60,buckwheat,15,2
+22,64,buckwheat,12,11
+39,65,buckwheat,17,8
+24,79,buckwheat,10,10
+39,80,buckwheat,14,3
+22,65,buckwheat,17,10
+25,76,buckwheat,6,15
+36,78,buckwheat,8,4
+29,47,cassava,20,10
+26,54,cassava,15,6
+31,30,cassava,7,15
+21,56,cassava,16,11
+26,42,cassava,18,5
+22,33,cassava,4,15
+20,72,cassava,14,9
+32,58,cassava,18,6
+37,77,cassava,3,10
+23,63,cassava,10,10
+17,67,cassava,12,2
+30,59,cassava,3,5
+19,35,cassava,13,5
+25,74,cassava,20,7
+21,72,cassava,18,15
+26,64,cassava,7,9
+21,71,cassava,20,14
+37,75,cassava,3,12
+32,44,cassava,4,3
+28,63,cassava,15,13
+40,70,cassava,8,9
+30,47,cassava,3,2
+31,79,cassava,3,5
+37,42,cassava,20,15
+23,61,cassava,16,8
+21,78,cassava,19,3
+17,54,cassava,12,5
+33,74,cassava,5,2
+31,48,cassava,9,12
+27,78,celery,11,3
+38,53,celery,13,14
+18,62,celery,4,9
+40,33,celery,19,11
+17,39,celery,9,13
+32,54,celery,12,9
+23,41,celery,9,13
+26,71,celery,17,4
+20,80,celery,17,3
+40,60,celery,3,8
+29,61,celery,13,14
+31,66,celery,14,9
+16,38,celery,15,7
+38,40,celery,5,12
+37,52,celery,12,3
+27,44,celery,9,7
+31,66,celery,4,13
+35,41,celery,10,7
+36,54,celery,12,13
+15,72,celery,3,3
+40,51,celery,19,3
+21,58,celery,9,9
+28,50,celery,12,11
+19,69,celery,9,10
+38,43,celery,13,12
+30,40,celery,9,8
+23,78,celery,4,3
+29,47,celery,17,13
+40,36,celery,16,8
+30,31,Kadala,7,4
+33,66,Kadala,14,3
+27,41,Kadala,19,3
+28,73,Kadala,14,4
+30,36,Kadala,17,7
+39,36,Kadala,11,2
+24,44,Kadala,4,7
+20,42,Kadala,5,14
+29,37,Kadala,20,3
+32,69,Kadala,15,4
+33,57,Kadala,7,4
+18,50,Kadala,17,6
+38,64,Kadala,4,5
+29,76,Kadala,17,5
+39,56,Kadala,4,13
+28,38,Kadala,18,15
+30,62,Kadala,10,10
+24,41,Kadala,6,5
+24,73,Kadala,16,7
+29,35,Kadala,19,8
+30,58,Kadala,20,6
+21,53,Kadala,5,11
+36,51,Kadala,4,9
+25,60,Kadala,20,6
+37,46,Kadala,14,11
+22,37,Kadala,10,11
+20,65,Kadala,14,2
+30,67,Kadala,19,9
+18,34,Kadala,17,10
+31,58,Coriander,3,7
+15,57,Coriander,11,6
+23,55,Coriander,4,15
+39,50,Coriander,10,2
+24,70,Coriander,11,10
+38,33,Coriander,17,15
+20,62,Coriander,8,15
+36,32,Coriander,17,8
+33,62,Coriander,3,12
+27,53,Coriander,6,4
+37,59,Coriander,13,10
+20,80,Coriander,4,5
+15,46,Coriander,4,13
+22,46,Coriander,13,13
+36,47,Coriander,3,4
+32,68,Coriander,12,4
+19,41,Coriander,3,8
+16,77,Coriander,16,6
+18,79,Coriander,14,4
+27,56,Coriander,13,11
+24,80,Coriander,17,6
+29,61,Coriander,16,3
+32,74,Coriander,8,3
+27,70,Coriander,11,6
+34,48,Coriander,16,12
+35,42,Coriander,7,2
+17,41,Coriander,11,4
+15,39,Coriander,5,5
+28,66,Coriander,16,2
+23,68,clover,8,14
+34,57,clover,17,2
+30,73,clover,17,15
+17,74,clover,14,6
+40,72,clover,10,5
+18,50,clover,17,8
+26,71,clover,8,7
+15,52,clover,9,9
+37,49,clover,19,13
+23,56,clover,9,10
+32,75,clover,14,15
+34,63,clover,13,3
+23,80,clover,8,3
+28,80,clover,20,3
+39,77,clover,18,14
+28,38,clover,5,11
+37,52,clover,8,15
+32,48,clover,18,2
+21,71,clover,6,12
+15,65,clover,20,15
+26,62,clover,7,6
+37,69,clover,12,2
+18,43,clover,13,2
+25,41,clover,9,15
+30,35,clover,14,6
+38,78,clover,20,14
+35,61,clover,14,2
+32,69,clover,13,5
+15,69,clover,11,4
+21,47,cotton,12,15
+34,60,cotton,4,5
+28,66,cotton,17,10
+21,53,cotton,20,7
+23,43,cotton,13,13
+18,37,cotton,7,8
+26,37,cotton,12,2
+31,68,cotton,13,6
+37,48,cotton,3,13
+38,72,cotton,9,2
+22,32,cotton,5,15
+40,45,cotton,20,11
+28,74,cotton,19,5
+24,73,cotton,5,4
+22,80,cotton,8,2
+15,38,cotton,11,11
+22,68,cotton,9,6
+27,78,cotton,6,14
+15,56,cotton,16,10
+28,46,cotton,10,14
+21,80,cotton,18,3
+18,36,cotton,11,8
+20,40,cotton,5,3
+16,33,cotton,6,11
+23,66,cotton,12,8
+21,72,cotton,7,4
+21,34,cotton,13,8
+39,68,cotton,15,3
+25,73,cotton,8,13
+25,55,dates,19,8
+39,51,dates,4,13
+40,35,dates,8,14
+16,65,dates,18,6
+23,38,dates,4,15
+15,39,dates,20,5
+33,65,dates,10,4
+29,74,dates,10,11
+22,52,dates,13,5
+36,80,dates,17,12
+33,48,dates,10,10
+32,75,dates,3,2
+30,62,dates,8,14
+17,60,dates,14,7
+20,54,dates,9,11
+35,75,dates,18,8
+17,41,dates,20,10
+22,38,dates,14,4
+25,67,dates,16,6
+37,39,dates,7,12
+25,56,dates,7,8
+22,67,dates,5,10
+24,73,dates,20,15
+24,49,dates,14,6
+22,80,dates,17,7
+31,37,dates,3,6
+21,59,dates,18,5
+35,79,dates,6,5
+23,73,dates,11,6
+17,67,dragon fruit,17,7
+34,46,dragon fruit,9,13
+28,34,dragon fruit,3,14
+33,33,dragon fruit,4,11
+26,34,dragon fruit,6,5
+31,35,dragon fruit,20,10
+23,78,dragon fruit,18,5
+21,39,dragon fruit,14,14
+24,79,dragon fruit,5,6
+15,37,dragon fruit,12,6
+20,56,dragon fruit,8,4
+36,58,dragon fruit,19,2
+24,50,dragon fruit,19,14
+19,77,dragon fruit,19,2
+15,57,dragon fruit,6,10
+31,46,dragon fruit,16,15
+34,43,dragon fruit,3,4
+22,59,dragon fruit,16,4
+24,71,dragon fruit,16,3
+36,48,dragon fruit,20,14
+20,43,dragon fruit,15,12
+16,61,dragon fruit,6,4
+30,31,dragon fruit,7,10
+15,40,dragon fruit,20,7
+26,41,dragon fruit,13,3
+26,60,dragon fruit,13,7
+27,41,dragon fruit,17,3
+37,39,dragon fruit,16,4
+30,42,dragon fruit,11,4
+24,48,eggplant,10,15
+39,53,eggplant,19,6
+23,77,eggplant,12,13
+27,80,eggplant,15,8
+33,45,eggplant,18,9
+28,30,eggplant,3,4
+31,63,eggplant,9,14
+32,32,eggplant,16,12
+24,72,eggplant,6,6
+17,38,eggplant,16,13
+38,52,eggplant,16,11
+33,79,eggplant,18,6
+26,58,eggplant,9,8
+26,66,eggplant,5,7
+26,69,eggplant,6,14
+31,78,eggplant,3,3
+40,62,eggplant,4,2
+35,55,eggplant,10,4
+39,80,eggplant,6,9
+30,51,eggplant,9,7
+36,80,eggplant,15,4
+24,30,eggplant,15,14
+18,73,eggplant,16,9
+38,30,eggplant,15,3
+35,75,eggplant,5,15
+22,50,eggplant,15,2
+22,30,eggplant,14,3
+15,78,eggplant,5,12
+24,41,eggplant,20,2
+34,38,fig,3,12
+22,49,fig,18,11
+23,48,fig,12,6
+36,42,fig,4,15
+28,67,fig,8,10
+21,68,fig,8,3
+29,30,fig,6,3
+22,51,fig,10,7
+24,44,fig,20,12
+18,73,fig,17,12
+21,62,fig,14,3
+29,34,fig,15,8
+33,76,fig,3,10
+22,33,fig,19,2
+35,34,fig,3,5
+37,56,fig,14,11
+22,34,fig,14,13
+25,48,fig,16,13
+20,64,fig,3,9
+37,50,fig,7,13
+32,63,fig,18,2
+23,51,fig,10,13
+38,59,fig,16,12
+18,45,fig,7,3
+29,79,fig,15,2
+26,30,fig,6,15
+19,66,fig,19,10
+36,66,fig,12,3
+33,33,fig,4,11
+24,35,flax,10,2
+22,77,flax,17,9
+38,56,flax,9,7
+18,71,flax,7,11
+40,37,flax,13,3
+32,61,flax,18,15
+31,70,flax,15,2
+17,30,flax,20,10
+25,69,flax,3,8
+29,44,flax,6,14
+24,54,flax,4,14
+24,30,flax,6,12
+38,36,flax,11,9
+26,66,flax,8,9
+40,68,flax,12,9
+39,56,flax,12,11
+37,67,flax,16,10
+38,39,flax,4,6
+18,60,flax,9,3
+31,40,flax,14,6
+33,44,flax,4,7
+36,44,flax,18,5
+17,43,flax,10,11
+22,67,flax,14,12
+38,68,flax,12,8
+33,75,flax,10,2
+16,63,flax,8,12
+30,48,flax,17,2
+37,44,flax,3,10
+30,55,garlic,3,4
+39,33,garlic,4,14
+31,47,garlic,15,7
+24,80,garlic,9,8
+18,43,garlic,11,9
+25,49,garlic,8,10
+37,64,garlic,11,11
+19,73,garlic,8,2
+26,46,garlic,10,6
+34,76,garlic,15,14
+31,36,garlic,16,14
+39,31,garlic,11,6
+24,52,garlic,18,6
+17,79,garlic,12,11
+22,47,garlic,9,2
+18,61,garlic,3,12
+32,64,garlic,8,14
+26,34,garlic,16,10
+29,54,garlic,13,10
+28,47,garlic,16,10
+18,70,garlic,10,10
+26,56,garlic,14,11
+23,32,garlic,8,5
+34,36,garlic,7,5
+27,65,garlic,6,6
+26,53,garlic,5,14
+38,60,garlic,4,11
+37,36,garlic,6,13
+18,67,garlic,14,10
+39,52,green gram,12,13
+15,65,green gram,10,13
+36,67,green gram,3,10
+20,42,green gram,9,12
+21,73,green gram,13,13
+25,54,green gram,6,4
+26,63,green gram,12,13
+15,71,green gram,11,7
+39,47,green gram,12,3
+20,56,green gram,9,14
+22,31,green gram,18,8
+23,61,green gram,13,5
+33,46,green gram,10,3
+38,40,green gram,15,9
+20,34,green gram,19,12
+32,44,green gram,3,8
+16,71,green gram,3,4
+34,38,green gram,11,10
+27,30,green gram,4,4
+26,51,green gram,3,12
+15,42,green gram,3,5
+33,67,green gram,13,8
+32,43,green gram,4,14
+17,53,green gram,12,5
+33,46,green gram,18,15
+20,49,green gram,19,7
+29,67,green gram,14,9
+26,77,green gram,9,11
+40,53,green gram,4,15
+24,61,guava,13,10
+29,59,guava,20,14
+34,78,guava,10,12
+28,76,guava,14,11
+35,68,guava,9,7
+32,63,guava,20,4
+28,66,guava,6,3
+19,68,guava,7,14
+18,66,guava,8,4
+39,33,guava,19,10
+24,37,guava,12,11
+34,62,guava,3,7
+21,76,guava,18,5
+19,48,guava,8,2
+16,33,guava,20,2
+25,30,guava,3,8
+33,76,guava,16,8
+24,65,guava,13,8
+17,51,guava,19,12
+40,62,guava,8,4
+18,65,guava,7,3
+32,74,guava,8,7
+20,65,guava,13,8
+19,69,guava,5,3
+28,57,guava,4,13
+30,50,guava,7,4
+35,51,guava,17,13
+19,52,guava,5,8
+15,47,guava,20,13
+30,45,jalapeno,9,5
+26,56,jalapeno,20,11
+28,71,jalapeno,16,6
+29,69,jalapeno,14,8
+40,50,jalapeno,19,5
+22,53,jalapeno,19,15
+17,49,jalapeno,16,10
+37,63,jalapeno,18,2
+23,34,jalapeno,19,12
+23,63,jalapeno,5,15
+32,32,jalapeno,6,9
+19,53,jalapeno,16,12
+15,80,jalapeno,13,6
+38,68,jalapeno,14,4
+27,33,jalapeno,14,7
+27,65,jalapeno,15,10
+20,63,jalapeno,18,10
+34,43,jalapeno,18,9
+30,45,jalapeno,16,7
+30,66,jalapeno,19,7
+16,34,jalapeno,14,6
+29,69,jalapeno,12,3
+30,30,jalapeno,8,14
+32,57,jalapeno,18,11
+37,39,jalapeno,6,14
+31,47,jalapeno,3,12
+32,51,jalapeno,9,9
+20,40,jalapeno,6,2
+19,39,jalapeno,9,2
+17,57,jute,13,15
+24,48,jute,9,9
+17,64,jute,16,4
+31,57,jute,10,4
+36,35,jute,14,8
+28,50,jute,10,13
+17,46,jute,14,12
+40,39,jute,17,2
+16,54,jute,4,2
+18,72,jute,6,14
+28,66,jute,16,7
+17,32,jute,17,2
+34,77,jute,19,6
+33,35,jute,15,4
+39,77,jute,7,4
+32,60,jute,8,7
+35,47,jute,15,8
+18,77,jute,18,7
+28,51,jute,5,5
+34,36,jute,11,14
+40,78,jute,8,7
+31,37,jute,14,7
+33,63,jute,3,7
+28,68,jute,16,13
+25,50,jute,16,10
+17,43,jute,8,6
+31,69,jute,8,7
+31,39,jute,3,3
+27,68,jute,11,3
+20,70,kidney bean,7,2
+20,38,kidney bean,10,10
+22,54,kidney bean,14,13
+22,39,kidney bean,16,13
+27,56,kidney bean,13,14
+37,51,kidney bean,18,14
+30,42,kidney bean,6,13
+36,50,kidney bean,12,6
+19,31,kidney bean,10,9
+20,60,kidney bean,19,9
+38,31,kidney bean,6,3
+23,32,kidney bean,11,13
+28,57,kidney bean,3,12
+18,52,kidney bean,13,14
+36,68,kidney bean,10,4
+32,64,kidney bean,5,9
+17,65,kidney bean,7,15
+27,37,kidney bean,10,5
+29,50,kidney bean,6,13
+31,31,kidney bean,6,3
+30,35,kidney bean,4,15
+37,43,kidney bean,7,9
+18,46,kidney bean,16,11
+31,66,kidney bean,19,9
+28,80,kidney bean,9,9
+30,79,kidney bean,13,7
+32,60,kidney bean,8,12
+22,34,kidney bean,10,11
+31,46,kidney bean,20,15
+21,61,kiwi,18,13
+20,59,kiwi,18,5
+18,54,kiwi,17,13
+23,43,kiwi,8,4
+22,66,kiwi,6,9
+31,43,kiwi,18,5
+25,62,kiwi,8,6
+21,72,kiwi,10,12
+15,80,kiwi,19,3
+23,68,kiwi,18,5
+34,42,kiwi,3,6
+26,76,kiwi,13,2
+23,54,kiwi,10,15
+26,62,kiwi,15,10
+22,75,kiwi,3,10
+17,49,kiwi,14,7
+38,47,kiwi,9,6
+40,62,kiwi,13,13
+39,77,kiwi,10,2
+18,72,kiwi,19,3
+36,58,kiwi,16,8
+20,50,kiwi,14,11
+31,52,kiwi,11,15
+32,75,kiwi,7,3
+17,44,kiwi,3,15
+20,64,kiwi,13,11
+37,59,kiwi,11,13
+28,79,kiwi,5,14
+34,32,kiwi,6,7
+30,65,leek,4,7
+37,75,leek,15,4
+28,51,leek,14,4
+16,44,leek,12,5
+32,63,leek,18,4
+25,75,leek,6,5
+18,35,leek,20,9
+36,31,leek,9,11
+30,65,leek,8,4
+39,30,leek,10,4
+30,53,leek,12,13
+31,57,leek,3,5
+24,43,leek,6,13
+39,61,leek,10,2
+27,44,leek,3,12
+39,60,leek,14,11
+29,54,leek,5,13
+19,52,leek,11,4
+17,62,leek,13,4
+36,38,leek,7,2
+30,76,leek,10,9
+15,66,leek,13,2
+38,34,leek,20,7
+26,74,leek,16,11
+33,53,leek,7,4
+36,65,leek,7,2
+26,49,leek,16,10
+35,46,leek,14,3
+27,79,leek,9,15
+32,35,lemongrass,10,8
+25,37,lemongrass,18,11
+22,30,lemongrass,6,11
+32,77,lemongrass,7,5
+21,33,lemongrass,18,14
+20,46,lemongrass,16,12
+24,71,lemongrass,3,11
+21,59,lemongrass,8,2
+35,45,lemongrass,8,12
+32,40,lemongrass,13,11
+34,66,lemongrass,9,8
+20,33,lemongrass,6,11
+36,46,lemongrass,13,9
+28,67,lemongrass,20,15
+27,50,lemongrass,3,4
+28,58,lemongrass,8,9
+33,52,lemongrass,12,2
+21,54,lemongrass,19,15
+22,79,lemongrass,13,9
+24,69,lemongrass,18,13
+26,61,lemongrass,17,9
+30,42,lemongrass,15,6
+35,80,lemongrass,5,14
+22,64,lemongrass,6,15
+23,58,lemongrass,13,12
+30,74,lemongrass,6,9
+36,57,lemongrass,17,3
+32,33,lemongrass,20,11
+15,42,lemongrass,14,2
+20,34,lettuce,13,8
+16,30,lettuce,7,11
+40,30,lettuce,13,7
+24,30,lettuce,16,4
+29,43,lettuce,8,14
+20,66,lettuce,15,10
+23,56,lettuce,4,15
+37,75,lettuce,19,10
+39,53,lettuce,5,3
+21,47,lettuce,12,6
+38,75,lettuce,4,8
+19,67,lettuce,3,3
+36,74,lettuce,9,14
+25,63,lettuce,12,15
+40,36,lettuce,18,9
+21,80,lettuce,8,7
+30,58,lettuce,12,5
+21,56,lettuce,7,10
+37,33,lettuce,14,7
+29,35,lettuce,3,6
+17,50,lettuce,15,11
+16,80,lettuce,5,2
+39,75,lettuce,19,15
+30,78,lettuce,10,12
+33,39,lettuce,11,2
+31,53,lettuce,10,11
+30,42,lettuce,11,15
+27,53,lettuce,20,13
+40,60,lettuce,18,9
+20,58,millet,3,14
+38,54,millet,13,12
+19,42,millet,19,3
+23,63,millet,9,3
+25,62,millet,3,11
+36,46,millet,13,13
+40,56,millet,16,8
+21,56,millet,17,14
+28,55,millet,10,7
+29,65,millet,11,11
+15,35,millet,18,11
+16,67,millet,20,15
+33,43,millet,18,4
+36,59,millet,12,14
+16,74,millet,5,7
+36,33,millet,19,8
+28,78,millet,11,2
+21,54,millet,18,13
+30,35,millet,14,13
+17,56,millet,5,5
+22,44,millet,14,9
+27,75,millet,17,14
+35,53,millet,8,13
+25,33,millet,5,6
+40,80,millet,17,10
+36,80,millet,10,11
+26,34,millet,13,14
+18,62,millet,10,10
+17,57,millet,7,10
+16,77,mint,16,9
+35,35,mint,20,13
+23,65,mint,14,5
+40,70,mint,6,15
+21,55,mint,4,6
+20,41,mint,3,5
+40,58,mint,8,8
+36,33,mint,9,13
+40,45,mint,4,12
+31,61,mint,18,13
+15,54,mint,15,14
+39,70,mint,13,3
+28,80,mint,14,13
+21,40,mint,15,13
+35,70,mint,17,8
+36,65,mint,6,2
+33,68,mint,14,4
+33,70,mint,8,12
+25,68,mint,12,11
+39,75,mint,14,8
+34,33,mint,10,10
+19,42,mint,4,14
+40,62,mint,17,9
+29,45,mint,4,13
+34,46,mint,20,5
+32,30,mint,11,10
+16,72,mint,5,13
+26,80,mint,14,9
+34,43,mint,16,12
+32,48,mustard,14,15
+40,49,mustard,5,4
+35,71,mustard,4,13
+31,43,mustard,11,8
+20,76,mustard,14,14
+33,77,mustard,11,15
+39,67,mustard,8,5
+20,76,mustard,14,11
+32,78,mustard,18,14
+33,67,mustard,15,4
+21,54,mustard,17,2
+35,31,mustard,18,13
+21,58,mustard,16,3
+20,35,mustard,3,13
+30,73,mustard,16,11
+28,56,mustard,20,5
+28,46,mustard,20,3
+28,58,mustard,15,6
+38,42,mustard,9,4
+38,54,mustard,20,6
+27,45,mustard,3,7
+24,59,mustard,16,7
+38,61,mustard,15,11
+27,35,mustard,15,9
+21,58,mustard,18,7
+29,68,mustard,20,14
+34,73,mustard,12,3
+33,39,mustard,18,11
+24,30,mustard,10,12
+23,34,okra,20,8
+20,64,okra,12,3
+27,42,okra,16,13
+37,64,okra,19,8
+30,77,okra,8,6
+29,40,okra,16,8
+34,53,okra,12,3
+33,57,okra,16,3
+32,32,okra,7,14
+16,63,okra,17,2
+36,36,okra,9,6
+36,57,okra,11,11
+35,31,okra,3,12
+24,51,okra,7,11
+39,67,okra,10,7
+29,53,okra,18,5
+20,65,okra,20,4
+26,40,okra,7,8
+29,33,okra,12,3
+19,72,okra,8,10
+39,76,okra,5,9
+19,51,okra,8,7
+39,80,okra,20,9
+24,54,okra,11,11
+27,59,okra,14,11
+34,55,okra,16,9
+37,43,okra,13,6
+30,53,okra,18,12
+39,37,okra,11,6
+23,40,olive,15,12
+34,36,olive,9,14
+34,70,olive,9,4
+36,45,olive,11,4
+38,58,olive,11,14
+15,58,olive,9,8
+22,43,olive,11,11
+21,48,olive,18,11
+16,53,olive,16,9
+21,75,olive,5,12
+38,34,olive,18,8
+26,47,olive,19,14
+19,34,olive,12,8
+34,40,olive,6,10
+25,52,olive,5,14
+16,42,olive,5,12
+23,54,olive,9,9
+19,52,olive,11,9
+22,42,olive,11,10
+30,67,olive,19,7
+17,47,olive,17,11
+38,30,olive,11,3
+34,53,olive,4,7
+34,76,olive,4,3
+31,33,olive,14,12
+30,39,olive,19,8
+35,44,olive,10,11
+36,32,olive,8,7
+30,65,olive,6,15
+36,59,parsley,9,15
+40,62,parsley,19,9
+16,30,parsley,3,12
+20,57,parsley,19,9
+37,56,parsley,5,13
+18,30,parsley,11,14
+37,51,parsley,8,6
+20,45,parsley,20,13
+23,59,parsley,12,8
+17,50,parsley,6,9
+16,67,parsley,9,12
+38,57,parsley,12,7
+23,72,parsley,9,11
+23,46,parsley,11,12
+39,67,parsley,18,4
+17,48,parsley,8,9
+19,44,parsley,4,8
+23,56,parsley,10,10
+39,38,parsley,5,4
+15,76,parsley,14,10
+40,60,parsley,9,15
+29,40,parsley,12,2
+37,75,parsley,18,15
+27,50,parsley,11,9
+27,52,parsley,12,6
+30,31,parsley,14,13
+40,71,parsley,4,4
+21,30,parsley,11,6
+18,58,parsley,17,11
+21,32,pea,17,6
+24,41,pea,20,6
+38,74,pea,7,9
+34,66,pea,19,5
+19,44,pea,9,2
+36,43,pea,11,5
+21,72,pea,10,8
+20,65,pea,13,8
+22,33,pea,11,5
+37,31,pea,4,5
+22,45,pea,6,4
+18,79,pea,17,9
+37,69,pea,9,7
+25,66,pea,8,14
+24,72,pea,4,13
+28,59,pea,20,9
+28,55,pea,12,2
+17,59,pea,3,15
+35,79,pea,19,7
+15,68,pea,6,3
+21,43,pea,6,14
+15,44,pea,5,11
+22,54,pea,20,6
+17,46,pea,9,13
+19,72,pea,8,9
+22,53,pea,14,14
+23,41,pea,8,2
+19,31,pea,20,7
+29,72,pea,17,8
+17,42,peanut,14,9
+22,31,peanut,20,5
+23,34,peanut,8,2
+21,48,peanut,8,8
+36,60,peanut,9,9
+30,40,peanut,13,8
+38,73,peanut,3,3
+21,64,peanut,4,3
+35,75,peanut,12,5
+19,58,peanut,16,10
+30,54,peanut,16,11
+22,35,peanut,12,7
+15,78,peanut,8,11
+30,76,peanut,20,9
+39,57,peanut,4,8
+33,77,peanut,20,4
+15,69,peanut,20,10
+33,30,peanut,10,10
+26,70,peanut,9,5
+37,59,peanut,15,15
+34,60,peanut,14,4
+26,56,peanut,4,11
+32,31,peanut,16,11
+32,48,peanut,11,5
+25,38,peanut,18,2
+25,54,peanut,8,7
+17,62,peanut,15,7
+29,75,peanut,12,13
+22,48,peanut,13,4
+29,70,pistachio,12,8
+31,67,pistachio,5,15
+34,50,pistachio,14,4
+22,54,pistachio,14,4
+40,80,pistachio,10,6
+30,77,pistachio,13,12
+33,75,pistachio,11,13
+37,80,pistachio,12,14
+40,45,pistachio,4,11
+21,64,pistachio,17,4
+17,31,pistachio,19,6
+26,47,pistachio,20,8
+25,64,pistachio,19,12
+40,72,pistachio,16,11
+20,49,pistachio,16,13
+20,68,pistachio,11,9
+21,75,pistachio,13,7
+21,51,pistachio,8,5
+18,73,pistachio,8,8
+15,75,pistachio,13,3
+32,58,pistachio,18,3
+40,44,pistachio,7,15
+40,41,pistachio,18,12
+37,73,pistachio,16,14
+38,57,pistachio,7,4
+30,71,pistachio,7,12
+32,77,pistachio,18,3
+18,40,pistachio,18,2
+29,58,pistachio,12,6
+17,60,quinoa,15,5
+38,31,quinoa,4,12
+38,44,quinoa,3,9
+28,57,quinoa,10,14
+20,46,quinoa,20,10
+37,58,quinoa,18,9
+16,58,quinoa,11,14
+40,77,quinoa,11,2
+28,77,quinoa,8,13
+30,66,quinoa,9,3
+29,63,quinoa,3,13
+27,62,quinoa,18,5
+33,46,quinoa,7,2
+18,43,quinoa,7,4
+15,47,quinoa,13,4
+22,57,quinoa,15,4
+21,31,quinoa,15,6
+19,61,quinoa,11,11
+22,39,quinoa,20,7
+22,45,quinoa,10,10
+15,53,quinoa,14,10
+39,74,quinoa,11,12
+26,80,quinoa,8,10
+21,78,quinoa,12,7
+40,44,quinoa,15,14
+39,54,quinoa,20,7
+31,79,quinoa,14,13
+25,50,quinoa,17,9
+25,71,quinoa,11,6
+27,73,radish,12,2
+37,76,radish,17,14
+37,41,radish,11,7
+27,75,radish,19,14
+38,47,radish,19,14
+39,40,radish,8,5
+18,75,radish,18,14
+21,32,radish,14,8
+22,37,radish,20,8
+16,56,radish,6,12
+37,80,radish,4,14
+34,48,radish,14,14
+16,42,radish,15,9
+37,37,radish,4,7
+15,47,radish,9,8
+29,56,radish,6,7
+38,47,radish,8,6
+24,35,radish,10,4
+31,49,radish,9,7
+20,76,radish,7,9
+39,55,radish,12,2
+31,69,radish,14,11
+33,75,radish,10,6
+18,60,radish,17,6
+28,37,radish,4,8
+23,50,radish,4,4
+21,32,radish,10,14
+37,71,radish,9,6
+39,30,radish,16,11
+32,34,raspberry,4,8
+35,55,raspberry,18,10
+29,58,raspberry,20,6
+37,40,raspberry,15,4
+29,63,raspberry,19,14
+25,45,raspberry,17,12
+26,73,raspberry,12,11
+19,66,raspberry,19,13
+38,60,raspberry,6,12
+29,40,raspberry,4,4
+26,61,raspberry,20,6
+18,69,raspberry,10,9
+21,42,raspberry,5,9
+37,48,raspberry,7,4
+18,58,raspberry,6,8
+21,50,raspberry,5,15
+25,38,raspberry,6,6
+36,66,raspberry,10,12
+35,61,raspberry,14,15
+17,46,raspberry,6,15
+29,40,raspberry,11,11
+15,75,raspberry,20,11
+40,59,raspberry,11,15
+40,74,raspberry,15,13
+19,64,raspberry,4,5
+24,32,raspberry,15,4
+15,34,raspberry,13,3
+16,36,raspberry,13,14
+18,38,raspberry,17,5
+15,72,red gram,13,12
+23,76,red gram,17,8
+19,59,red gram,11,5
+39,37,red gram,15,8
+18,75,red gram,3,6
+26,66,red gram,15,5
+28,47,red gram,6,11
+21,72,red gram,13,7
+20,62,red gram,7,11
+16,37,red gram,6,14
+25,62,red gram,9,2
+22,48,red gram,12,10
+27,61,red gram,3,13
+16,34,red gram,15,7
+38,75,red gram,7,9
+19,51,red gram,4,6
+25,63,red gram,6,4
+20,54,red gram,15,8
+19,70,red gram,17,10
+39,38,red gram,16,12
+24,54,red gram,7,10
+20,55,red gram,8,3
+32,34,red gram,6,4
+37,33,red gram,4,10
+34,37,red gram,19,9
+40,47,red gram,10,9
+29,54,red gram,20,10
+16,41,red gram,8,10
+36,43,red gram,16,15
+34,73,rose apple,4,7
+20,80,rose apple,13,12
+16,71,rose apple,8,11
+29,65,rose apple,5,11
+28,34,rose apple,11,3
+15,69,rose apple,16,5
+19,46,rose apple,7,9
+39,66,rose apple,20,9
+27,72,rose apple,11,2
+18,35,rose apple,8,4
+22,49,rose apple,16,13
+15,67,rose apple,20,13
+15,66,rose apple,14,12
+31,57,rose apple,17,2
+28,70,rose apple,20,5
+33,44,rose apple,6,9
+36,75,rose apple,14,14
+29,64,rose apple,18,5
+24,64,rose apple,20,5
+32,30,rose apple,4,13
+39,73,rose apple,18,15
+19,65,rose apple,7,6
+26,67,rose apple,12,10
+25,30,rose apple,11,2
+25,45,rose apple,19,4
+37,43,rose apple,8,4
+34,51,rose apple,17,6
+26,38,rose apple,14,6
+20,51,rose apple,15,11
+16,56,saffron,12,14
+17,61,saffron,10,3
+18,55,saffron,11,10
+17,54,saffron,19,5
+33,64,saffron,13,10
+23,35,saffron,12,6
+29,51,saffron,3,2
+35,78,saffron,12,9
+26,71,saffron,17,13
+22,41,saffron,9,11
+27,65,saffron,19,15
+22,39,saffron,13,8
+28,38,saffron,18,14
+17,64,saffron,15,3
+31,51,saffron,15,14
+22,72,saffron,7,2
+27,67,saffron,7,6
+28,66,saffron,10,15
+28,80,saffron,4,8
+17,40,saffron,4,5
+32,50,saffron,19,11
+29,57,saffron,17,14
+19,74,saffron,15,9
+36,78,saffron,20,4
+20,51,saffron,6,10
+17,36,saffron,19,12
+16,35,saffron,8,9
+27,60,saffron,8,4
+29,48,saffron,4,5
+24,55,soybean,13,9
+20,66,soybean,3,13
+35,34,soybean,15,2
+40,56,soybean,14,5
+19,65,soybean,5,4
+37,50,soybean,10,3
+29,30,soybean,20,6
+24,64,soybean,4,5
+15,62,soybean,19,10
+34,58,soybean,13,6
+24,46,soybean,11,5
+38,67,soybean,20,6
+30,33,soybean,20,9
+37,51,soybean,13,2
+16,41,soybean,9,7
+37,80,soybean,8,14
+36,68,soybean,3,3
+25,44,soybean,19,6
+29,44,soybean,20,9
+24,39,soybean,15,15
+27,66,soybean,16,7
+18,32,soybean,10,6
+16,46,soybean,7,9
+40,48,soybean,14,11
+26,77,soybean,18,14
+39,70,soybean,15,7
+18,61,soybean,3,11
+25,52,soybean,3,6
+36,65,soybean,5,7
+39,80,sugarcane,20,4
+30,38,sugarcane,16,9
+31,31,sugarcane,17,14
+38,53,sugarcane,15,2
+26,71,sugarcane,19,2
+35,37,sugarcane,9,9
+31,52,sugarcane,7,8
+19,57,sugarcane,16,13
+19,74,sugarcane,7,9
+30,69,sugarcane,5,13
+33,36,sugarcane,15,2
+37,62,sugarcane,9,12
+27,64,sugarcane,14,9
+20,34,sugarcane,16,4
+19,40,sugarcane,16,10
+20,70,sugarcane,7,15
+24,55,sugarcane,18,5
+31,36,sugarcane,19,4
+25,70,sugarcane,10,10
+40,52,sugarcane,5,9
+27,66,sugarcane,15,13
+22,35,sugarcane,11,10
+37,74,sugarcane,14,9
+30,54,sugarcane,3,8
+23,68,sugarcane,15,4
+35,37,sugarcane,9,7
+35,65,sugarcane,11,6
+25,73,sugarcane,8,10
+40,68,sugarcane,6,10
+24,80,sweet potato,19,3
+21,53,sweet potato,8,13
+38,36,sweet potato,14,12
+36,43,sweet potato,4,13
+15,48,sweet potato,15,7
+24,57,sweet potato,18,5
+21,53,sweet potato,6,11
+29,37,sweet potato,7,9
+18,58,sweet potato,15,9
+27,41,sweet potato,17,2
+18,45,sweet potato,3,7
+19,40,sweet potato,14,9
+20,79,sweet potato,16,8
+37,51,sweet potato,6,7
+32,36,sweet potato,19,14
+28,68,sweet potato,9,9
+30,45,sweet potato,20,11
+34,64,sweet potato,15,5
+32,76,sweet potato,5,6
+20,64,sweet potato,7,9
+37,54,sweet potato,6,3
+38,72,sweet potato,12,15
+29,32,sweet potato,10,13
+17,34,sweet potato,13,3
+22,77,sweet potato,12,11
+22,31,sweet potato,20,4
+17,51,sweet potato,15,13
+20,37,sweet potato,10,9
+38,41,sweet potato,14,10
+39,38,tea,3,3
+24,69,tea,5,7
+16,62,tea,9,4
+37,36,tea,9,8
+17,33,tea,5,4
+39,49,tea,3,6
+29,60,tea,7,13
+21,54,tea,4,10
+32,41,tea,16,7
+25,44,tea,6,6
+16,58,tea,3,13
+20,35,tea,18,13
+31,56,tea,6,10
+31,52,tea,20,4
+20,78,tea,11,9
+38,70,tea,12,9
+15,61,tea,18,4
+36,48,tea,20,4
+23,30,tea,14,8
+25,39,tea,19,10
+34,76,tea,15,12
+39,55,tea,18,6
+39,49,tea,7,5
+21,64,tea,3,12
+17,59,tea,12,10
+23,54,tea,18,13
+35,67,tea,18,9
+39,42,tea,13,13
+23,42,tea,12,10
+28,45,turnip,3,13
+32,53,turnip,13,3
+27,55,turnip,15,10
+21,51,turnip,18,4
+34,45,turnip,15,14
+39,71,turnip,13,11
+19,30,turnip,16,2
+39,72,turnip,12,4
+38,38,turnip,11,8
+24,63,turnip,13,9
+19,52,turnip,17,4
+21,71,turnip,6,3
+19,61,turnip,14,13
+37,30,turnip,14,4
+17,60,turnip,14,13
+27,72,turnip,6,5
+25,50,turnip,13,8
+16,43,turnip,17,13
+33,37,turnip,8,10
+32,67,turnip,15,15
+40,51,turnip,11,9
+17,62,turnip,15,6
+29,50,turnip,8,11
+18,33,turnip,3,5
+15,79,turnip,14,12
+33,37,turnip,9,11
+32,71,turnip,15,7
+20,73,turnip,17,10
+24,44,turnip,9,3
+24,46,vanilla,19,7
+30,56,vanilla,6,11
+32,43,vanilla,13,8
+17,43,vanilla,11,2
+26,77,vanilla,10,12
+19,48,vanilla,12,6
+19,76,vanilla,6,7
+34,77,vanilla,10,13
+26,65,vanilla,18,6
+38,57,vanilla,6,5
+24,79,vanilla,5,14
+19,54,vanilla,10,13
+17,42,vanilla,4,15
+30,68,vanilla,9,2
+40,59,vanilla,5,15
+31,47,vanilla,17,2
+32,75,vanilla,17,8
+17,48,vanilla,7,11
+21,75,vanilla,3,9
+21,72,vanilla,11,8
+30,39,vanilla,10,7
+16,56,vanilla,12,10
+35,57,vanilla,20,14
+31,56,vanilla,12,11
+22,58,vanilla,10,13
+25,71,vanilla,5,15
+19,77,vanilla,9,2
+21,44,vanilla,20,9
+17,48,vanilla,6,3
+30,45,walnut,7,11
+26,43,walnut,20,9
+19,61,walnut,13,7
+33,59,walnut,14,12
+38,76,walnut,15,3
+34,34,walnut,8,13
+35,54,walnut,7,8
+32,58,walnut,8,4
+26,33,walnut,11,5
+17,73,walnut,15,15
+18,38,walnut,6,4
+36,61,walnut,10,15
+40,57,walnut,3,15
+21,54,walnut,13,8
+22,67,walnut,9,8
+24,47,walnut,12,14
+33,55,walnut,20,15
+18,70,walnut,3,4
+29,59,walnut,18,6
+15,63,walnut,10,15
+23,65,walnut,14,2
+18,69,walnut,19,9
+35,31,walnut,4,4
+33,50,walnut,4,3
+32,64,walnut,8,8
+15,64,walnut,20,9
+39,49,walnut,20,2
+28,73,walnut,4,15
+38,73,walnut,3,2
+37,49,yam,17,6
+38,75,yam,9,13
+19,44,yam,18,2
+25,43,yam,3,13
+31,66,yam,12,11
+39,60,yam,6,13
+33,74,yam,16,14
+21,50,yam,16,12
+24,70,yam,15,2
+31,65,yam,13,15
+40,69,yam,5,8
+18,68,yam,20,5
+15,76,yam,19,14
+15,71,yam,19,6
+24,52,yam,18,14
+35,52,yam,16,4
+24,75,yam,10,13
+36,34,yam,17,10
+18,49,yam,17,7
+23,52,yam,13,3
+38,78,yam,20,14
+21,43,yam,7,12
+25,43,yam,19,11
+21,74,yam,6,9
+18,49,yam,17,7
+32,36,yam,5,12
+20,66,yam,19,9
+38,78,yam,14,15
+27,79,yam,19,6

@@ -451,7 +451,7 @@
                 <a href="{% url 'chatbot_page' %}"></a>
                 <li><a href="{% url 'addcrops' %}"><i class="fas fa-plus"></i> Add Crops</a></li>
                 <li><a href="{% url 'farmercrops' %}"><i class="fas fa-eye"></i> View Crops</a></li>
-                <li><a href="{% url 'stockfarmer' %}"><i class="fas fa-warehouse"></i> Stock Details</a></li>
+                <li><a href="{% url 'manage_bulk_orders' %}"><i class="fas fa-box-open"></i>Manage Pre-Orders</a></li>  <!-- New Link for Bulk Orders -->
                 <li><a href="{% url 'weather_update' %}"><i class="fas fa-cloud-sun"></i> Weather Updates</a></li>
                 <li><a href="{% url 'demand_prediction' %}" id="demand_prediction"><i class="fas fa-chart-line"></i> Demand Prediction</a></li>
                 <li><a href="{% url 'farmer_notifications' %}"><i class="fas fa-bell"></i> Notifications{% if notifications %}<span class="notification-badge">{{ notifications|length }}</span>{% endif %}</a></li>

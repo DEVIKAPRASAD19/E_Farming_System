@@ -265,6 +265,10 @@
                         <div class="item-details">
                             <div class="item-name">{{ item.crop.name }}</div>
                             <div class="item-price">₹{{ item.crop.price }} per kg</div>
+                            {% if item.delivery_date %}
+    <div class="item-delivery-date">Delivery Date: {{ item.delivery_date }}</div>
+{% endif %}
+
                             <form method="POST" action="{% url 'update_cart' item.id %}" class="quantity-controls">
                                 {% csrf_token %}
                                 <button type="button" class="quantity-btn" onclick="decrementQuantity(this)">-</button>

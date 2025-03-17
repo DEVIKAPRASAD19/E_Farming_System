@@ -65,11 +65,20 @@
                         {% csrf_token %}
                         <label for="quantity"><b>Quantity (in kg):</b></label>
                         <input type="number" id="quantity" name="quantity" min="1" max="{{ crop.stock }}" required>
-                        <button type="submit" class="btn add-to-cart-btn">Add to Cart</button>
+                        <button type="submit" class="btn add-to-cart-btn">
+                            <i class="fas fa-shopping-cart"></i> Add to Cart
+                        </button>
                     </form>
-                    <form method="POST" action="{% url 'crop_details' crop.id %}">
+                    <div class="button-row">
+                        <button type="submit" name="add_to_wishlist" form="wishlist-form" class="btn add-to-wishlist-btn">
+                            <i class="fas fa-heart"></i> Add to Wishlist
+                        </button>
+                        <a href="{% url 'place_bulk_order' crop.id %}" class="bulk-order-btn">
+                            <i class="fas fa-boxes"></i> Place Bulk Order
+                        </a>
+                    </div>
+                    <form id="wishlist-form" method="POST" action="{% url 'crop_details' crop.id %}" style="display: none;">
                         {% csrf_token %}
-                        <button type="submit" name="add_to_wishlist" class="btn add-to-wishlist-btn">Add to Wishlist</button>
                     </form>
                 </div>
             </div>
@@ -199,6 +208,8 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        height: 1000px; /* Set a fixed height */
+
     }
     
     /* Improve Google Translate Dropdown appearance */
@@ -292,6 +303,108 @@
         0% { transform: scale(1); opacity: 1; }
         50% { transform: scale(1.05); opacity: 0.8; }
         100% { transform: scale(1); opacity: 1; }
+    }
+
+    .action-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        width: 100%;
+    }
+
+    .action-buttons form {
+        width: 100%;
+    }
+
+    .button-row {
+        display: flex;
+        gap: 10px;
+        width: 100%;
+    }
+
+    .bulk-order-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 24px;
+        background: linear-gradient(135deg, #ff6b6b 0%, #ff4757 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.2);
+        flex: 1;
+    }
+
+    .bulk-order-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255, 107, 107, 0.3);
+        background: linear-gradient(135deg, #ff4757 0%, #ff6b6b 100%);
+        color: white;
+        text-decoration: none;
+    }
+
+    .add-to-wishlist-btn {
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .add-to-wishlist-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(52, 152, 219, 0.3);
+        background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
+    }
+
+    .btn i, .bulk-order-btn i {
+        margin-right: 8px;
+        font-size: 16px;
+    }
+
+    /* Update existing button styles to match */
+    .btn {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .add-to-cart-btn {
+        background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(46, 204, 113, 0.2);
+    }
+
+    .add-to-cart-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(46, 204, 113, 0.3);
+        background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+    }
+
+    /* Update the quantity input styling */
+    #quantity {
+        padding: 10px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 16px;
+        margin-right: 10px;
+        transition: all 0.3s ease;
+    }
+
+    #quantity:focus {
+        border-color: #2ecc71;
+        box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.1);
+        outline: none;
     }
 </style>
 

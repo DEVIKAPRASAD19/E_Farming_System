@@ -95,6 +95,10 @@ urlpatterns = [
     path('plot-crop-demand/', views.plot_crop_demand, name='plot_crop_demand'),
     path('farmer-sales-data/', views.farmer_sales_data, name='farmer_sales_data'),
     path('sales-analytics/', views.sales_analytics, name='sales_analytics'),
+
+    path("bulk-order/<int:crop_id>/", views.place_bulk_order, name="place_bulk_order"),
+    path("manage-bulk-orders/", views.manage_bulk_orders, name="manage_bulk_orders"),
+    path("update-bulk-order/<int:order_id>/<str:status>/", views.update_bulk_order_status, name="update_bulk_order_status"),
     
 
 

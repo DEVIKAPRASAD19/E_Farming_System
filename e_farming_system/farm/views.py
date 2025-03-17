@@ -2430,3 +2430,96 @@ def sales_analytics(request):
         'total_revenue': sum(revenues),
     })
 
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from .models import BulkOrder, Crop, Registeruser
+
+def place_bulk_order(request, crop_id):
+    crop = get_object_or_404(Crop, id=crop_id)
+
+    if request.method == "POST":
+        buyer_id = request.session.get("user_id")  # Get logged-in user ID from session
+        if not buyer_id:
+            messages.error(request, "You must be logged in to place an order.")
+            return redirect("login")
+
+        quantity = request.POST.get("quantity")
+        delivery_date = request.POST.get("delivery_date")
+
+        if not quantity or not delivery_date:
+            messages.error(request, "All fields are required.")
+            return redirect("place_bulk_order", crop_id=crop.id)
+
+        buyer = get_object_or_404(Registeruser, user_id=buyer_id)  # Fetch buyer from Registeruser model
+
+        BulkOrder.objects.create(
+            buyer=buyer,
+            crop=crop,
+            quantity=quantity,
+            delivery_date=delivery_date,
+            status="Pending"
+        )
+
+        messages.success(request, "Your bulk order request has been sent!")
+        return redirect("buyer_dashboard")
+
+    return render(request, "place_bulk_order.html", {"crop": crop})
+
+
+
+def manage_bulk_orders(request):
+    farmer_id = request.session.get("user_id")  # Get farmer ID from session
+    if not farmer_id:
+        return redirect("login")
+
+    bulk_orders = BulkOrder.objects.filter(crop__farmer_id=farmer_id).order_by("-created_at")  # Sort by latest orders
+    return render(request, "manage_bulk_orders.html", {"bulk_orders": bulk_orders})
+
+def update_bulk_order_status(request, order_id, status):
+    order = get_object_or_404(BulkOrder, id=order_id)
+
+    # Ensure only the correct farmer updates the order
+    if order.crop.farmer_id != request.session.get("user_id"):
+        messages.error(request, "You are not authorized to update this order.")
+        return redirect("manage_bulk_orders")
+
+    # Prevent updates on already rejected or delivered orders
+    if order.status in ["Rejected", "Delivered"]:
+        messages.warning(request, f"You cannot update an order that is already {order.status.lower()}.")
+        return redirect("manage_bulk_orders")
+
+    order.status = status
+    order.save()
+
+    # **Add crop to cart if order is accepted**
+    if status == "Accepted":
+        buyer = order.buyer  # Assuming `buyer` is a ForeignKey to `Registeruser`
+        crop = order.crop
+        quantity = max(order.quantity, 1)  # Ensure quantity is a positive integer
+        delivery_date = order.delivery_date  # Get delivery date from BulkOrder
+
+        # Check if item already exists in the cart
+        cart_item, created = Cart.objects.get_or_create(
+            user=buyer, crop=crop,
+            defaults={"quantity": quantity, "delivery_date": delivery_date}
+        )
+
+        if not created:
+            cart_item.quantity += quantity  # Update existing quantity
+            cart_item.delivery_date = delivery_date  # Update delivery date
+            cart_item.save()
+
+    # **Notify buyer about the status update via email**
+    buyer_email = order.buyer.email
+    if buyer_email:
+        send_mail(
+            subject="Bulk Order Status Update",
+            message=f"Your bulk order for {order.crop.name} has been {status.lower()}. Expected delivery: {order.delivery_date}.",
+            from_email=settings.EMAIL_HOST_USER,
+            recipient_list=[buyer_email],
+            fail_silently=True,
+        )
+
+    messages.success(request, f"Order has been {status.lower()}!")
+    return redirect("manage_bulk_orders")

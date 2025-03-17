@@ -62,13 +62,13 @@ textarea {
 input[type="text"]:focus,
 input[type="email"]:focus,
 textarea:focus {
-    border-color: #3498db;
+    border-color: #0e7e32;
     outline: none;
 }
 
 /* Button Styles */
 button {
-    background-color: #3498db;
+    background-color: #107b40;
     color: white;
     border: none;
     padding: 10px 15px;
@@ -78,7 +78,7 @@ button {
 }
 
 button:hover {
-    background-color: #2980b9;
+    background-color: #107d3f;
 }
 
 /* Table Styles */
@@ -95,7 +95,7 @@ th, td {
 }
 
 th {
-    background-color: #3498db;
+    background-color: #146a43;
     color: white;
 }
 

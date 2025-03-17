@@ -6,27 +6,371 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout - Order & Payment</title>
     <link rel="stylesheet" href="{% static 'css/checkout.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <style>
+        :root {
+            --primary-color: #2e7d32;
+            --primary-dark: #1b5e20;
+            --primary-light: #4caf50;
+            --accent-color: #ff6b6b;
+            --text-color: #333333;
+            --text-light: #666666;
+            --background-color: #f8f9fa;
+            --card-color: #ffffff;
+            --border-color: #e0e0e0;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --success-color: #4caf50;
+            --error-color: #f44336;
+            --table-header: #f1f8e9;
+            --table-row-even: #f9f9f9;
+            --table-row-hover: #e8f5e9;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-image: url('data:image/svg+xml,%3Csvg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="%239C92AC" fill-opacity="0.05"%3E%3Cpath d="M0 0h20L0 20z"%2F%3E%3Cpath d="M20 0v20H0z"%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E');
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 20px;
+        }
+
+        h2, h3, h4 {
+            color: var(--primary-color);
+            position: relative;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-light);
+            display: flex;
+            align-items: center;
+        }
+
+        h3:before {
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+
+        h3:first-of-type:before {
+            content: '\f07a'; /* Shopping cart icon */
+        }
+
+        h3:nth-of-type(2):before {
+            content: '\f15c'; /* Document icon */
+        }
+
+        h4 {
+            font-size: 1.2rem;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Table Styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: var(--card-color);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px var(--shadow-color);
+        }
+
+        thead {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: var(--table-row-even);
+        }
+
+        tbody tr:hover {
+            background-color: var(--table-row-hover);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Total Price */
+        p strong {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+
+        /* Form Styling */
+        form {
+            background: var(--card-color);
+            border-radius: 15px;
+            box-shadow: 0 8px 30px var(--shadow-color);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        form:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(to right, var(--primary-color), var(--primary-light));
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+            font-weight: 500;
+            font-size: 1rem;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            color: var(--text-color);
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+            background-color: #f9f9f9;
+            resize: vertical;
+        }
+
+        textarea:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+            outline: none;
+            background-color: #fff;
+        }
+
+        /* Payment Options */
         .payment-options {
             display: flex;
             align-items: center;
             gap: 40px;
+            margin: 1rem 0;
+            padding: 1.5rem;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
         }
+
         .payment-option {
             display: flex;
             align-items: center;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
         }
+
+        .payment-option:hover {
+            background-color: var(--table-row-hover);
+        }
+
         .payment-option input[type="radio"] {
             margin-right: 8px;
+            accent-color: var(--primary-color);
+            width: 18px;
+            height: 18px;
+        }
+
+        .payment-option label {
+            margin-bottom: 0;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .payment-option:first-child label:before {
+            content: '\f4c0';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            margin-right: 8px;
+            color: var(--primary-color);
+        }
+
+        .payment-option:last-child label:before {
+            content: '\f09d';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            margin-right: 8px;
+            color: var(--primary-color);
+        }
+
+        /* Buttons */
+        button {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 1rem;
+            box-shadow: 0 4px 15px rgba(46, 125, 50, 0.2);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(46, 125, 50, 0.3);
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+        }
+
+        #confirm-purchase:before {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+        }
+
+        #rzp-button1 {
+            background: linear-gradient(135deg, #3949ab 0%, #1a237e 100%);
+            box-shadow: 0 4px 15px rgba(57, 73, 171, 0.2);
+        }
+
+        #rzp-button1:hover {
+            box-shadow: 0 6px 20px rgba(57, 73, 171, 0.3);
+            background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%);
+        }
+
+        /* Back Button */
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(46, 125, 50, 0.2);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .back-button:before {
+            content: '\f060';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            margin-right: 8px;
+        }
+
+        .back-button:hover {
+            transform: translateX(-5px);
+            box-shadow: 0 6px 20px rgba(46, 125, 50, 0.3);
+            color: white;
+            text-decoration: none;
+        }
+
+        /* SweetAlert Customization */
+        .swal2-popup {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            border-radius: 15px;
+        }
+
+        .swal2-title {
+            color: var(--primary-color);
+        }
+
+        .swal2-confirm {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%) !important;
+        }
+
+        .swal2-cancel {
+            background: linear-gradient(135deg, #e53935 0%, #c62828 100%) !important;
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .container > * {
+            animation: fadeIn 0.5s ease backwards;
+        }
+
+        .container > *:nth-child(1) { animation-delay: 0.1s; }
+        .container > *:nth-child(2) { animation-delay: 0.2s; }
+        .container > *:nth-child(3) { animation-delay: 0.3s; }
+        .container > *:nth-child(4) { animation-delay: 0.4s; }
+        .container > *:nth-child(5) { animation-delay: 0.5s; }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 15px;
+                margin-top: 4rem;
+            }
+            
+            .payment-options {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            th, td {
+                padding: 10px;
+            }
         }
     </style>
 </head>
 <body>
     <!-- Back Button -->
-    <a href="{% url 'check_out_step1' %}" class="back-button">Back</a>
+    <a href="{% url 'check_out_step1' %}" class="back-button">Back to Details</a>
 
     <div class="container">
         <!-- Cart Items Section -->
@@ -52,21 +396,19 @@
             </tbody>
         </table>
 
-        <p><strong>Total Price:</strong> Rs.{{ total_price }}</p><br>
+        <p><strong>Total Price:</strong> Rs.{{ total_price }}</p>
 
         <!-- Order Form -->
         <h3>Order Details</h3>
         <form id="order-form" method="post" action="{% url 'place_order' %}">
             {% csrf_token %}
             <label for="address">Delivery Address:</label>
-<textarea id="address" name="address" rows="3" required>
-    {{ request.session.updated_user_details.delivery_address|default:user.delivery_address }}
-</textarea><br>
+            <textarea id="address" name="address" rows="3" required>{{ request.session.updated_user_details.delivery_address|default:user.delivery_address }}</textarea>
 
-<!-- Hidden input for pincode -->
-<input type="hidden" name="pincode" value="{{ request.session.updated_user_details.pincode|default:user.pincode }}">
+            <!-- Hidden input for pincode -->
+            <input type="hidden" name="pincode" value="{{ request.session.updated_user_details.pincode|default:user.pincode }}">
 
-            <h4>Payment Method:</h4><br>
+            <h4>Payment Method:</h4>
             <div class="payment-options">
                 <div class="payment-option">
                     <input type="radio" id="Cash" name="payment_method" value="Cash" checked>
@@ -76,7 +418,7 @@
                     <input type="radio" id="online" name="payment_method" value="online">
                     <label for="online">Online Payment</label>
                 </div>
-            </div><br>
+            </div>
 
             <button type="button" id="confirm-purchase">Confirm Purchase</button>
             <button type="button" id="rzp-button1" style="display:none;">Pay with Razorpay</button>
@@ -120,7 +462,7 @@
 
         const options = {
             "key": "{{ razorpay_key_id }}",
-            "amount": "{{ final_price|floatformat:2 }}",  
+            "amount": "{{ final_price|floatformat:2 }}",  
             "currency": "INR",
             "name": "E Farming System",
             "description": "Order Payment",

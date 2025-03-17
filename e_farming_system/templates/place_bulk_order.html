@@ -1,0 +1,336 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Add SweetAlert2 CSS and JS in the head -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-material-ui/material-ui.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<div class="content-wrapper">
+    <div class="bulk-order-container">
+        <div class="bulk-order-card">
+            <div class="order-header">
+                <div class="crop-image-preview">
+                    {% if crop.images.first %}
+                        <img src="{{ crop.images.first.image.url }}" alt="{{ crop.name }}" class="crop-preview-img">
+                    {% else %}
+                        <img src="{% static 'images/default_crop.jpg' %}" alt="{{ crop.name }}" class="crop-preview-img">
+                    {% endif %}
+                </div>
+                <div class="order-title">
+                    <h2><i class="fas fa-shopping-cart"></i> Bulk Order</h2>
+                    <p class="crop-name">{{ crop.name }}</p>
+                    <span class="price-tag">₹{{ crop.price }} per kg</span>
+                </div>
+            </div>
+
+            <form method="post" class="bulk-order-form" id="bulkOrderForm" novalidate>
+            {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="quantity">
+                        <i class="fas fa-weight"></i> Quantity (kg)
+                </label>
+                    <div class="input-wrapper">
+                        <input type="number" 
+                               name="quantity" 
+                               id="quantity" 
+                               min="1" 
+                               placeholder="Enter quantity in kg"
+                               required>
+                        <span class="input-icon"><i class="fas fa-balance-scale"></i></span>
+                    </div>
+            </div>
+
+                <div class="form-group">
+                    <label for="delivery_date">
+                        <i class="fas fa-calendar-alt"></i> Delivery Date
+                </label>
+                    <div class="input-wrapper">
+                        <input type="date" 
+                               name="delivery_date" 
+                               id="delivery_date"
+                               required>
+                        <span class="input-icon"><i class="fas fa-calendar-check"></i></span>
+                    </div>
+                </div>
+
+                <div class="order-summary">
+                    <h3>Order Summary</h3>
+                    <div class="summary-item">
+                        <span>Quantity:</span>
+                        <span id="summary-quantity">0 kg</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Price per kg:</span>
+                        <span>₹{{ crop.price }}</span>
+                    </div>
+                    <div class="summary-item total">
+                        <span>Total Amount:</span>
+                        <span id="summary-total">₹0</span>
+                    </div>
+            </div>
+
+                <button type="submit" class="submit-btn" id="submitBulkOrder">
+                    <i class="fas fa-check-circle"></i> Place Bulk Order
+                </button>
+            </form>
+            </div>
+    </div>
+</div>
+
+<style>
+    .content-wrapper {
+        padding: 2rem;
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        min-height: 100vh;
+    }
+
+    .bulk-order-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .bulk-order-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    .order-header {
+        background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+        color: white;
+        padding: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+    }
+
+    .crop-image-preview {
+        width: 120px;
+        height: 120px;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    .crop-preview-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .order-title {
+        flex: 1;
+    }
+
+    .order-title h2 {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .crop-name {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        margin-bottom: 0.5rem;
+    }
+
+    .price-tag {
+        display: inline-block;
+        background: rgba(255,255,255,0.2);
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 1.1rem;
+    }
+
+    .bulk-order-form {
+        padding: 2rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+
+    .input-wrapper {
+        position: relative;
+    }
+
+    .input-wrapper input {
+        width: 100%;
+        padding: 12px 20px;
+        padding-right: 40px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .input-wrapper input:focus {
+        border-color: #2e7d32;
+        box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+        outline: none;
+    }
+
+    .input-icon {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #666;
+    }
+
+    .order-summary {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin: 2rem 0;
+    }
+
+    .order-summary h3 {
+        color: #333;
+        margin-bottom: 1rem;
+        font-size: 1.2rem;
+    }
+
+    .summary-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        color: #666;
+    }
+
+    .summary-item.total {
+        border-top: 2px solid #e0e0e0;
+        margin-top: 0.5rem;
+        padding-top: 1rem;
+        font-weight: 600;
+        color: #333;
+        font-size: 1.1rem;
+    }
+
+    .submit-btn {
+        width: 100%;
+        padding: 15px;
+        background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(46, 125, 50, 0.2);
+    }
+
+    @media (max-width: 768px) {
+        .order-header {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .crop-image-preview {
+            margin: 0 auto;
+        }
+
+        .bulk-order-container {
+            padding: 10px;
+        }
+    }
+
+    /* Add styles for the popup */
+    .swal2-popup {
+        font-size: 1.1rem;
+    }
+
+    .swal2-title {
+        color: #2e7d32;
+    }
+
+    .swal2-html-container {
+        font-size: 1rem;
+    }
+
+    .swal2-confirm {
+        background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%) !important;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('bulkOrderForm');
+    const quantityInput = document.getElementById('quantity');
+    const summaryQuantity = document.getElementById('summary-quantity');
+    const summaryTotal = document.getElementById('summary-total');
+    const pricePerKg = {{ crop.price }};
+
+    function updateSummary() {
+        const quantity = parseInt(quantityInput.value) || 0;
+        const total = quantity * pricePerKg;
+        
+        summaryQuantity.textContent = `${quantity} kg`;
+        summaryTotal.textContent = `₹${total}`;
+    }
+
+    quantityInput.addEventListener('input', updateSummary);
+
+    // Set minimum date to today
+    const deliveryDateInput = document.getElementById('delivery_date');
+    const today = new Date().toISOString().split('T')[0];
+    deliveryDateInput.min = today;
+
+    // Handle form submission
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Check form validity
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        // Show confirmation popup
+        Swal.fire({
+            title: 'Bulk Order Placed!',
+            html: `
+                <div style="text-align: left; padding: 10px;">
+                    <p style="margin-bottom: 15px;">Your order will appear in the cart when the farmer accepts it.</p>
+                    <p style="color: #666;">Please check your cart for updates!</p>
+                </div>
+            `,
+            icon: 'success',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#2e7d32',
+            showClass: {
+                popup: 'animate__animated animate__fadeInDown'
+            },
+            hideClass: {
+                popup: 'animate__animated animate__fadeOutUp'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Submit the form
+                form.submit();
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
