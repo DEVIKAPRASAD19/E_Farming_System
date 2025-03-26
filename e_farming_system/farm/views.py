@@ -912,26 +912,81 @@ def delete_from_cart(request, cart_id):
 
 
 def crop_stock_details(request):
-    crops = Crop.objects.all()  # Retrieve all crops
-    return render(request, 'stock.html', {'crops': crops})
+    # Get all crops
+    crops = Crop.objects.all()
 
+    # Get all completed orders
+    sold_crops = OrderItem.objects.select_related('order', 'crop', 'crop__farmer').filter(
+        order__status='Delivered',
+        order__is_canceled=False
+    ).order_by('-order__order_date')
+
+    # Calculate total amount for each sale
+    for sale in sold_crops:
+        sale.total_amount = sale.price * sale.quantity
+
+    # Calculate statistics
+    total_crops_sold = sold_crops.values('crop').distinct().count()
+    total_quantity_sold = sold_crops.aggregate(Sum('quantity'))['quantity__sum'] or 0
+    total_sales_amount = sum(sale.total_amount for sale in sold_crops)
+    unique_buyers_count = sold_crops.values('order__user').distinct().count()
+
+    context = {
+        'crops': crops,
+        'sold_crops': sold_crops,
+        'total_crops_sold': total_crops_sold,
+        'total_quantity_sold': total_quantity_sold,
+        'total_sales_amount': total_sales_amount,
+        'unique_buyers_count': unique_buyers_count
+    }
+
+    return render(request, 'stock.html', context)
+
+
+from django.db.models import Sum
+
+from django.db.models import Sum, F
 
 def stockfarmer(request):
-    # Check if user_id is in the session; if not, redirect to login
     if not request.session.get('user_id'):
         return redirect('login')
 
-    # Fetch the logged-in farmer using the session's user_id
     farmer = get_object_or_404(Registeruser, user_id=request.session['user_id'])
 
-    # Ensure the user is a farmer
     if farmer.role != 'farmer':
-        return redirect('home')  # Redirect non-farmer users to another page
+        return redirect('home')
 
-    # Retrieve only the crops added by the logged-in farmer
     crops = Crop.objects.filter(farmer=farmer)
 
-    return render(request, 'stockfarmer.html', {'crops': crops})
+    # Get completed orders for this farmer's crops
+    sold_crops = OrderItem.objects.select_related('order', 'crop').filter(
+        crop__farmer=farmer,
+        order__status='Delivered',  # Only show delivered orders
+        order__is_canceled=False    # Exclude canceled orders
+    ).order_by('-order__order_date')
+
+    # Calculate total amount for each sale and add it to the queryset
+    for sale in sold_crops:
+        sale.total_amount = sale.price * sale.quantity
+
+    # Calculate statistics
+    total_crops_sold = sold_crops.values('crop').distinct().count()
+    total_quantity_sold = sold_crops.aggregate(Sum('quantity'))['quantity__sum'] or 0
+    total_sales_amount = sum(sale.total_amount for sale in sold_crops)
+    unique_buyers_count = sold_crops.values('order__user').distinct().count()
+
+    context = {
+        'crops': crops,
+        'sold_crops': sold_crops,
+        'total_crops_sold': total_crops_sold,
+        'total_quantity_sold': total_quantity_sold,
+        'total_sales_amount': total_sales_amount,
+        'unique_buyers_count': unique_buyers_count
+    }
+
+    return render(request, 'stockfarmer.html', context)
+
+
 
 
 
@@ -2082,7 +2137,7 @@ def predict_spoilage(request):
             humidity = float(request.POST.get('humidity'))
             crop = request.POST.get('crop').lower()
 
-            # Load the model and feature columns
+                        # Load the model and feature columns
             model_path = os.path.join(settings.BASE_DIR, 'ml_model', 'ml_models', 'post_harvest_model.pkl')
             feature_columns_path = os.path.join(settings.BASE_DIR, 'ml_model', 'ml_models', 'feature_columns.pkl')
             
@@ -2109,51 +2164,70 @@ def predict_spoilage(request):
                 input_data.at[0, crop_column] = 1
             else:
                 return JsonResponse({
-                    'error': f"Crop type '{crop}' not found in training data. Available crops: " + 
+                    'error': f"Crop type '{crop}' not found. Please enter a valid crop like " + 
                             ", ".join(col.replace('crop_type_', '') for col in feature_columns if col.startswith('crop_type_'))
                 })
+            
+            # **Use ML model to predict spoilage risk**
+            prediction = model.predict(input_data)
+
+# The prediction should return the estimated spoilage days
+            spoilage_days = int(prediction[0])  # Convert to integer
+
 
             # Define optimal ranges for different crops
             optimal_conditions = {
                 'wheat': {'temp_min': 10, 'temp_max': 25, 'humidity_min': 45, 'humidity_max': 65, 'max_days': 180},
                 'rice': {'temp_min': 12, 'temp_max': 28, 'humidity_min': 50, 'humidity_max': 70, 'max_days': 160},
                 'maize': {'temp_min': 10, 'temp_max': 30, 'humidity_min': 40, 'humidity_max': 60, 'max_days': 150},
-                # Add more crops as needed based on your CSV data
+                # Default conditions for other crops
+                'default': {'temp_min': 15, 'temp_max': 25, 'humidity_min': 45, 'humidity_max': 65, 'max_days': 90}
             }
 
-            # Make prediction
-            prediction_prob = model.predict_proba(input_data)[0]
-            risk_probability = prediction_prob[1]
+            # Get crop conditions or use default
+            crop_conditions = optimal_conditions.get(crop, optimal_conditions['default'])
 
-            # Calculate spoilage days
-            if crop in optimal_conditions:
-                crop_conditions = optimal_conditions[crop]
-            else:
-                # Default conditions if crop not in optimal_conditions
-                crop_conditions = {
-                    'temp_min': 15, 'temp_max': 25,
-                    'humidity_min': 45, 'humidity_max': 65,
-                    'max_days': 90
-                }
+            # Calculate risk based on temperature and humidity deviations
+            temp_risk = 0
+            humidity_risk = 0
 
-            # Calculate factors
-            temp_factor = 1.0
-            humidity_factor = 1.0
-
+            # Temperature risk calculation
             if temperature < crop_conditions['temp_min']:
-                temp_factor = 0.7 + (temperature / crop_conditions['temp_min']) * 0.3
+                temp_risk = ((crop_conditions['temp_min'] - temperature) / crop_conditions['temp_min']) * 100
             elif temperature > crop_conditions['temp_max']:
-                temp_factor = 1.0 - ((temperature - crop_conditions['temp_max']) / crop_conditions['temp_max']) * 0.5
+                temp_risk = ((temperature - crop_conditions['temp_max']) / crop_conditions['temp_max']) * 100
 
+            # Humidity risk calculation
             if humidity < crop_conditions['humidity_min']:
-                humidity_factor = 0.7 + (humidity / crop_conditions['humidity_min']) * 0.3
+                humidity_risk = ((crop_conditions['humidity_min'] - humidity) / crop_conditions['humidity_min']) * 100
             elif humidity > crop_conditions['humidity_max']:
-                humidity_factor = 1.0 - ((humidity - crop_conditions['humidity_max']) / crop_conditions['humidity_max']) * 0.5
+                humidity_risk = ((humidity - crop_conditions['humidity_max']) / crop_conditions['humidity_max']) * 100
 
-            spoilage_days = round(crop_conditions['max_days'] * temp_factor * humidity_factor)
+            # Calculate overall risk (weighted average)
+            overall_risk = (temp_risk * 0.6 + humidity_risk * 0.4)  # Temperature has more weight
+            
+            # Ensure risk doesn't exceed 100%
+            overall_risk = min(100, overall_risk)
+
+            # Calculate spoilage days based on risk
+            max_days = crop_conditions['max_days']
+            spoilage_days = int(max_days * (1 - (overall_risk / 100)))
+            spoilage_days = max(1, spoilage_days)  # Ensure at least 1 day
+
+            # Determine risk level text
+            if overall_risk > 75:
+                risk_level = "Very High"
+            elif overall_risk > 50:
+                risk_level = "High"
+            elif overall_risk > 25:
+                risk_level = "Moderate"
+            else:
+                risk_level = "Low"
 
             # Generate recommendations
             recommendations = []
+            
+            # Existing temperature and humidity recommendations
             if temperature < crop_conditions['temp_min']:
                 recommendations.append(
                     f"Increase temperature from {temperature}°C to between "
@@ -2176,26 +2250,78 @@ def predict_spoilage(request):
                     f"{crop_conditions['humidity_min']}% and {crop_conditions['humidity_max']}%"
                 )
 
-            # Add optimal conditions message
-            recommendations.append(
-                f"Optimal storage conditions for {crop}:\n"
-                f"Temperature: {crop_conditions['temp_min']}°C to {crop_conditions['temp_max']}°C\n"
-                f"Humidity: {crop_conditions['humidity_min']}% to {crop_conditions['humidity_max']}%"
-            )
-
-            # Determine risk level
-            if risk_probability > 0.75:
-                risk_level = "Very High"
-            elif risk_probability > 0.5:
-                risk_level = "High"
-            elif risk_probability > 0.25:
-                risk_level = "Moderate"
+            # Add storage condition recommendations based on risk level
+            if overall_risk > 75:
+                recommendations.extend([
+                    "Warning: Unfavorable conditions detected",
+                    "Monitor closely",
+                    "Consider immediate use",
+                    "Check for signs of spoilage every 4-6 hours",
+                    "Move to climate-controlled storage if available",
+                    "Ensure proper ventilation",
+                    "Separate affected produce from healthy ones"
+                ])
+            elif overall_risk > 50:
+                recommendations.extend([
+                    "Monitor temperature and humidity twice daily",
+                    "Ensure good air circulation",
+                    "Check for signs of deterioration daily",
+                    "Consider using moisture-absorbing materials",
+                    "Maintain cleanliness in storage area"
+                ])
+            elif overall_risk > 25:
+                recommendations.extend([
+                    "Regular monitoring recommended",
+                    "Maintain current storage conditions",
+                    "Check produce quality every 2-3 days",
+                    "Keep storage area clean and organized"
+                ])
             else:
-                risk_level = "Low"
+                recommendations.extend([
+                    "Optimal storage conditions",
+                    "Continue regular maintenance",
+                    "Weekly quality checks recommended"
+                ])
+
+            # Add crop-specific recommendations
+            if crop == 'rice':
+                recommendations.extend([
+                    "Store in airtight containers",
+                    "Keep away from direct sunlight",
+                    "Use neem leaves as natural preservative",
+                    "Check for insect infestation regularly",
+                    "Maintain proper stacking with pallets"
+                ])
+            elif crop == 'wheat':
+                recommendations.extend([
+                    "Ensure moisture content below 12%",
+                    "Use food-grade storage bags",
+                    "Implement proper fumigation schedule",
+                    "Keep storage area dark",
+                    "Monitor for mold growth"
+                ])
+            elif crop == 'maize':
+                recommendations.extend([
+                    "Ensure proper drying before storage",
+                    "Use raised platforms for storage",
+                    "Check for aflatoxin development",
+                    "Maintain good ventilation",
+                    "Regular pest monitoring required"
+                ])
+
+            # Add general best practices
+            recommendations.extend([
+                "Keep storage area clean and sanitized",
+                "Implement first-in-first-out (FIFO) inventory management",
+                "Document storage conditions daily",
+                "Train staff on proper handling procedures",
+                "Have emergency response plan ready",
+                f"Expected storage life: {spoilage_days} days under current conditions"
+            ])
 
             return JsonResponse({
                 'result': f"{risk_level} risk of spoilage",
-                'probability': f"{risk_probability:.2%}",
+                'probability': f"{overall_risk:.2f}%",
                 'spoilage_days': spoilage_days,
                 'details': {
                     'temperature': temperature,

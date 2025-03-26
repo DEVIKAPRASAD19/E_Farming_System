@@ -220,6 +220,7 @@ class OrderItem(models.Model):
     def __str__(self):
         return f"{self.crop.name} (x{self.quantity})"
 
+
 class CropViewHistory(models.Model):
     buyer = models.ForeignKey('Registeruser', on_delete=models.CASCADE, related_name='viewed_crops')
     crop = models.ForeignKey('Crop', on_delete=models.CASCADE)

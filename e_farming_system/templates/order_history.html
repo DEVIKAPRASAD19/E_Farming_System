@@ -294,9 +294,9 @@
                             {% if order.status == 'Pending' %}
                                 <form method="POST" action="{% url 'cancel_order' order.id %}" style="flex: 1;">
                                     {% csrf_token %}
-                                    <button type="submit" class="action-btn cancel-btn">
+                                    {% comment %} <button type="submit" class="action-btn cancel-btn">
                                         <i class="fas fa-times"></i> Cancel Order
-                                    </button>
+                                    </button> {% endcomment %}
                                 </form>
                             {% endif %}
                         </div>

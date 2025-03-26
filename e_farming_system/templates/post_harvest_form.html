@@ -468,7 +468,7 @@
                                 <i class="fas fa-chart-bar"></i> Prediction Results
                             </h3>
                             <p><strong>Risk Level:</strong> ${data.result}</p>
-                            <p><strong>Confidence:</strong> ${data.probability}</p>
+                            <p><strong>Risk Probability:</strong> ${data.probability}</p>
                             <p><strong>Expected Storage Life:</strong> ${data.spoilage_days} days</p>
                         </div>
                     `;
@@ -498,5 +498,28 @@
             }
         });
     </script>
+    <script>
+        document.getElementById('prediction-form').addEventListener('submit', function(event) {
+            let temperature = document.getElementById('temperature').value;
+            let humidity = document.getElementById('humidity').value;
+            let crop = document.getElementById('crop').value;
+    
+            // Humidity Validation
+            if (humidity < 0 || humidity > 100) {
+                alert("Humidity must be between 0 and 100.");
+                event.preventDefault();
+                return;
+            }
+    
+            // Crop Name Validation (Only letters and spaces)
+            let cropRegex = /^[A-Za-z\s]+$/;
+            if (!cropRegex.test(crop)) {
+                alert("Crop name should only contain letters and spaces.");
+                event.preventDefault();
+                return;
+            }
+        });
+    </script>
+    
 </body>
 </html>

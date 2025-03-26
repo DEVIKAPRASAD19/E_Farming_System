@@ -637,6 +637,17 @@
         .progress-line-container .progress-line.active {
             background-color: #2e7d32; /* Green line for active */
         }
+
+        .swal-wide {
+            width: 500px !important;
+            padding: 2rem !important;
+        }
+        .text-left {
+            text-align: left !important;
+        }
+        .swal2-html-container {
+            margin: 1rem 0 !important;
+        }
     </style>
 </head>
 <body>
@@ -961,15 +972,39 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         function confirmCancelOrder() {
+            const paymentMethod = '{{ order.payment_method }}';
+            let confirmMessage = 'Do you really want to cancel this order?';
+            let additionalHtml = '';
+
+            if (paymentMethod.toLowerCase() === 'razorpay') {
+                confirmMessage = 'Are you sure you want to cancel this order?';
+                additionalHtml = `
+                    <div style="margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px; font-size: 0.9rem; text-align: left;">
+                        <p style="color: #2e7d32; margin-bottom: 0.5rem;">
+                            <i class="fas fa-info-circle"></i> Refund Information:
+                        </p>
+                        <p style="margin-bottom: 0.5rem;">
+                            The money you paid for this order would be credited back to your account with in 3 days.
+                        </p>
+                        <p style="color: #666; font-size: 0.8rem;">
+                            For any enquiries, contact: <a href="mailto:efarming2024@gmail.com" style="color: #2e7d32;">efarming2024@gmail.com</a>
+                        </p>
+                    </div>`;
+            }
+
             Swal.fire({
-                title: 'Are you sure?',
-                text: 'Do you really want to cancel this order?',
+                title: 'Cancel Order',
+                html: `<p style="margin-bottom: 1rem;">${confirmMessage}</p>${additionalHtml}`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
                 cancelButtonColor: '#3085d6',
                 confirmButtonText: 'Yes, cancel it!',
-                cancelButtonText: 'No, keep it'
+                cancelButtonText: 'No, keep it',
+                customClass: {
+                    popup: 'swal-wide',
+                    content: 'text-left'
+                }
             }).then((result) => {
                 if (result.isConfirmed) {
                     const form = document.createElement('form');
